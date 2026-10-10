@@ -19,9 +19,32 @@ interface ProviderModel {
   mode?: (ImageMode | VideoMode)[];
   associationSkills?: string;
   audio?: "optional" | boolean;
+  // 【音频能力声明】以下字段服务于音频节点（复刻音色、语音指令分离）。图片与视频节点不消费它们，
+  // 纯类型声明、运行时无副作用——若不需要音频节点，这几项可以整组移除而不影响其它媒体类型。
+  /**
+   * 音频模型归属：`speech` 语音合成（TTS，ComfyUI-音频生成用）、
+   * `music` 音乐生成（ComfyUI-音乐生成用）。
+   * 未声明时按 `speech` 处理——历史音频供应商全是 TTS 工作流，
+   * 不声明的老供应商不需要改就能继续出现在音频节点里。
+   */
+  audioCategory?: "speech" | "music";
+  /** 该音频模型是否消费接入的参考音频（复刻音色类工作流用得到）；未声明即不支持，节点据此提示而非静默丢弃。 */
+  referenceAudio?: boolean;
+  /**
+   * 该音频模型是否**必须**消费接入的参考音频（音乐翻唱类：靠参考音频转谱才能出曲）。
+   * 声明为 true 时，节点在缺少参考音频时直接拦住生成，而不是提交一个必然失败的任务。
+   */
+  requiresReferenceAudio?: boolean;
   imageSizes?: string[];
   imageRatios?: string[];
   durationResolutionMap?: { duration: number[]; resolution: string[] }[];
+  /**
+   * 该模型是「放大/超分」类：只接一张图、没有提示词与 LoRA 通道，画布据此收起
+   * 不适用的控件（LoRA、分辨率、比例、玩法按钮），只留放大倍数。
+   */
+  upscale?: boolean;
+  /** 放大倍数的可选档位；缺省时画布用 [1.5, 2, 3, 4]。 */
+  upscaleMultipliers?: string[];
   voices?: { title: string; voice: string }[];
 }
 
@@ -49,9 +72,9 @@ interface MediaRequest {
 
 /** 抽象层的媒体来源；供应商负责转换为平台需要的 URL、文件或字节。 */
 type MediaInput =
-  | { type: "url"; url: string; mimeType?: string; name?: string }
-  | { type: "base64"; data: string; mimeType: string; name?: string }
-  | { type: "binary"; data: Uint8Array; mimeType: string; name?: string };
+  | { type: "url"; url: string; mimeType?: string; name?: string; text?: string }
+  | { type: "base64"; data: string; mimeType: string; name?: string; text?: string }
+  | { type: "binary"; data: Uint8Array; mimeType: string; name?: string; text?: string };
 
 type MediaAsset = MediaInput & { mediaType: "image" | "video" | "audio" };
 
@@ -79,6 +102,13 @@ interface FfmpegRequiredError extends Error {
 
 interface ProviderTools {
   fetch: typeof globalThis.fetch;
+  /**
+   * 不绑定取消信号的 fetch，只用于**取消之后**必须发出的一次性善后请求。
+   * 典型场景：用户中止生成时，远端任务不会自己停（云端仍在计费、本地工作流仍在占显存），
+   * 需要通知远端中止已提交的任务；此时普通 fetch 已随取消抛错，只有这个通道能发出去。
+   * 正常业务请求一律用 fetch，不要用它绕过取消。
+   */
+  fetchDetached(input: string | URL | Request, init?: RequestInit): Promise<Response>;
   /** 提取供应商错误正文中的可读原因，并隐藏配置中的密钥和 URL 查询参数。 */
   errorMessage(value: unknown): string;
   hash: typeof Bun.hash;
@@ -118,6 +148,13 @@ interface ImageRequest extends MediaRequest {
   ratio?: string;
   /** 输出尺寸，如 1K、2K、4K 或 1024x1024；具体格式由供应商转换。 */
   size?: string;
+  /**
+   * 可叠加的 LoRA，按数组顺序依次应用。name 是宿主侧的全路径标识（如 ComfyUI 的「目录\文件名」），
+   * strength 缺省为 1、负值表示反转。上限随宿主工作流的可堆叠槽位数（ComfyUI 堆叠节点为 12）。
+   */
+  loras?: { name: string; strength?: number }[];
+  /** 放大倍数，只放大/超分类模型消费（如 SeedVR2 的 resize_type.multiplier）；范围 1.5~4。 */
+  multiplier?: number;
   /** 画质档位，如 low、medium、high，由供应商映射。 */
   quality?: string;
   /** 输出编码格式，如 png、jpeg、webp。 */
@@ -170,10 +207,14 @@ type AudioRequest = MediaRequest & {
   normalizeText?: boolean;
   /** 输出编码格式，如 mp3、wav、pcm、flac、opus；由供应商映射平台的格式名称。 */
   format?: string;
+  /** 输出编码质量档位或预设，如 V0、320k；由供应商按格式校验支持范围，缺省沿用其默认档位。 */
+  quality?: string;
   /** 输出采样率，单位 Hz。 */
   sampleRate?: number;
   /** 输出编码码率，单位 kbps；仅适用于支持配置码率的格式，由供应商转换平台单位。 */
   bitrateKbps?: number;
+  /** 采样随机种子；不传时由供应商自行随机。取值范围由供应商按宿主节点的类型校验（部分节点是 32 位 INT）。 */
+  seed?: number;
 } & ({ text: string } | { prompt: string });
 
 /**

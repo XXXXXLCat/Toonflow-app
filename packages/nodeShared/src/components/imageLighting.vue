@@ -52,7 +52,7 @@
         <div class="switchControl"><span>智能模式</span><el-switch v-model="settings.smartMode" :disabled="busy" aria-label="智能模式" /></div>
         <el-input v-if="settings.smartMode" v-model="settings.smartDesc" type="textarea" :autosize="{ minRows: 2, maxRows: 5 }" :disabled="busy" placeholder="描述你想要的光影、氛围或局部细节…" aria-label="智能打光描述" />
       </div>
-      <imageVariationGenerator v-model:generating="generating" :settings="settings" :source="source" :aspectRatio="sourceRatio" :prompt="buildLightingPrompt(settings)" :disabled="disabled" label="打光" @generated="emit('close')" />
+      <imageVariationGenerator v-model:generating="generating" :settings="settings" :source="source" :aspectRatio="sourceRatio" :prompt="buildLightingPrompt(settings)" :disabled="disabled" :nodeType="nodeType" label="打光" @generated="emit('close')" />
     </section>
   </teleport>
 </template>
@@ -67,7 +67,7 @@ import { buildLightingPrompt, lightingPresets, readLightingSettings, type Lighti
 import imageLightingStage from "./imageLightingStage.vue";
 import imageVariationGenerator from "./imageVariationGenerator.vue";
 
-const props = defineProps<{ src: string; source?: NodeMediaValue; target?: HTMLElement; disabled?: boolean }>();
+const props = defineProps<{ src: string; source?: NodeMediaValue; target?: HTMLElement; disabled?: boolean; nodeType?: string }>();
 const emit = defineEmits<{ close: [] }>();
 const { node } = useNode();
 node.data.lighting = readLightingSettings(node.data.lighting);

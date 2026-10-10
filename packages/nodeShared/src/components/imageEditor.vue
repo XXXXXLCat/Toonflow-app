@@ -58,16 +58,16 @@ import { useNode, useVueFlow } from "@vue-flow/core";
 import { ElButton, ElMessage } from "element-plus";
 import { IconBrush, IconEraser, IconSquare, IconCircle, IconTypography, IconArrowBackUp, IconArrowForwardUp, IconTrash, IconCheck, IconX } from "@tabler/icons-vue";
 import { uploadNodeFile, useNodeFiles } from "@toonflow/nodes-scaffold/runtime";
-import { showNodeError } from "@toonflow/node-shared/showNodeError";
-import { useImageVariationNode } from "../useImageVariationNode";
+import { showNodeError } from "../showNodeError";
+import { useImageVariationNode, variationSizeKey, VARIATION_NODE, AUTO_RATIO, recommendedLora } from "../useImageVariationNode";
 import { buildInpaintPrompt, type InpaintDraftInput } from "../imageInpaint";
 
-const props = defineProps<{ src: string; alt: string; toolbarTarget?: HTMLElement; disabled?: boolean }>();
+const props = defineProps<{ src: string; alt: string; toolbarTarget?: HTMLElement; disabled?: boolean; nodeType?: string }>();
 const emit = defineEmits<{ load: [event: Event]; error: [event: Event] }>();
 const { node } = useNode();
 const { addNodes, addEdges, findNode, getNodes, nodeTypes } = useVueFlow();
 const files = useNodeFiles();
-const createVariation = useImageVariationNode();
+const createVariation = useImageVariationNode({ nodeType: props.nodeType });
 const getCanvas = inject<(() => { id: string } | undefined) | undefined>("canvas", undefined);
 const batchHistory = inject<(action: () => Promise<void>) => Promise<void>>("batchCanvasHistory", action => action());
 const sourceImage = ref<HTMLImageElement>();
@@ -346,7 +346,9 @@ async function saveMark() {
 async function createInpaint(input: InpaintDraftInput, signal: AbortSignal) {
   if (busy.value || mode.value !== "inpaint") throw new Error("请先进入局部重绘");
   if (!input.prompt.trim()) throw new Error("请输入重绘提示词");
-  if (!nodeTypes?.value?.["remote-imageGenerationNode"]) throw new Error("请先启用图片生成节点插件");
+  // 承载节点由调用方指定：ComfyUI 图片节点与内置图片生成节点的尺寸键名不同，不能写死。
+  const type = props.nodeType ?? VARIATION_NODE.builtin;
+  if (!nodeTypes?.value?.[type]) throw new Error("请先启用图片生成节点插件");
   const layer = paintCanvas.value;
   if (!layer || !layer.getContext("2d")?.getImageData(0, 0, layer.width, layer.height).data.some((value, index) => index % 4 === 3 && value)) throw new Error("请先涂抹需要重绘的区域");
   const workspace = files.getWorkspaceFiles();
@@ -382,8 +384,14 @@ async function createInpaint(input: InpaintDraftInput, signal: AbortSignal) {
     const result = await createVariation({
       label: "局部重绘", nodeId, prompt: buildInpaintPrompt(input.prompt),
       model: typeof node.data.model === "string" ? node.data.model : "",
-      size: typeof node.data.size === "string" ? node.data.size : "",
-      ratio: typeof node.data.ratio === "string" ? node.data.ratio : "16:9",
+      size: (() => {
+        const value = (node.data as Record<string, unknown>)[variationSizeKey(type)];
+        return typeof value === "string" ? value : "";
+      })(),
+      // 局部重绘的出图与原图同尺寸更稳妥：ComfyUI 图片节点用「自适应」让比例跟随参考图，
+      // 供应商据此让主 latent 取参考图编码；内置节点没有这个档位，沿用父节点比例即可。
+      ratio: type === VARIATION_NODE.comfyui ? AUTO_RATIO : typeof node.data.ratio === "string" ? node.data.ratio : "16:9",
+      loras: recommendedLora("inpaint"),
       inpaint: { source: node.data.outputs?.image?.value?.url ?? "", original: paths[0]!, guide: paths[1]!, mask: paths[2]!, images: input.images ?? [] },
     }, requestSignal);
     committed = true;

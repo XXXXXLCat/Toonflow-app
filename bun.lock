@@ -372,11 +372,13 @@
       "version": "0.0.0",
       "dependencies": {
         "@tabler/icons-vue": "^3.46.0",
+        "three": "0.184.0",
         "vue-draggable-plus": "^0.6.1",
         "x-sender": "1.4.6",
       },
       "devDependencies": {
         "@toonflow/nodes-scaffold": "workspace:*",
+        "@types/three": "0.184.0",
         "typescript": "~6.0.3",
         "vite": "^8.2.2",
         "vue-tsc": "^3.3.11",
@@ -389,7 +391,7 @@
     },
     "packages/nodes/audioGenerationNode": {
       "name": "@toonflow/node-audio-generation",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@tabler/icons-vue": "^3.46.0",
       },
@@ -416,6 +418,85 @@
       "devDependencies": {
         "@toonflow/ffmpeg": "workspace:*",
         "@toonflow/node-shared": "workspace:*",
+        "@toonflow/nodes-scaffold": "workspace:*",
+        "typescript": "~6.0.3",
+        "vite": "^8.2.2",
+        "vue-tsc": "^3.3.11",
+      },
+      "peerDependencies": {
+        "@vue-flow/core": "^1.48.2",
+        "element-plus": "^2.14.5",
+        "vue": "^3.5.42",
+      },
+    },
+    "packages/nodes/comfyuiAudioNode": {
+      "name": "@toonflow/node-comfyui-audio",
+      "version": "1.0.6",
+      "dependencies": {
+        "@tabler/icons-vue": "^3.46.0",
+      },
+      "devDependencies": {
+        "@toonflow/node-audio": "workspace:*",
+        "@toonflow/node-shared": "workspace:*",
+        "@toonflow/nodes-scaffold": "workspace:*",
+        "typescript": "~6.0.3",
+        "vite": "^8.2.2",
+        "vue-tsc": "^3.3.11",
+      },
+      "peerDependencies": {
+        "@vue-flow/core": "^1.48.2",
+        "element-plus": "^2.14.5",
+        "vue": "^3.5.42",
+      },
+    },
+    "packages/nodes/comfyuiImageNode": {
+      "name": "@toonflow/node-comfyui-image",
+      "version": "1.25.3",
+      "dependencies": {
+        "@tabler/icons-vue": "^3.46.0",
+      },
+      "devDependencies": {
+        "@toonflow/node-shared": "workspace:*",
+        "@toonflow/nodes-scaffold": "workspace:*",
+        "typescript": "~6.0.3",
+        "vite": "^8.2.2",
+        "vue-tsc": "^3.3.11",
+      },
+      "peerDependencies": {
+        "@vue-flow/core": "^1.48.2",
+        "element-plus": "^2.14.5",
+        "vue": "^3.5.42",
+      },
+    },
+    "packages/nodes/comfyuiMusicNode": {
+      "name": "@toonflow/node-comfyui-music",
+      "version": "1.0.0",
+      "dependencies": {
+        "@tabler/icons-vue": "^3.46.0",
+      },
+      "devDependencies": {
+        "@toonflow/node-audio": "workspace:*",
+        "@toonflow/node-shared": "workspace:*",
+        "@toonflow/nodes-scaffold": "workspace:*",
+        "typescript": "~6.0.3",
+        "vite": "^8.2.2",
+        "vue-tsc": "^3.3.11",
+      },
+      "peerDependencies": {
+        "@vue-flow/core": "^1.48.2",
+        "element-plus": "^2.14.5",
+        "vue": "^3.5.42",
+      },
+    },
+    "packages/nodes/comfyuiVideoNode": {
+      "name": "@toonflow/node-comfyui-video",
+      "version": "1.4.0",
+      "dependencies": {
+        "@tabler/icons-vue": "^3.46.0",
+      },
+      "devDependencies": {
+        "@toonflow/node-shared": "workspace:*",
+        "@toonflow/node-video": "workspace:*",
         "@toonflow/nodes-scaffold": "workspace:*",
         "typescript": "~6.0.3",
         "vite": "^8.2.2",
@@ -454,12 +535,11 @@
     },
     "packages/nodes/imageGenerationNode": {
       "name": "@toonflow/node-image-generation",
-      "version": "2.0.0",
+      "version": "2.1.2",
       "dependencies": {
         "@tabler/icons-vue": "^3.46.0",
       },
       "devDependencies": {
-        "@toonflow/node-image": "workspace:*",
         "@toonflow/node-shared": "workspace:*",
         "@toonflow/nodes-scaffold": "workspace:*",
         "typescript": "~6.0.3",
@@ -474,15 +554,13 @@
     },
     "packages/nodes/imageNode": {
       "name": "@toonflow/node-image",
-      "version": "2.0.0",
+      "version": "2.1.2",
       "dependencies": {
         "@tabler/icons-vue": "^3.46.0",
-        "three": "0.184.0",
       },
       "devDependencies": {
         "@toonflow/node-shared": "workspace:*",
         "@toonflow/nodes-scaffold": "workspace:*",
-        "@types/three": "0.184.0",
         "typescript": "~6.0.3",
         "vite": "^8.2.2",
         "vue-tsc": "^3.3.11",
@@ -529,7 +607,7 @@
     },
     "packages/nodes/videoGenerationNode": {
       "name": "@toonflow/node-video-generation",
-      "version": "2.0.0",
+      "version": "2.0.1",
       "dependencies": {
         "@tabler/icons-vue": "^3.46.0",
       },
@@ -1337,6 +1415,14 @@
     "@toonflow/node-audio": ["@toonflow/node-audio@workspace:packages/nodes/audioNode"],
 
     "@toonflow/node-audio-generation": ["@toonflow/node-audio-generation@workspace:packages/nodes/audioGenerationNode"],
+
+    "@toonflow/node-comfyui-audio": ["@toonflow/node-comfyui-audio@workspace:packages/nodes/comfyuiAudioNode"],
+
+    "@toonflow/node-comfyui-image": ["@toonflow/node-comfyui-image@workspace:packages/nodes/comfyuiImageNode"],
+
+    "@toonflow/node-comfyui-music": ["@toonflow/node-comfyui-music@workspace:packages/nodes/comfyuiMusicNode"],
+
+    "@toonflow/node-comfyui-video": ["@toonflow/node-comfyui-video@workspace:packages/nodes/comfyuiVideoNode"],
 
     "@toonflow/node-director3d": ["@toonflow/node-director3d@workspace:packages/nodes/director3dNode"],
 
@@ -2751,6 +2837,14 @@
     "@toonflow/node-audio/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "@toonflow/node-audio-generation/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
+
+    "@toonflow/node-comfyui-audio/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
+
+    "@toonflow/node-comfyui-image/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
+
+    "@toonflow/node-comfyui-music/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
+
+    "@toonflow/node-comfyui-video/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "@toonflow/node-director3d/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 

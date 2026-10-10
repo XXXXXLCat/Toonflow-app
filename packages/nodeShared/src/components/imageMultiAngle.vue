@@ -58,6 +58,7 @@
         :aspectRatio="sourceRatio"
         :prompt="buildMultiAnglePrompt(settings)"
         :disabled="props.disabled"
+        :nodeType="nodeType"
         label="多角度"
         buttonLabel="生成新视角"
         @generated="emit('close')" />
@@ -75,7 +76,7 @@ import { buildMultiAnglePrompt, getMultiAngleShot, multiAnglePresets, readMultiA
 import imageMultiAngleStage from "./imageMultiAngleStage.vue";
 import imageVariationGenerator from "./imageVariationGenerator.vue";
 
-const props = defineProps<{ src: string; source?: NodeMediaValue; target?: HTMLElement; disabled?: boolean }>();
+const props = defineProps<{ src: string; source?: NodeMediaValue; target?: HTMLElement; disabled?: boolean; nodeType?: string }>();
 const emit = defineEmits<{ close: [] }>();
 const { node } = useNode();
 node.data.multiAngle = readMultiAngleSettings(node.data.multiAngle);

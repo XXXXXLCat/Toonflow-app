@@ -74,13 +74,13 @@ import { computed, nextTick, ref } from "vue";
 import { IconPhoto, IconUpload, IconTransfer, IconLayoutGrid, IconBrush, IconPencil, IconSun, IconCameraRotate, IconPanoramaHorizontal, IconChevronDown } from "@tabler/icons-vue";
 import { ElButton, ElImageViewer, ElMessage } from "element-plus";
 import { nodeSkeleton, nodeTools, useNode, z, type NodeHandle } from "@toonflow/nodes-scaffold/runtime";
-import imageGridSplit from "./components/imageGridSplit.vue";
-import imageEditor from "./components/imageEditor.vue";
-import imageInpaintPrompt from "./components/imageInpaintPrompt.vue";
-import imageLighting from "./components/imageLighting.vue";
-import imagePanorama from "./components/imagePanorama.vue";
-import imageMultiAngle from "./components/imageMultiAngle.vue";
-import type { InpaintDraftInput } from "./imageInpaint";
+import imageGridSplit from "@toonflow/node-shared/imageGridSplit";
+import imageEditor from "@toonflow/node-shared/imageEditor";
+import imageInpaintPrompt from "@toonflow/node-shared/imageInpaintPrompt";
+import imageLighting from "@toonflow/node-shared/imageLighting";
+import imagePanorama from "@toonflow/node-shared/imagePanorama";
+import imageMultiAngle from "@toonflow/node-shared/imageMultiAngle";
+import type { InpaintDraftInput } from "@toonflow/node-shared/imageInpaint";
 
 defineOptions({
   inheritAttrs: false,

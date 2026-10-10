@@ -409,6 +409,15 @@ export async function loadMediaProviderSource(source: string, config: Record<str
         const requestSignal = init?.signal === null ? undefined : init?.signal ?? (input instanceof Request ? input.signal : undefined);
         return fetchRequest(input, { ...init, signal: requestSignal ? AbortSignal.any([signal, requestSignal]) : signal });
       }, { preconnect: fetchRequest.preconnect }) as typeof fetch : fetchRequest,
+      // 取消后的善后请求通道：上面的 fetch 绑定了取消信号，一旦中止就会抛错，而中止远端已提交的
+      // 任务恰恰要在这之后发出。这里不附加任何取消信号，也不检查中止状态。
+      //
+      // 【只用于取消后的那一次请求】正常业务一律用 fetch。用它绕过取消会让请求在用户已经放弃之后
+      // 继续执行，是明确的误用。它之所以必须由宿主提供：供应商跑在 Node vm 沙箱里，注入的全局中
+      // 没有 fetch，无法自行构造一个不带信号的通道。
+      // 【配对使用】media/requests.ts 的取消接口发出中止 → 供应商在检测到 signal.aborted 后调用它
+      // 撤销远端任务（如从 ComfyUI 队列摘除任务、执行中断）。
+      fetchDetached: (input, init) => fetchRequest(input, { ...init, signal: init?.signal ?? undefined }),
       hash: Bun.hash,
       errorMessage: (value: unknown) => mediaErrorMessage(value, providerConfig),
       image: Bun.Image,

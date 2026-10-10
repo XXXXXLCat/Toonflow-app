@@ -44,10 +44,10 @@ import type { NodeMediaValue } from "@toonflow/nodes-scaffold/runtime";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
 import { buildPanoramaPrompt, type PanoramaMode } from "../imagePanorama";
 import { usePanoramaCapture } from "../usePanoramaCapture";
-import { useImageVariationNode } from "../useImageVariationNode";
+import { useImageVariationNode, variationSizeKey, VARIATION_NODE, recommendedLora } from "@toonflow/node-shared/useImageVariationNode";
 import imagePanoramaPreview from "./imagePanoramaPreview.vue";
 
-const props = defineProps<{ src: string; source?: NodeMediaValue; disabled?: boolean }>();
+const props = defineProps<{ src: string; source?: NodeMediaValue; disabled?: boolean; nodeType?: string }>();
 const emit = defineEmits<{ open: [] }>();
 const { node } = useNode();
 const dropdown = ref<InstanceType<typeof ElDropdown>>();
@@ -55,9 +55,9 @@ const trigger = ref<HTMLElement>();
 const visible = ref(false);
 const mode = ref<PanoramaMode>("sphere");
 const creating = ref(false);
-const createVariation = useImageVariationNode();
+const createVariation = useImageVariationNode({ nodeType: props.nodeType });
 const previewStage = ref<InstanceType<typeof imagePanoramaPreview>>();
-const { saving, saveCapture } = usePanoramaCapture(() => props.src);
+const { saving, saveCapture } = usePanoramaCapture(() => props.src, { nodeType: props.nodeType });
 const busy = computed(() => creating.value || saving.value || !!previewStage.value?.capturing);
 
 defineExpose({ open, busy, visible });
@@ -86,8 +86,13 @@ async function selectAction(command: string) {
       label: mode.value === "sphere" ? "720°全景图" : "360°环绕图",
       prompt: buildPanoramaPrompt(mode.value),
       model: typeof node.data.model === "string" ? node.data.model : "",
-      size: typeof node.data.size === "string" ? node.data.size : "",
+      // 尺寸键按承载节点走：ComfyUI 节点上叫 megapixels，内置节点叫 size。
+      size: (() => {
+        const value = (node.data as Record<string, unknown>)[variationSizeKey(props.nodeType ?? VARIATION_NODE.builtin)];
+        return typeof value === "string" ? value : "";
+      })(),
       ratio: mode.value === "sphere" ? "2:1" : "4:1",
+      loras: recommendedLora("panorama"),
     });
   } catch (error) {
     showNodeError(error, "全景节点创建失败");

@@ -36,8 +36,24 @@ export async function listMediaModels(): Promise<MediaModel[]> {
     return [{
       providerId: provider.id, providerLabel: provider.label, modelId: model.id, label: model.label, type: model.type,
       mode: model.mode, durationResolutionMap: model.durationResolutionMap, audio: model.audio,
+      // ACT: 参考音频是音频模型的可选能力（复刻音色类会消费），未声明保持 undefined，节点据此提示。
+      // requiresReferenceAudio 与之配套：翻唱类没有音频就转不出谱，节点据此在提交前拦住。
+      // audioCategory 缺省按 speech 处理，理由见 types.d.ts。
+      ...(model.audioCategory === undefined ? {} : { audioCategory: model.audioCategory }),
+      ...(model.referenceAudio === undefined ? {} : { referenceAudio: model.referenceAudio }),
+      ...(model.requiresReferenceAudio === undefined ? {} : { requiresReferenceAudio: model.requiresReferenceAudio }),
+      // ACT: 放大类模型（超分）只接一张图、没有提示词与 LoRA 通道，画布据此只显示放大倍数。
+      // 未声明保持 undefined，普通生成模型不受影响。
+      ...(model.upscale === undefined ? {} : { upscale: model.upscale, upscaleMultipliers: model.upscaleMultipliers }),
       ...(model.type === "audio" ? { voices: model.voices } : {}),
-      ...(model.type === "image" ? {
+      // ACT: 图片与视频都能声明可选画幅/百万像素；未声明时保持 undefined，由节点用兜底值。
+      //
+      // 【这一处属于视频，不要当成音频改动删掉】条件原为 model.type === "image"，视频模型被挡在门外，
+      // comfyuiVideoNode 拿不到档位只能退回硬编码的 DEFAULT_MEGAPIXELS / DEFAULT_RATIOS，
+      // 并且 workflow 判定（!!imageSizes.length）会误判成走云端通道。
+      // imageSizes / imageRatios 这两个字段本身在 types.d.ts 里一直存在（图片模型在用），
+      // 这里改的是**下发条件**：只要不是音频就一并下发。删除后果：视频的分辨率与比例选择静默失效。
+      ...(model.type !== "audio" ? {
         imageSizes: imageOptions(Array.isArray(model.imageSizes) ? model.imageSizes : builtIn?.imageSizes, /^[^\u0000-\u001f\u007f]+$/),
         imageRatios: imageOptions(Array.isArray(model.imageRatios) ? model.imageRatios : builtIn?.imageRatios, /^[1-9]\d{0,3}:[1-9]\d{0,3}$/),
       } : {}),
@@ -76,7 +92,9 @@ export async function readReference(cwd: string, reference: MediaReference, medi
   if (!bytes.length || bytes.length > maxMediaSize) invalid("参考媒体为空或超过 100 MB");
   const mimeType = detectMimeType(bytes, reference.mimeType);
   if (!mimeType.startsWith(`${mediaType}/`)) invalid(t`参考媒体类型须为 ${mediaType}`);
-  return { type: "base64", data: bytes.toString("base64"), mimeType, name: reference.path };
+  // text 是参考媒体的转写内容，音频场景下给复刻音色的供应商做对齐；没有就不带这个字段。
+  // 纯音频用途，图片与视频不消费——删除只影响音频节点的参考音频对齐。
+  return { type: "base64", data: bytes.toString("base64"), mimeType, name: reference.path, text: reference.text };
 }
 
 async function downloadAsset(url: string, signal?: AbortSignal) {
@@ -153,11 +171,14 @@ export async function generateMedia(
   signal?.throwIfAborted();
   const assets = mediaType === "audio"
     ? await provider.generateAudio!({
-      model: request.modelId, text: request.prompt, images, audios: await references(request.audios, "audio"),
-      voice: request.voice, speed: request.speed, volume: request.volume, pitch: request.pitch, language: request.language, format: request.format, sampleRate: request.sampleRate,
+      model: request.modelId, text: request.prompt, prompt: request.instruction, images, audios: await references(request.audios, "audio"),
+      voice: request.voice, speed: request.speed, volume: request.volume, pitch: request.pitch, language: request.language, format: request.format, quality: request.quality, sampleRate: request.sampleRate, seed: request.seed,
+      // other 是音频供应商的专属通道（YuE2 的 mode / max_duration 等），原样转发，形状由供应商解释。
+      other: request.other,
     })
     : mediaType === "image"
-    ? await provider.generateImage!({ model: request.modelId, prompt: request.prompt, images, ratio: request.ratio, size: request.size })
+    // multiplier 是放大/超分类模型的唯一参数（SeedVR2 等）；未声明时保持 undefined，普通生成模型忽略它。
+    ? await provider.generateImage!({ model: request.modelId, prompt: request.prompt, images, ratio: request.ratio, size: request.size, multiplier: request.multiplier })
     : await provider.generateVideo!({
       model: request.modelId, prompt: request.prompt, images,
       videos: await references(request.videos, "video"), audios: await references(request.audios, "audio"),

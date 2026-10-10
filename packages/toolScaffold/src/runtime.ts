@@ -81,13 +81,25 @@ export interface MediaModel {
   imageSizes?: string[];
   imageRatios?: string[];
   durationResolutionMap?: { duration: number[]; resolution: string[] }[];
+  /** 该模型是放大/超分类：画布据此只显示放大倍数，隐藏 LoRA、分辨率、比例与玩法按钮。 */
+  upscale?: boolean;
+  /** 放大倍数的可选档位。 */
+  upscaleMultipliers?: string[];
   audio?: boolean | "optional";
+  /** 音频模型归属：speech 语音合成、music 音乐生成；未声明按 speech 处理。节点据此分开列模型。 */
+  audioCategory?: "speech" | "music";
+  /** 该音频模型是否消费接入的参考音频；未声明即不支持，节点据此提示而非静默丢弃用户接的音频。 */
+  referenceAudio?: boolean;
+  /** 该音频模型是否**必须**有参考音频（翻唱类靠音频转谱才能出曲）；节点据此在提交前拦住生成。 */
+  requiresReferenceAudio?: boolean;
   voices?: { title: string; voice: string }[];
 }
 
 export interface MediaReference {
   path: string;
   mimeType: string;
+  /** 参考媒体的说明文本；音频场景下可填该段音频的转写内容，供复刻音色的供应商对齐使用。 */
+  text?: string;
 }
 
 export interface MediaGenerationRequest {
@@ -102,16 +114,29 @@ export interface MediaGenerationRequest {
   lastFrame?: MediaReference;
   ratio?: string;
   size?: string;
+  /** 放大倍数（仅 upscale 类模型消费，如 SeedVR2），范围 1.5~4；未传时供应商用自身默认值。 */
+  multiplier?: number;
   resolution?: string;
   duration?: number;
   generateAudio?: boolean;
+  /** 音频创作或语音风格指令（如音色、性别、语气、口音），与待朗读的 prompt 分开传入。 */
+  instruction?: string;
   voice?: string;
   speed?: number;
   volume?: number;
   pitch?: number;
   language?: string;
   format?: string;
+  /** 输出编码质量档位（如 V0、320k），与 format 配套；供应商按格式校验支持范围。 */
+  quality?: string;
   sampleRate?: number;
+  /** 采样随机种子；不传时由供应商自行随机，传固定值可复现同一次生成。 */
+  seed?: number;
+  /**
+   * 供应商专属通道：工作流参数差异太大时不便逐项进白名单（如 YuE2 的 mode / max_duration）。
+   * 宿主只保证能传下去，形状与含义由供应商自己解释。
+   */
+  other?: Record<string, unknown>;
   mode?: "singleImage" | "startEndRequired" | "endFrameOptional" | "startFrameOptional" | "text"
     | (`${"image" | "video" | "audio"}Reference:${number}`)[];
 }

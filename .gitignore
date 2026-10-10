@@ -31,3 +31,10 @@ Thumbs.db
 *.keychain
 *.keychain-db
 .tmp/
+
+# 一次性真机探针脚本（.probe-*.ts）：跑完即弃，不要进版本库。
+.probe-*.ts
+# 画布生成的媒体产物（节点输出Directory 默认 assets/<节点id>），本地产物不进版本库。
+/assets/
+# WorkBuddy 的项目记忆目录，本机数据。
+/.workbuddy/

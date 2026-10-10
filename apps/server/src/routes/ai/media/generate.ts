@@ -4,6 +4,7 @@ import { audioGenerationSchema, imageGenerationSchema, videoGenerationSchema } f
 import { validateFields } from "@/lib/middleware";
 import { success, error, errorFromCause } from "@/lib/responseFormat";
 import u from "@/utils";
+import { registerMediaRequest, releaseMediaRequest } from "@/utils/media/requests";
 import { translateMessage, validationOptions } from "@/lib/i18n";
 
 export default Router().post("/", validateFields({
@@ -17,6 +18,10 @@ export default Router().post("/", validateFields({
   }
   const cwd = await u.workspace.resolveWorkspace(req, directory);
   const controller = new AbortController();
+  // 停止生成由前端显式通知（POST /api/ai/media/cancel）：客户端断开后服务端收不到任何事件，
+  // 靠连接状态判断取消不可靠，下面的 close 只作为运行时支持时的兜底。
+  const requestId = req.get("x-toonflow-request-id") ?? "";
+  if (requestId) registerMediaRequest(requestId, controller);
   let heartbeat: ReturnType<typeof setInterval> | undefined;
   const close = () => { clearInterval(heartbeat); controller.abort(); };
   res.once("close", close);
@@ -32,6 +37,7 @@ export default Router().post("/", validateFields({
   } catch (err) {
     if (!res.destroyed) res.write(JSON.stringify(errorFromCause(err)));
   } finally {
+    if (requestId) releaseMediaRequest(requestId);
     clearInterval(heartbeat);
     res.off("close", close);
     req.off("aborted", close);

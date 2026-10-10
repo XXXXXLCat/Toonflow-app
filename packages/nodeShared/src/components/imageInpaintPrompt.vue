@@ -15,7 +15,7 @@ import { ElButton, ElCard } from "element-plus";
 import { IconCheck } from "@tabler/icons-vue";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
 import promptInput from "@toonflow/node-shared/promptInput";
-import type { InpaintDraftInput } from "../imageInpaint";
+import type { InpaintDraftInput } from "@toonflow/node-shared/imageInpaint";
 
 const props = defineProps<{
   createDraft: (input: InpaintDraftInput, signal: AbortSignal) => Promise<void>;

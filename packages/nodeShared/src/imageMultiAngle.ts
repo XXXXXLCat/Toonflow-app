@@ -24,6 +24,8 @@ const multiAngleSchema = z.object({
   model: z.string().catch(""),
   size: z.string().catch(""),
   ratio: z.string().catch(""),
+  // 工作流类承载节点带提示词改写分支，默认开启（与画布上的开关一致）。
+  rewritePrompt: z.boolean().catch(true),
 });
 
 export type MultiAngleSettings = z.infer<typeof multiAngleSchema>;

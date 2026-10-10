@@ -60,9 +60,9 @@ import { computed, inject, onBeforeUnmount, ref, watch } from "vue";
 import { useNode, useVueFlow, type Node } from "@vue-flow/core";
 import { ElButton, ElInputNumber, ElMessage, ElPopover } from "element-plus";
 import { uploadNodeFile, useNodeFiles } from "@toonflow/nodes-scaffold/runtime";
-import { showNodeError } from "@toonflow/node-shared/showNodeError";
+import { showNodeError } from "../showNodeError";
 
-const props = defineProps<{ src: string; disabled?: boolean; active: boolean }>();
+const props = defineProps<{ src: string; disabled?: boolean; active: boolean; nodeType?: string }>();
 const { node } = useNode();
 const { addNodes, findNode, getNodes, getSelectedNodes, nodeTypes, onNodeDragStart, onSelectionStart, onMoveStart } = useVueFlow();
 const files = useNodeFiles();
@@ -78,6 +78,8 @@ const imageSize = ref({ width: 0, height: 0 });
 // ACT: 每轴最多 10 格（100 张），逐张编码上传以控制内存；更大批量需加入分批任务后再放开。
 const validGrid = computed(() => [rows.value, columns.value].every(value => Number.isInteger(value) && value >= 1 && value <= 10));
 const canSplit = computed(() => validGrid.value && rows.value * columns.value > 1 && imageSize.value.width >= columns.value && imageSize.value.height >= rows.value);
+// 切出来的切片用哪种节点承载由调用方决定（内置图片节点默认；本地工作流节点可传自己的类型）。
+const targetType = computed(() => props.nodeType || "remote-imageNode");
 let splitController: AbortController | undefined;
 
 watch(() => props.src, () => {
@@ -110,7 +112,8 @@ function readSize(event: Event) {
 
 async function splitImage() {
   if (splitting.value || props.disabled || !canSplit.value) return;
-  if (!nodeTypes?.value?.["remote-imageNode"]) return void ElMessage.error("请先启用图片节点插件");
+  const type = targetType.value;
+  if (!nodeTypes?.value?.[type]) return void ElMessage.error("请先启用图片节点插件");
   splitting.value = true;
   completed.value = 0;
   const controller = splitController = new AbortController();
@@ -148,14 +151,14 @@ async function splitImage() {
         controller.signal.throwIfAborted();
         nodes.push({
           id,
-          type: "remote-imageNode",
+          type,
           position: { x: 0, y: 0 },
           data: { label: `${node.data.label || "图片"} · ${row + 1}-${column + 1}`, outputs: { image: { dataType: "IMAGE", value: { url: path, mimeType: "image/png" } } } },
         });
         completed.value++;
       }
     }
-    if (findNode(node.id) !== node || !nodeTypes?.value?.["remote-imageNode"]) throw new Error("画布节点已变化，请重新切分");
+    if (findNode(node.id) !== node || !nodeTypes?.value?.[type]) throw new Error("画布节点已变化，请重新切分");
     const tileWidth = Math.ceil(width / columnCount) / Math.floor(height / rowCount) * 240 + 18;
     const gridWidth = columnCount * (tileWidth + 40) - 40;
     const gridHeight = rowCount * 320 - 20;

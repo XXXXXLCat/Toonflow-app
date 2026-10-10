@@ -7,6 +7,23 @@
     "./promptInput": "./src/components/promptInput.vue",
     "./referenceItem": "./src/components/referenceItem.vue",
     "./mediaHistory": "./src/components/mediaHistory.vue",
+    "./imageGridSplit": "./src/components/imageGridSplit.vue",
+    "./imageEditor": "./src/components/imageEditor.vue",
+    "./imageLighting": "./src/components/imageLighting.vue",
+    "./imageMultiAngle": "./src/components/imageMultiAngle.vue",
+    "./imagePanorama": "./src/components/imagePanorama.vue",
+    "./imageOutpaint": "./src/components/imageOutpaint.vue",
+    "./loraStackPicker": "./src/components/loraStackPicker.vue",
+    "./imageVariationGenerator": "./src/components/imageVariationGenerator.vue",
+    "./imageInpaint": "./src/imageInpaint.ts",
+    "./imageInpaintPrompt": "./src/components/imageInpaintPrompt.vue",
+    "./imagePanoramaSettings": "./src/imagePanorama.ts",
+    "./imageLightingSettings": "./src/imageLighting.ts",
+    "./imageMultiAngleSettings": "./src/imageMultiAngle.ts",
+    "./imageOutpaintSettings": "./src/imageOutpaint.ts",
+    "./imageAnimeToReal": "./src/imageAnimeToReal.ts",
+    "./usePanoramaCapture": "./src/usePanoramaCapture.ts",
+    "./useImageVariationNode": "./src/useImageVariationNode.ts",
     "./showNodeError": "./src/showNodeError.ts",
     "./useNodeReferences": "./src/useNodeReferences.ts",
     "./useNodeGeneration": "./src/useNodeGeneration.ts",
@@ -23,10 +40,12 @@
   "dependencies": {
     "@tabler/icons-vue": "^3.46.0",
     "vue-draggable-plus": "^0.6.1",
-    "x-sender": "1.4.6"
+    "x-sender": "1.4.6",
+    "three": "0.184.0"
   },
   "devDependencies": {
     "@toonflow/nodes-scaffold": "workspace:*",
+    "@types/three": "0.184.0",
     "typescript": "~6.0.3",
     "vite": "^8.2.2",
     "vue-tsc": "^3.3.11"

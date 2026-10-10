@@ -119,12 +119,12 @@ import { useNodeReferences } from "@toonflow/node-shared/useNodeReferences";
 import promptInput from "@toonflow/node-shared/promptInput";
 import referenceItem from "@toonflow/node-shared/referenceItem";
 import mediaHistory from "@toonflow/node-shared/mediaHistory";
-import imageGridSplit from "@toonflow/node-image/imageGridSplit";
-import imageEditor from "@toonflow/node-image/imageEditor";
-import { useImageInpaint, type ImageInpaint } from "@toonflow/node-image/imageInpaint";
-import imageLighting from "@toonflow/node-image/imageLighting";
-import imagePanorama from "@toonflow/node-image/imagePanorama";
-import imageMultiAngle from "@toonflow/node-image/imageMultiAngle";
+import imageGridSplit from "@toonflow/node-shared/imageGridSplit";
+import imageEditor from "@toonflow/node-shared/imageEditor";
+import { useImageInpaint, type ImageInpaint } from "@toonflow/node-shared/imageInpaint";
+import imageLighting from "@toonflow/node-shared/imageLighting";
+import imagePanorama from "@toonflow/node-shared/imagePanorama";
+import imageMultiAngle from "@toonflow/node-shared/imageMultiAngle";
 import generationSettings from "./components/generationSettings.vue";
 
 defineOptions({

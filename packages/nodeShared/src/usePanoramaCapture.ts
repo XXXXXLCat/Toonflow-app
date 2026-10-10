@@ -5,7 +5,7 @@ import { uploadNodeFile, useNodeFiles } from "@toonflow/nodes-scaffold/runtime";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
 import type { PanoramaCapture } from "./imagePanorama";
 
-export function usePanoramaCapture(source: () => string) {
+export function usePanoramaCapture(source: () => string, options?: { nodeType?: string }) {
   const { node } = useNode();
   const { addNodes, addEdges, removeNodes, findNode, getNodes, nodeTypes } = useVueFlow();
   const files = useNodeFiles();
@@ -20,6 +20,11 @@ export function usePanoramaCapture(source: () => string) {
     try { return getDirectory?.(); } catch { return undefined; }
   }], () => operation?.abort(), { flush: "sync" });
   onScopeDispose(() => { disposed = true; operation?.abort(); });
+
+  function typeLabel() {
+    const type = options?.nodeType ?? "remote-imageNode";
+    return type === "remote-imageNode" ? "图片" : "ComfyUI 图片";
+  }
 
   async function saveCapture(payload: PanoramaCapture) {
     if (saving.value || disposed) return;
@@ -36,7 +41,8 @@ export function usePanoramaCapture(source: () => string) {
         throw new Error("截图内容无效，请重新截图");
       }
       if (!source() || findNode(node.id) !== node) throw new Error("原图片节点已变化，请重新打开全景预览");
-      if (!nodeTypes?.value?.["remote-imageNode"]) throw new Error("请先启用图片节点插件");
+      const type = options?.nodeType ?? "remote-imageNode";
+      if (!nodeTypes?.value?.[type]) throw new Error(`请先启用${typeLabel()}节点插件`);
       const grouped = payload.images.length > 1;
       if (grouped && !nodeTypes?.value?.canvasGroup) throw new Error("当前画布不支持分组");
       workspace = files.getWorkspaceFiles();
@@ -47,11 +53,11 @@ export function usePanoramaCapture(source: () => string) {
         const path = await uploadNodeFile(workspace, id, new File([image.blob], "panorama.png", { type: "image/png" }));
         controller.signal.throwIfAborted();
         createdNodes.push({
-          id, type: "remote-imageNode", position: { x: 0, y: 0 },
+          id, type, position: { x: 0, y: 0 },
           data: { label: `${node.data.label || "图片"} · ${image.label}`, outputs: { image: { dataType: "IMAGE", value: { url: path, mimeType: "image/png" } } } },
         });
       }
-      if (findNode(node.id) !== node || !nodeTypes?.value?.["remote-imageNode"] || (grouped && !nodeTypes?.value?.canvasGroup)) {
+      if (findNode(node.id) !== node || !nodeTypes?.value?.[type] || (grouped && !nodeTypes?.value?.canvasGroup)) {
         throw new Error("画布节点已变化，请重新截图");
       }
       const columns = grouped ? payload.columns : 1;

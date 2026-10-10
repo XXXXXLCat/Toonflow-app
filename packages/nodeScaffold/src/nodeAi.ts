@@ -30,7 +30,8 @@ export type NodeImageRequest = {
 export type NodeImageResult = { path: string; mimeType: string; mediaType: "image" };
 export type NodeVideoRequest = Omit<MediaGenerationRequest, "size"> & { directory: string; outputDirectory: string };
 export type NodeVideoResult = { path: string; mimeType: string; mediaType: "video" };
-export type NodeAudioRequest = Pick<MediaGenerationRequest, "providerId" | "modelId" | "prompt" | "images" | "audios" | "voice" | "speed" | "volume" | "pitch" | "language" | "format" | "sampleRate"> & { directory: string; outputDirectory: string };
+// other 是音频供应商的专属通道（YuE2 的 mode / max_duration 等），形状由供应商自己解释。
+export type NodeAudioRequest = Pick<MediaGenerationRequest, "providerId" | "modelId" | "prompt" | "instruction" | "images" | "audios" | "voice" | "speed" | "volume" | "pitch" | "language" | "format" | "quality" | "sampleRate" | "seed" | "other"> & { directory: string; outputDirectory: string };
 export type NodeAudioResult = { path: string; mimeType: string; mediaType: "audio" };
 export type NodeAiRequest = {
   providerId: string;
@@ -159,12 +160,31 @@ export function useNodeAi() {
   }
 
   async function generateMedia<T extends "image" | "video" | "audio">(mediaType: T, input: NodeImageRequest | NodeVideoRequest | NodeAudioRequest, signal?: AbortSignal) {
-    return readResult<{ path: string; mimeType: string; mediaType: T }[]>(await fetch("/api/ai/media/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-toonflow-workspace": "1" },
-      body: JSON.stringify({ ...input, mediaType }),
-      signal: requestSignal(signal),
-    }));
+    const callSignal = requestSignal(signal);
+    // 每次生成带一个请求 ID。取消不能指望服务端发现连接断开——Bun 下断开不触发任何事件，
+    // 请求会一直跑到完成、远端已提交的任务也就无人撤销，所以取消时显式通知一次。
+    // randomUUID 只在安全上下文可用，非安全上下文（如局域网 IP 访问）退回随机串。
+    const requestId = typeof crypto.randomUUID === "function"
+      ? crypto.randomUUID()
+      : `media-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+    const notifyCancel = () => {
+      void fetch("/api/ai/media/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requestId }),
+      }).catch(() => {});
+    };
+    callSignal.addEventListener("abort", notifyCancel, { once: true });
+    try {
+      return await readResult<{ path: string; mimeType: string; mediaType: T }[]>(await fetch("/api/ai/media/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-toonflow-workspace": "1", "x-toonflow-request-id": requestId },
+        body: JSON.stringify({ ...input, mediaType }),
+        signal: callSignal,
+      }));
+    } finally {
+      callSignal.removeEventListener("abort", notifyCancel);
+    }
   }
 
   function generateImage(input: NodeImageRequest, signal?: AbortSignal) {
