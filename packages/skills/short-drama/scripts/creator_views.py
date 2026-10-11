@@ -308,7 +308,7 @@ def parse_storyboard(text: str) -> dict[str, Any]:
         framing = fields.get("景别/机位", "")
         move = fields.get("运镜", "")
         scale = shot_scale(framing)
-        reference = fields.get("输入参考图", "")
+        reference = fields.get("输入参考", "")
         slots = _slots(reference)
         scene = check.SCENE_ID_RE.search(fields.get("来源", ""))
         basis_text = fields.get("视觉依据", "").split(check.OFFSCREEN_PREFIX)[0]

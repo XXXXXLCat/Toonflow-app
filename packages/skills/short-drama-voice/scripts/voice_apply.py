@@ -3,8 +3,10 @@
 """把配音本与音色绑定导出成一份可导入的画布文件。
 
 产出内容：
-  - 每个人物 1 个音频节点（标签 VOICE-<人物>），带上语音指令与参考文本
-  - 音频节点的音频输出 -> 该人物每一句对白所在镜头的视频节点
+  - 每个人物 1 个对白生成节点（标签 VOICE-<人物>），带上语音指令与参考文本
+  - 每个对白生成节点再接 1 个基础音色参考源节点（声音参考文件），经 in 端口作为参考音频
+    引导带语气的对白；基础音色不并到 MOTION（否则会被当成成片音轨）
+  - 对白生成节点的音频输出 -> 该人物每一句对白所在镜头的视频节点（即那镜的音频轨）
 
 关键映射链：配音本的 LINE 指向剧本场次（EP001-SC002）；
 `分镜.md` 的 SHOT 条目的「来源」字段写明它出自哪个场次；
@@ -17,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import uuid
 from pathlib import Path
@@ -157,6 +160,29 @@ def edge_id(source: str, target: str) -> str:
     return str(uuid.uuid5(NAMESPACE, f"voice:{source}->{target}"))
 
 
+MIME_BY_SUFFIX = {
+    "wav": "audio/wav", "mp3": "audio/mpeg", "m4a": "audio/mp4",
+    "aac": "audio/aac", "flac": "audio/flac",
+}
+
+
+def mime_for_path(path: str) -> str:
+    suffix = path.rsplit(".", 1)[-1].lower() if "." in path else ""
+    return MIME_BY_SUFFIX.get(suffix, "application/octet-stream")
+
+
+def voice_reference_path(value: str) -> str:
+    """从「声音参考」值里取出文件路径。
+
+    写法固定为 `<路径>（用途：…；控制：…；不得控制：…）`，路径是括号前那段；
+    没有控制边界时整段当作路径（去掉首尾空白与可能的括号）。
+    """
+    matched = re.search(r"[（(]用途[：:]", value)
+    if matched:
+        return value[: matched.start()].strip()
+    return value.strip().strip("（）()").strip()
+
+
 def build_payload(episode_dir: Path) -> Dict[str, Any]:
     roll_doc = episode_dir / "配音本.md"
     if not roll_doc.is_file():
@@ -173,8 +199,9 @@ def build_payload(episode_dir: Path) -> Dict[str, Any]:
 
     for name in sorted(cast):
         record = cast[name]
+        voice_id = node_id(f"VOICE-{name}")
         nodes.append({
-            "id": node_id(f"VOICE-{name}"),
+            "id": voice_id,
             "type": NODE_TYPES["audio"],
             "position": {"x": VOICE_COLUMN_X, "y": count * COLUMN_GAP},
             "data": {
@@ -191,6 +218,30 @@ def build_payload(episode_dir: Path) -> Dict[str, Any]:
                 "seedValue": 0,
             },
         })
+        # 基础音色：把「声音参考」文件接进对白生成节点的 in，作为参考音频引导带语气的对白。
+        # 它不并到 MOTION——并上去会被当成成片音轨，与「参考音频不能直接充当成品音轨」冲突；
+        # 对白（本节点 audio 输出）才接 MOTION。
+        base_voice = voice_reference_path(record.get("声音参考", ""))
+        if base_voice:
+            ref_key = f"VOICEREF-{name}"
+            nodes.append({
+                "id": node_id(ref_key),
+                "type": NODE_TYPES["audio"],
+                "position": {"x": VOICE_COLUMN_X - 360, "y": count * COLUMN_GAP},
+                "data": {
+                    "label": f"音色·{name}",
+                    "model": "", "instruction": "", "text": "", "format": "mp3",
+                    "quality": "", "seedMode": "random", "seedValue": 0,
+                    "outputs": {"audio": {"dataType": "AUDIO", "value": {"url": base_voice, "mimeType": mime_for_path(base_voice)}}},
+                },
+            })
+            edges.append({
+                "id": edge_id(ref_key, f"VOICE-{name}"),
+                "source": node_id(ref_key),
+                "sourceHandle": "audio",
+                "target": voice_id,
+                "targetHandle": "in",
+            })
         count += 1
 
     for line in roll_lines:

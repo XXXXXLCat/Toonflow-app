@@ -10,7 +10,12 @@
 连线依据取自文档已有的事实，不做推断：
   - SHOT 的「图片提示词项」  -> IMG 节点连到该 SHOT 节点
   - MOTION 的「分镜」        -> SHOT 节点连到该 MOTION 节点
-  - SHOT/MOTION 的「输入参考图」的 REF-* -> 该素材连到目标节点
+  - SHOT/MOTION 的「输入参考」的 REF-* -> 该素材连到目标节点
+
+「输入参考」一个字段承载三类素材：图片 `REF-`/`PLAN-`、视频 `REF-VIDEO-`、音色
+`REF-VOICE-`。三类按 图片 → 视频 → 音色 成块书写，`顺序` 各从 1 数，所以计划里按
+(媒体类型, 顺序) 排序，视频与音色不并入图片序列——它们接的是视频与音频类型的 `in`
+端口。`SHOT-*` 只登记图片，视频与音色只在 `MOTION-*` 上出现（VID-27、VID-28）。
 
 本脚本只读文档、只输出计划，不写任何文件，也不调用画布或供应商。
 """
@@ -30,8 +35,22 @@ SUB_HEADING = re.compile(r"^###\s+(?P<title>.+?)\s*$")
 FIELD = re.compile(r"^-\s*(?P<key>[^：:]+)[：:]\s*(?P<value>.*)$")
 DURATION = re.compile(r"(\d+(?:\.\d+)?)\s*s\b")
 RATIO = re.compile(r"(?<!\d)(\d{1,2}:\d{1,2})(?!\d)")
-REF_SLOT = re.compile(r"(?P<kind>REF|PLAN)-(?P<slot>[A-Za-z0-9-]+)\s*（顺序：(?P<order>\d+)）")
+# A slot's own name carries Han as well as ASCII: a voice slot is named after
+# the character it belongs to and a video slot after what the take borrows from
+# the clip, and a Chinese project has no ASCII spelling to fall back on. The
+# locator is optional so a malformed declaration still shows up as a slot worth
+# reporting rather than vanishing from the plan.
+REF_SLOT = re.compile(
+    r"(?P<kind>REF|PLAN)-(?P<slot>[A-Z0-9\u3400-\u9fff][A-Z0-9\u3400-\u9fff-]*)"
+    r"\s*（顺序：(?P<order>\d+)）(?:\s*·\s*(?P<locator>[^；\n]*?)《)?"
+)
 IMG_ITEM = re.compile(r"(?P<id>IMG-[A-Za-z0-9-]+)")
+# What kind of file a slot points at. The suffix is the same test the checker
+# uses, so the plan and the checker cannot disagree about a slot's type.
+IMAGE_SUFFIXES = ("png", "jpg", "jpeg", "webp")
+VIDEO_SUFFIXES = ("mp4", "mov", "webm", "mkv", "m4v", "avi")
+AUDIO_SUFFIXES = ("wav", "mp3", "m4a", "aac", "flac")
+MEDIA_ORDER = {"image": 0, "video": 1, "audio": 2}
 
 PROMPT_HEADINGS = ("可复制提示词", "冻结关键帧提示词", "收尾关键帧提示词")
 NONE_PREFIXES = ("无", "待补", "-")
@@ -114,6 +133,30 @@ def is_absent(value: Optional[str]) -> bool:
     if not value:
         return True
     return value.lstrip().startswith(NONE_PREFIXES)
+
+
+def slot_media(kind: str, slot: str, locator: Optional[str]) -> str:
+    """图片 / 视频 / 音色 for one 输入参考 slot.
+
+    The locator's suffix decides it, because that is what separates the three
+    grammars: a picture points at png/jpg/webp, a video at mp4/mov/..., a voice
+    at wav/mp3/.... A slot written without a readable locator falls back to the
+    `VIDEO-` / `VOICE-` prefix its own name must carry anyway.
+    """
+    tail = (locator or "").strip().lower()
+    suffix = tail.rsplit(".", 1)[-1] if "." in tail else ""
+    if suffix in VIDEO_SUFFIXES:
+        return "video"
+    if suffix in AUDIO_SUFFIXES:
+        return "audio"
+    if suffix in IMAGE_SUFFIXES:
+        return "image"
+    head = slot.split("-", 1)[0].upper() if "-" in slot else ""
+    if kind == "REF" and head == "VIDEO":
+        return "video"
+    if kind == "REF" and head == "VOICE":
+        return "audio"
+    return "image"
 
 
 def parse_duration(value: Optional[str]) -> Optional[float]:
@@ -251,7 +294,7 @@ def build_plan(episode_dir: Path) -> Dict[str, Any]:
                 "ratio": detect_ratio(entry, ratio),
                 "source": "分镜.md",
                 "image_items": IMG_ITEM.findall(entry["fields"].get("图片提示词项", "")),
-                "reference_field": entry["fields"].get("输入参考图", ""),
+                "reference_field": entry["fields"].get("输入参考", ""),
             })
 
     motion_doc = episode_dir / "视频提示词.md"
@@ -268,7 +311,7 @@ def build_plan(episode_dir: Path) -> Dict[str, Any]:
                 "mode": entry["fields"].get("生成方式", ""),
                 "shot": (entry["fields"].get("分镜") or "").strip(),
                 "source": "视频提示词.md",
-                "reference_field": entry["fields"].get("输入参考图", ""),
+                "reference_field": entry["fields"].get("输入参考", ""),
             })
 
     # 连线一：分镜的图片提示词项 -> 该镜关键帧
@@ -293,20 +336,29 @@ def build_plan(episode_dir: Path) -> Dict[str, Any]:
         else:
             node.setdefault("missing_items", []).append(shot)
 
-    # 连线三：输入参考图里已落地的 REF- 槽位
+    # 连线三：输入参考里已落地的槽位，三类各自成序列
     for node in nodes:
         if node["role"] == "asset":
             continue
         field = node.pop("reference_field", "") or ""
-        slots = REF_SLOT.findall(field)
-        if slots:
-            kinds = {kind.upper() for kind, _, _ in slots}
-            node["reference_state"] = "已绑定真实图" if kinds == {"REF"} else (
-                "挂图计划" if kinds == {"PLAN"} else "真实图与挂图计划混用")
-            node["reference_slots"] = [
-                {"kind": kind.upper(), "slot": slot, "order": int(order)}
-                for kind, slot, order in slots
-            ]
+        slots = [
+            {
+                "kind": kind.upper(),
+                "media": slot_media(kind.upper(), slot, locator),
+                "id": f"{kind.upper()}-{slot}",
+                "slot": slot,
+                "order": int(order),
+                "locator": (locator or "").strip(),
+            }
+            for kind, slot, order, locator in REF_SLOT.findall(field)
+        ]
+        slots.sort(key=lambda item: (MEDIA_ORDER[item["media"]], item["order"]))
+        node["reference_slots"] = slots
+        # 视频与音色是附加在图片之上的另两类，不改变「这一镜有没有图」。
+        pictures = {item["kind"] for item in slots if item["media"] == "image"}
+        if pictures:
+            node["reference_state"] = "已绑定真实图" if pictures == {"REF"} else (
+                "挂图计划" if pictures == {"PLAN"} else "真实图与挂图计划混用")
         elif field.lstrip().startswith("无"):
             node["reference_state"] = "创作者选择无参考"
         elif is_absent(field):
