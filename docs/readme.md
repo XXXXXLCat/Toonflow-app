@@ -32,7 +32,6 @@
 
 ## 使用与开发
 
-- [使用教程](https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf)：日常操作与创作流程。
 - [开发与扩展指南](./development.md)：源码运行、插件扩展、桌面打包和更新发布。
 - [Android 说明](../apps/mobile/readme.md)：ARM64 APK、本地运行、设备互联与构建。
 - [贡献指南](../CONTRIBUTING.md)与[开发规范](../AGENTS.md)：参与项目的约定。
@@ -47,9 +46,8 @@ docs/
   readme.md          文档入口
   development.md     开发与扩展指南
   readme/            各语言项目介绍
-  images/            标识、认证与社区图片
+  images/            标识图片
     screenshots/     产品截图
-    sponsors/        赞助商图片
 ```
 
 各子包的实现与维护说明保留在对应 `packages/` 目录。更新项目介绍时，以根目录 `README.md` 为准同步其余二十份译版；图片统一复用 `images/`，移动文件时同时更新 Markdown 和 HTML 中的相对链接。

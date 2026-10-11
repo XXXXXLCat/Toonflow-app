@@ -62,9 +62,6 @@
   <a href="https://github.com/XXXXXLCat/Toonflow-app/network/members">
     <img src="https://img.shields.io/github/forks/XXXXXLCat/Toonflow-app?style=for-the-badge&logo=github&color=orange" alt="Fork 徽章" />
   </a>
-  <a href="https://discord.gg/HEjKmpNpAZ">
-    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
-  </a>
 </p>
 <p align="center">
   <a href="https://github.com/XXXXXLCat/Toonflow-app/issues">
@@ -84,72 +81,19 @@
   <img src="https://img.shields.io/badge/Desktop-Electrobun-8257E5?style=for-the-badge" alt="Electrobun" />
 </p>
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/24197?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-24197" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/24197/daily?language=TypeScript" alt="XXXXXLCat/Toonflow-app | Trendshift" width="250" height="55" />
-  </a>
-</p>
-
 **開源 AI 短劇與動態漫畫影片創作平台**
 
 > 🚀 **一站式短劇創作**：整合劇本創作、素材管理、圖像與影片生成，在無限畫布中安排完整的創作流程。
 
 </div>
 
-
 <p align="center">
-  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">下載桌面版</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf">使用教學</a> ·
-  <a href="https://api.toonflow.net/console/plugIn">外掛市集</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/KNBNd9naqolsy6xjAOCcEAkqnRd">開發者文件</a> ·
-  <a href="https://api.toonflow.net/">官方模型平台</a>
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">下載桌面版</a>
 </p>
 
 ---
 
-## 1. 💛 贊助與支持
-
-感謝以下合作夥伴對 Toonflow 開源專案的支持。
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://metaso.cn/minimax-h3/?s=toon"><img src="../images/sponsors/metaso.svg" alt="秘塔" height="28" valign="middle" /> <strong>秘塔</strong></a>
-      <br />
-      <sub>提供高性價比的 MiniMax H3 影片生成服務：768P 僅人民幣 0.09 元/秒，2K 僅人民幣 0.15 元/秒；支援原生 2K、影音同步，API 相容 OpenAI 協定，同時支援 ComfyUI、無限畫布，無需自行部署 GPU。透過<a href="https://metaso.cn/minimax-h3/?s=toon">專屬連結註冊</a>即可領取贈送額度及專屬優惠，商務洽談可加微信 metasota12。</sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://go.apimart.ai/gh-toonflow-app"><img src="../images/sponsors/apiMart.jpg" alt="APIMart" height="28" valign="middle" /> <strong>APIMart</strong></a>
-      <br />
-      <sub>感謝 APIMart 贊助本專案！專注於 AI 圖片與影片生成的平價 API 平台，GPT-Image-2 每張低至 $0.006，1 美元可生成 160+ 張圖片；圖片與影片共用一套非同步 API，提交任務取得 ID，透過回呼取得結果，批次處理上萬張也不逾時，切換模型無需修改程式碼，按用量計費、無月費。透過此<a href="https://go.apimart.ai/gh-toonflow-app">註冊連結</a>註冊即可使用。</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow"><img src="../images/sponsors/compShare.png" alt="優雲智算" height="28" valign="middle" /> <strong>優雲智算</strong></a>
-      <br />
-      <sub>優雲智算提供高性價比 H3 影片生成服務，涵蓋文字生成影片、首尾影格及全能參考。支援最長 30 秒影片、原生 2K 畫質，768P 僅人民幣 0.08 元/秒。支援 API 呼叫、企業高併發、自助開立發票。</sub>
-      <br /><br />
-      <sub>🎁 透過<a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow">專屬連結註冊</a>，即可獲得免費人民幣 5 元平台體驗金！</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
-
-<details>
-<summary><strong>👉成為贊助商👈</strong></summary>
-
-<p align="center">
-  <img src="../images/businessQr.png" alt="商務合作微信 QR Code" width="200" />
-</p>
-
-<p align="center"><sub>此聯絡方式僅供商務合作洽談，不提供問題解答。使用問題歡迎在交流群交流，需求與 BUG 可透過回饋表提交。感謝理解。</sub></p>
-
-</details>
-
----
-
-## 2. 🌟 亮點
+## 1. 🌟 亮點
 
 Toonflow 是面向短劇、動態漫畫與短影片製作的開源 AI 創作平台，將劇本、素材與影片片段整合到同一張無限畫布。
 
@@ -158,7 +102,7 @@ Toonflow 是面向短劇、動態漫畫與短影片製作的開源 AI 創作平�
 | 🏠 **本機部署** | 專案與素材儲存在自己的裝置或伺服器，支援桌面、Android、Docker 與伺服器部署。 |
 | 🖼️ **無限畫布** | 在同一張畫布中組織劇本、角色、場景與影片片段。 |
 | 🔌 **MCP** | 透過 MCP 連接外部工具與服務。 |
-| 🧩 **外掛市集** | 透過[外掛市集](https://api.toonflow.net/console/plugIn)擴充節點、工具與創作功能。 |
+| 🧩 **外掛市集** | 透過外掛市集擴充節點、工具與創作功能。 |
 | 🤖 **開放 Agent** | 開放提示詞、工具與 A2A，支援自訂 Agent 行為及外部協作。 |
 | 🔧 **自由串接模型** | 設定第三方 API，也可串接本機 ComfyUI 和 LLM。 |
 | 🌐 **多語言支援** | 支援 21 種介面語言。 |
@@ -171,7 +115,7 @@ Toonflow 是面向短劇、動態漫畫與短影片製作的開源 AI 創作平�
 
 ---
 
-## 3. 📸 螢幕截圖
+## 2. 📸 螢幕截圖
 
 <div align="center">
 
@@ -199,9 +143,9 @@ Toonflow 是面向短劇、動態漫畫與短影片製作的開源 AI 創作平�
 
 ---
 
-## 4. 🚀 下載與安裝
+## 3. 🚀 下載與安裝
 
-### 4.1 用戶端安裝
+### 3.1 用戶端安裝
 
 | 作業系統 | GitHub |
 | --- | --- |
@@ -244,11 +188,9 @@ sudo spctl --master-disable
 
 </details>
 
-更多操作說明請參閱[使用教學](https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf)。
-
 ---
 
-### 4.2 Docker 安裝
+### 3.2 Docker 安裝
 
 先安裝 Git、[Docker Engine](https://docs.docker.com/engine/install/) 和 Docker Compose；Windows / macOS 可使用 Docker Desktop 的 Linux 容器模式。儲存庫提供 [Dockerfile](../../Dockerfile)、[Compose 設定](../../compose.yaml) 和[建置排除規則](../../.dockerignore)，以 Bun 1.3.14 建置，映像檔內含 FFmpeg。
 
@@ -292,7 +234,7 @@ docker compose start
 
 ---
 
-### 4.3 伺服器安裝
+### 3.3 伺服器安裝
 
 適用於直接在 Linux 伺服器上執行 Web 與 Server。以下以 Ubuntu / Debian 為例，使用專案指定的 [Bun 1.3.14](https://bun.sh/docs/installation)。
 
@@ -328,7 +270,7 @@ bun run start:server
 
 ---
 
-### 4.4 存取與資料說明
+### 3.4 存取與資料說明
 
 - 目前服務使用固定連接埠 `3000`，功能頁面與 API 沒有獨立的登入驗證。安裝在伺服器上時，請透過防火牆或安全群組限制 `3000` 連接埠的存取來源；公開網路存取需設定具備身分驗證的反向代理。
 - 個人遠端使用可在自己的電腦上執行 `ssh -N -L 3000:127.0.0.1:3000 用户名@服务器地址`（將 `用户名@服务器地址` 替換為實際的使用者名稱與伺服器位址），保持連線後開啟 `http://127.0.0.1:3000`，無需將伺服器的 `3000` 連接埠對公開網路開放。
@@ -337,142 +279,13 @@ bun run start:server
 
 ---
 
-### 4.5 雲端平台部署
-
-合作平台[智星雲](https://www.ai-galaxy.com/)提供官方授權的 Toonflow 商用映像檔，可直接使用預先安裝的環境。具體步驟請參閱[映像檔部署圖文教學](https://mp.weixin.qq.com/s/lq9X1ovQ1_TKeXMOLgicKg?scene=1)。
-
----
-
-## 5. 🎬 作品範例
-
-https://github.com/user-attachments/assets/2d9fddac-dfdf-4640-b030-b09d7f7287e9
-
-### 案例資訊
-
-| 項目 | 原儲存庫記錄 |
-| --- | --- |
-| 製作時間與成片 | 約 2 小時，成片約 2 分鐘。 |
-| 影片模型 | Seedance 2.0 |
-| 圖片模型 | GPT Image 2 |
-| 語言模型 | Claude Opus 4.6 |
-| 模型呼叫費用 | 約人民幣 ¥130，其中語言約 ¥10、影片約 ¥120、圖片不足 ¥1。 |
-
-費用為此案例的記錄，僅供參考，實際成本取決於模型服務、生成次數與參數。示範影片為壓縮後的 480p 版本。
-
----
-
-## 6. 🚀 TF-Router 官方模型中轉平台
-
-<p align="center">
-  <a href="https://api.toonflow.net/">
-    <img src="https://img.shields.io/badge/TF--Router_Official%20Model%20Gateway-181717?style=for-the-badge&logoColor=white" alt="TF-Router" />
-  </a>
-</p>
-
-TF-Router 是 Toonflow 自營的官方模型中轉平台，歡迎使用。平台原始碼已完全開源，可自行部署與稽核：[HBAI-Ltd/TF-Router](https://github.com/HBAI-Ltd/TF-Router)。
-
-<details>
-<summary><strong>致 Toonflow 社群的一封信（發於 2026-06-08）</strong></summary>
-
-> ### 致 Toonflow 社群的一封信
-> 130 天。
-> 不長，但足夠讓我們看清楚一些事情。
-> 從第一行程式碼提交到今天，我們走過了 130 天，發布了 20 個版本，留下了 800+ 次 Commit，寫下了 213,765 行程式碼、640,810 個字元。
-> 兩次重構，一套供應商系統，一個我們引以為傲的工作流程。
-> 我們以為這已經足夠了。
-> 但它不夠。
-> 有人跟我們說，想在 Toonflow 裡加一個自己的模組，改了半天還是看不懂。
-> 有人跟我們說，社群太小，遇到問題找不到人。
-> 有人跟我們說，商業條款讓他們的專案無法落實。
-> 我們聽到了。
-> 這 130 天裡，團隊成員輪流守在群組裡，7×24 小時回答每一個問題。沒有贊助，沒有補助，全部都是我們自己掏腰包支撐的人力成本。
-> 不是因為我們有多少錢。
-> 是因為我們相信這件事值得做。
-> 所以，我們決定進行第三次重構。
-> Toonflow 的每一次重構，都朝更開源、更開放的方向發展。
-> 這一次重構，我們選擇：徹底開放。
-> 　
-> 一、MIT License
-> 重構完成後，我們決定將授權條款從 Apache-2.0 改為 MIT License，並移除所有商業附加條款。
-> 它將完全開放，沒有任何商業限制。
-> 你可以用它做任何事。
-> 　
-> 二、全自由度外掛系統
-> 我們要重新設計整個外掛架構。
-> 分鏡表、全景圖、時間軸，甚至——小遊戲。
-> 只要你想得到，就可以加進來。
-> 不是 Hack，而是設計本來就如此。
-> 　
-> 三、Drizzle ORM + 多資料庫支援
-> 升級至 Drizzle ORM。
-> 本機、PostgreSQL、MySQL，依你的需求選擇。
-> 二次開發不再是惡夢。
-> 　
-> 四、Monorepo 串起完整流程
-> 外掛開發、SDK 整合、發布上線，一條龍完成。
-> 讓貢獻變得夠簡單，簡單到一個人就能做到。
-> 　
-> 五、新模組
-> 無限畫布 —— 不只是大，更在於自由
-> 靈感模式 —— 為創作者而生
-> 外掛 Hub —— 讓好外掛被看見
-> Skill Hub —— 讓經驗得以傳承
-> 供應商 Hub —— 生態系從這裡開始
-> 完整的 Docker 整合 —— 部署不再是門檻
-> 　
-> 接著，說一件我們一直不太好意思說的事。
-> 重構需要時間。這段時間裡，伺服器在運作，網域要續費，團隊在熬夜，咖啡在漲價。
-> 我們沒有募資，沒有廣告，也沒有任何隱藏的商業計畫。
-> 但我們需要活下去，才能繼續把這件事做完。
-> 所以我們推出了「Toonflow 官方模型中轉平台」TF-Router。
-> 說實話，這個平台讓我們猶豫了很久。
-> 這個平台並不是我們原本想做的，我們不想因為一個中轉平台，讓人覺得 Toonflow 開始只顧著賺錢了。
-> 這個包袱，我們背了很久。
-> 但很多使用者沒有取得白名單資格，用不上 Seedance 2.0，反覆問我們有沒有辦法。
-> 我們想了很久，最後沒有其他辦法，只能決定架設一個平台，並自行與火山簽訂 Seedance 年度框架合約。
-> **同時，我們決定在平台活動期間，以成本價提供 Seedance 2.0，不賺取任何差價。**
-> 活動結束後，我們會正常收取一點點點點服務費——但現在，先讓你們用得上再說。
-> 更重要的是——TF-Router 平台原始碼已經全部開源並打包【<a href="https://github.com/HBAI-Ltd/TF-Router" target="_blank">開源位址</a>】。
-> 你不信任我們？沒關係，你可以自己看程式碼、自己部署、自己執行。
-> 這就是我們的態度。
-> 如果你願意試用，就是對我們目前唯一能繼續支撐下去的方式，投下一票信任。
-> 如果你不願意，也沒關係，繼續使用 Toonflow，繼續罵我們，繼續提出需求。
-> 我們都在。
-> 最後說一句真心話。
-> 我們只是一群相信「創作工具應該屬於每個人」的普通人。
-> Toonflow 從來不是我們的產品。
-> 它是我們一起寫的故事。
-> 第三次重構，不是終點。
-> 是我們重新出發的地方。
-> 感謝每一個用過它、罵過它、給過建議的人。
-> 你們才是讓它走到今天的原因。
-> 謝謝你們。
-
-</details>
-
----
-
-## 7. 👨‍👩‍👧‍👦 微信交流群
-
-入群小幫手：
-
-<img src="../images/qr.png" alt="Toonflow 入群 QR Code" height="400"/>
-
-也可以點擊圖示加入 Discord：
-
-[![加入我們的 Discord](https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/67d00cf7266d2c75571aebde_Example.svg)](https://discord.gg/HEjKmpNpAZ)
-
-或點擊邀請連結：[https://discord.gg/HEjKmpNpAZ](https://discord.gg/HEjKmpNpAZ)
-
----
-
-## 8. 💌 聯絡我們
+## 4. 💌 聯絡我們
 
 📧 電子郵件：[ltlctools@outlook.com](mailto:ltlctools@outlook.com?subject=Toonflow咨询)
 
 ---
 
-## 9. 📜 開源授權
+## 5. 📜 開源授權
 
 Toonflow 採用 [MIT 授權條款](../../LICENSE)。第三方相依套件與素材遵循各自的授權及著作權聲明。
 
@@ -481,20 +294,5 @@ Toonflow 採用 [MIT 授權條款](../../LICENSE)。第三方相依套件與素�
 > **不溯及既往條款**：在 v1.0.8 發布前依 AGPL-3.0 使用的使用者，繼續適用 AGPL-3.0；v1.0.8 ~ v1.1.8 繼續適用 Apache-2.0 與附加協議，不受本次授權變更影響。
 
 ---
-
-## 10. 🙏 致謝
-
-- **合作夥伴**：算能雲、騰訊混元 3D、智星雲。
-- **專案貢獻者**：感謝所有參與程式碼開發、文件完善、外掛分享與問題排查的貢獻者。
-- **社群使用者**：感謝所有持續提供回饋、分享創作成果並支持專案發展的使用者。
-
-仰起脸笑的像满月：提供 Codex 20x 開發運算資源。
-西安中星数字智能科技有限公司：提供 Apple 憑證簽署。
-
-<div align="center">
-
-Copyright © 2026 北京爱阿科技有限公司
-
-</div>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=90&section=footer" alt="Toonflow 頁尾" width="100%" />

@@ -62,9 +62,6 @@
   <a href="https://github.com/XXXXXLCat/Toonflow-app/network/members">
     <img src="https://img.shields.io/github/forks/XXXXXLCat/Toonflow-app?style=for-the-badge&logo=github&color=orange" alt="Mga Fork" />
   </a>
-  <a href="https://discord.gg/HEjKmpNpAZ">
-    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
-  </a>
 </p>
 <p align="center">
   <a href="https://github.com/XXXXXLCat/Toonflow-app/issues">
@@ -84,72 +81,19 @@
   <img src="https://img.shields.io/badge/Desktop-Electrobun-8257E5?style=for-the-badge" alt="Electrobun" />
 </p>
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/24197?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-24197" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/24197/daily?language=TypeScript" alt="XXXXXLCat/Toonflow-app | Trendshift" width="250" height="55" />
-  </a>
-</p>
-
 **Isang open-source na AI platform para sa maiikling drama, animated na komiks, at paggawa ng video**
 
 > 🚀 **Kumpletong paggawa ng maikling drama**: Sumulat ng iskrip, pamahalaan ang mga asset, at bumuo ng mga larawan at video. Ayusin ang buong proseso ng paglikha sa isang walang-hanggang canvas.
 
 </div>
 
-
 <p align="center">
-  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">I-download</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf">Gabay sa Paggamit</a> ·
-  <a href="https://api.toonflow.net/console/plugIn">Pamilihan ng mga Plugin</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/KNBNd9naqolsy6xjAOCcEAkqnRd">Dokumentasyon para sa mga Developer</a> ·
-  <a href="https://api.toonflow.net/">Opisyal na Platform ng mga Modelo</a>
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">I-download</a>
 </p>
 
 ---
 
-## 1. 💛 Mga Sponsor at Suporta
-
-Salamat sa mga sumusunod na katuwang sa pagsuporta sa open-source na proyektong Toonflow.
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://metaso.cn/minimax-h3/?s=toon"><img src="../images/sponsors/metaso.svg" alt="Metaso" height="28" valign="middle" /> <strong>Metaso</strong></a>
-      <br />
-      <sub>Abot-kayang pagbuo ng video gamit ang MiniMax H3: ¥0.09/segundo lamang sa 768P at ¥0.15/segundo sa 2K (CNY). Sinusuportahan nito ang katutubong 2K, sabay na audio at video, API na tugma sa OpenAI, ComfyUI, at walang-hanggang canvas, nang hindi kailangang mag-deploy ng sariling GPU. <a href="https://metaso.cn/minimax-h3/?s=toon">Magparehistro gamit ang espesyal na link na ito</a> upang makatanggap ng mga bonus credit at eksklusibong alok. Para sa mga usaping pangnegosyo, kontakin ang metasota12 sa WeChat.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://go.apimart.ai/gh-toonflow-app"><img src="../images/sponsors/apiMart.jpg" alt="APIMart" height="28" valign="middle" /> <strong>APIMart</strong></a>
-      <br />
-      <sub>Salamat sa APIMart sa pag-sponsor ng proyektong ito! Ang APIMart ay isang abot-kayang API platform para sa pagbuo ng mga larawan at video gamit ang AI. Nagsisimula ang GPT-Image-2 sa $0.006 bawat larawan, o mahigit 160 larawan sa halagang $1. Iisang asynchronous API ang ginagamit para sa larawan at video: magsumite ng gawain, kunin ang ID nito, at tanggapin ang resulta sa pamamagitan ng callback. Magproseso ng mga batch na may 10,000 larawan nang walang timeout, at magpalit ng modelo nang hindi binabago ang code. Magbayad ayon sa paggamit, nang walang buwanang bayarin. <a href="https://go.apimart.ai/gh-toonflow-app">Magparehistro rito</a> upang makapagsimula.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow"><img src="../images/sponsors/compShare.png" alt="CompShare" height="28" valign="middle" /> <strong>CompShare</strong></a>
-      <br />
-      <sub>Nag-aalok ang CompShare ng abot-kayang pagbuo ng H3 video, kabilang ang text-to-video, pagkontrol sa una at huling frame, at mga mode na gumagamit ng pinagsamang sanggunian. Makagawa ng video na hanggang 30 segundo sa katutubong 2K; CNY 0.08 bawat segundo lamang para sa 768P. Sinusuportahan ang paggamit ng API, maramihang sabayang kahilingan para sa mga negosyo, at sariling pagkuha ng invoice.</sub>
-      <br /><br />
-      <sub>🎁 <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow">Magparehistro gamit ang espesyal na link na ito</a> upang makatanggap ng CNY 5 na libreng credit para masubukan ang platform!</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
-
-<details>
-<summary><strong>👉 Maging Sponsor 👈</strong></summary>
-
-<p align="center">
-  <img src="../images/businessQr.png" alt="QR code sa WeChat para sa mga usaping pangnegosyo" width="200" />
-</p>
-
-<p align="center"><sub>Para lamang sa pakikipag-ugnayang pangnegosyo ang contact na ito at hindi ito nagbibigay ng teknikal na suporta. Para sa mga tanong sa paggamit, sumali sa mga grupo ng komunidad. Isumite ang mga mungkahing feature at bug sa feedback form. Salamat sa pag-unawa.</sub></p>
-
-</details>
-
----
-
-## 2. 🌟 Mga Pangunahing Kakayahan
+## 1. 🌟 Mga Pangunahing Kakayahan
 
 Ang Toonflow ay isang open-source na AI platform para sa maiikling drama, animated na komiks, at maiikling video. Pinagsasama nito ang mga iskrip, asset, at video clip sa iisang walang-hanggang canvas.
 
@@ -158,7 +102,7 @@ Ang Toonflow ay isang open-source na AI platform para sa maiikling drama, animat
 | 🏠 **Lokal na deployment** | Itago ang mga proyekto at asset sa sarili mong device o server. May mga opsyon para sa desktop, Android, Docker, at server deployment. |
 | 🖼️ **Walang-hanggang canvas** | Ayusin ang mga iskrip, tauhan, tagpuan, at video clip sa iisang canvas. |
 | 🔌 **MCP** | Kumonekta sa mga panlabas na tool at serbisyo sa pamamagitan ng MCP. |
-| 🧩 **Pamilihan ng mga plugin** | Palawakin ang mga node, tool, at kakayahan sa paglikha gamit ang [Pamilihan ng mga Plugin](https://api.toonflow.net/console/plugIn). |
+| 🧩 **Pamilihan ng mga plugin** | Palawakin ang mga node, tool, at kakayahan sa paglikha gamit ang Pamilihan ng mga Plugin. |
 | 🤖 **Bukas na Agent** | Bukas ang mga prompt, tool, at A2A upang maiangkop ang kilos ng Agent at makipagtulungan sa mga panlabas na Agent. |
 | 🔧 **Malayang pagkonekta ng mga modelo** | Mag-configure ng mga third-party API o kumonekta sa lokal na ComfyUI at mga LLM. |
 | 🌐 **Suporta sa maraming wika** | Sinusuportahan ang 21 wika ng interface. |
@@ -171,7 +115,7 @@ Mga sinusuportahang wika: 简体中文, 繁體中文, English, 日本語, Рус
 
 ---
 
-## 3. 📸 Mga Screenshot
+## 2. 📸 Mga Screenshot
 
 <div align="center">
 
@@ -199,9 +143,9 @@ Mga sinusuportahang wika: 简体中文, 繁體中文, English, 日本語, Рус
 
 ---
 
-## 4. 🚀 Pag-download at Pag-install
+## 3. 🚀 Pag-download at Pag-install
 
-### 4.1 Pag-install ng App
+### 3.1 Pag-install ng App
 
 | Operating System | GitHub |
 | --- | --- |
@@ -244,11 +188,9 @@ Pinapaluwag nito ang mga paghihigpit sa seguridad para sa lahat ng app. Pagkatap
 
 </details>
 
-Para sa iba pang tagubilin, tingnan ang [Gabay sa Paggamit](https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf).
-
 ---
 
-### 4.2 Pag-install gamit ang Docker
+### 3.2 Pag-install gamit ang Docker
 
 I-install muna ang Git, [Docker Engine](https://docs.docker.com/engine/install/), at Docker Compose. Sa Windows at macOS, maaaring gamitin ang Docker Desktop sa Linux container mode. Kasama sa repository ang [Dockerfile](../../Dockerfile), [configuration ng Compose](../../compose.yaml), at [mga hindi isinasama sa build](../../.dockerignore). Ginagamit ang Bun 1.3.14 sa pagbuo ng image, at kasama na ang FFmpeg.
 
@@ -292,7 +234,7 @@ docker compose start
 
 ---
 
-### 4.3 Pag-install sa Server
+### 3.3 Pag-install sa Server
 
 Gamitin ang paraang ito upang direktang patakbuhin ang Web at Server sa isang Linux server. Ang halimbawa sa ibaba ay para sa Ubuntu / Debian at sa itinakdang bersyon ng proyekto na [Bun 1.3.14](https://bun.sh/docs/installation).
 
@@ -328,7 +270,7 @@ Kapag nakita ang “服务启动成功” (matagumpay na nagsimula ang serbisyo)
 
 ---
 
-### 4.4 Pag-access at Data
+### 3.4 Pag-access at Data
 
 - Kasalukuyang ginagamit ng serbisyo ang nakapirming port na `3000`. Walang hiwalay na pagpapatunay sa pag-login ang web interface at API. Sa pag-install sa server, limitahan ang access sa port `3000` sa pamamagitan ng firewall o security group. Kailangan ng reverse proxy na may authentication para sa pampublikong access.
 - Para sa personal na remote access, patakbuhin ang `ssh -N -L 3000:127.0.0.1:3000 username@server-address` sa sarili mong computer. Panatilihing bukas ang koneksyon at pumunta sa `http://127.0.0.1:3000`. Hindi kailangang ilantad ang port `3000` ng server sa pampublikong internet.
@@ -337,142 +279,13 @@ Kapag nakita ang “服务启动成功” (matagumpay na nagsimula ang serbisyo)
 
 ---
 
-### 4.5 Deployment sa Cloud
-
-Nagbibigay ang katuwang naming [AI Galaxy (智星云)](https://www.ai-galaxy.com/) ng opisyal na awtorisadong komersyal na Toonflow image na may handa nang environment. Tingnan ang [gabay na may mga larawan para sa deployment ng image](https://mp.weixin.qq.com/s/lq9X1ovQ1_TKeXMOLgicKg?scene=1).
-
----
-
-## 5. 🎬 Halimbawang Gawa
-
-https://github.com/user-attachments/assets/2d9fddac-dfdf-4640-b030-b09d7f7287e9
-
-### Detalye ng Produksyon
-
-| Item | Naitala sa orihinal na repository |
-| --- | --- |
-| Oras ng paggawa at haba ng video | Humigit-kumulang 2 oras na paggawa para sa video na halos 2 minuto ang haba. |
-| Modelo ng video | Seedance 2.0 |
-| Modelo ng larawan | GPT Image 2 |
-| Modelo ng wika | Claude Opus 4.6 |
-| Gastos sa API ng modelo | Humigit-kumulang ¥130 CNY (Chinese yuan): mga ¥10 para sa wika, ¥120 para sa video, at mas mababa sa ¥1 para sa mga larawan. |
-
-Ang mga halagang ito ay naitala para sa halimbawang ito at ibinibigay bilang sanggunian lamang. Nakadepende ang aktuwal na gastos sa serbisyo ng modelo, bilang ng pagbuo, at mga parameter. Ang demo video ay isang compressed na bersyon sa 480p.
-
----
-
-## 6. 🚀 Opisyal na Gateway ng Modelo na TF-Router
-
-<p align="center">
-  <a href="https://api.toonflow.net/">
-    <img src="https://img.shields.io/badge/TF--Router_Official%20Model%20Gateway-181717?style=for-the-badge&logoColor=white" alt="TF-Router" />
-  </a>
-</p>
-
-Ang TF-Router ay ang opisyal na gateway ng modelo na sariling pinapatakbo ng Toonflow. Maaari mo itong gamitin. Open source ang buong source code nito at maaaring i-host at suriin nang sarili: [HBAI-Ltd/TF-Router](https://github.com/HBAI-Ltd/TF-Router).
-
-<details>
-<summary><strong>Liham sa Komunidad ng Toonflow (inilathala noong 2026-06-08)</strong></summary>
-
-> ### Liham sa Komunidad ng Toonflow
-> 130 araw.
-> Hindi mahaba, ngunit sapat upang malinaw naming maunawaan ang ilang bagay.
-> Mula sa una naming na-commit na linya ng code hanggang ngayon, 130 araw na ang lumipas. Nakapaglabas kami ng 20 bersyon, nakagawa ng mahigit 800 commit, at nakasulat ng 213,765 linya ng code na may 640,810 character.
-> Dalawang muling pagsulat, isang sistema ng mga provider, at isang daloy ng trabaho na ipinagmamalaki namin.
-> Akala namin ay sapat na iyon.
-> Ngunit hindi pala.
-> May nagsabing nais nilang magdagdag ng sariling module sa Toonflow, ngunit kahit ilang oras na silang sumubok, hindi pa rin nila maintindihan kung paano babaguhin ang code.
-> May nagsabing napakaliit ng komunidad at wala silang mahanapang tulong kapag may problema.
-> May nagsabing hinahadlangan ng mga komersyal na kondisyon ang aktuwal na paggamit ng kanilang mga proyekto.
-> Narinig namin kayo.
-> Sa loob ng 130 araw na ito, nagpalitan ang mga miyembro ng aming pangkat sa mga chat group upang sagutin ang bawat tanong, 7×24. Walang sponsor at walang subsidiya: kami mismo ang nagbayad ng lahat ng gastos sa paggawa.
-> Hindi dahil marami kaming pera.
-> Kundi dahil naniniwala kaming karapat-dapat itong gawin.
-> Kaya napagpasyahan naming muling isulat ang proyekto sa ikatlong pagkakataon.
-> Sa bawat muling pagsulat ng Toonflow, mas lumalawak ang pagiging bukas at open source nito.
-> Sa pagkakataong ito, pinili naming buksan ang lahat.
->
-> 1. Lisensyang MIT
-> Napagpasyahan naming palitan ang Apache-2.0 ng Lisensyang MIT at alisin ang lahat ng karagdagang komersyal na kondisyon kapag natapos ang muling pagsulat.
-> Ganap itong magiging bukas, nang walang komersyal na paghihigpit.
-> Maaari ninyo itong gamitin para sa anumang layunin.
->
-> 2. Isang Ganap na Naaangkop na Sistema ng Plugin
-> Muli naming ididisenyo ang buong arkitektura ng plugin.
-> Mga storyboard, panorama, timeline, at maging maliliit na laro.
-> Kung maiisip ninyo, maaari ninyo itong idagdag.
-> Bahagi ito ng disenyo mismo, hindi ng mga pansamantalang paraan.
->
-> 3. Drizzle ORM + Suporta sa Maraming Database
-> Lilipat kami sa Drizzle ORM.
-> Lokal na storage, PostgreSQL, o MySQL: piliin kung ano ang kailangan ninyo.
-> Hindi na magiging bangungot ang pagbuo ng mga pasadyang pagbabago.
->
-> 4. Isang Kumpletong Daloy ng Trabaho sa Monorepo
-> Magkakaugnay ang pagbuo ng plugin, pagsasama ng SDK, at paglabas ng mga bersyon.
-> Gagawing sapat na simple ang pag-aambag upang kayanin kahit ng isang tao.
->
-> 5. Mga Bagong Module
-> Walang-hanggang Canvas — higit sa espasyo, kalayaan.
-> Inspiration Mode — ginawa para sa mga tagalikha.
-> Plugin Hub — tumutulong upang matuklasan ang mahuhusay na plugin.
-> Skill Hub — ginagawang naibabahagi ang karanasan.
-> Provider Hub — dito nagsisimula ang ecosystem.
-> Kumpletong pagsasama ng Docker — pinadadali ang deployment.
->
-> Ngayon, tungkol naman sa isang bagay na matagal naming iniiwasang talakayin.
-> Kailangan ng panahon ang muling pagsulat. Habang ginagawa ito, patuloy ang mga server, kailangang i-renew ang mga domain, nagpupuyat ang pangkat, at tumataas ang presyo ng kape.
-> Wala kaming pondong mula sa mga investor, patalastas, o nakatagong komersyal na plano.
-> Ngunit kailangan naming magpatuloy upang matapos ang nasimulan namin.
-> Kaya inilunsad namin ang TF-Router, ang opisyal na gateway ng modelo ng Toonflow.
-> Sa totoo lang, matagal kaming nag-alinlangan tungkol sa platform na ito.
-> Hindi ito isang bagay na nais naming buuin noon. Ayaw naming isipin ng mga tao na nagsimulang “pagkakitaan” ng Toonflow ang mga gumagamit dahil sa isang gateway.
-> Matagal naming dinala ang alalahaning iyon.
-> Ngunit maraming gumagamit ang hindi makakuha ng aprubadong access sa Seedance 2.0 at paulit-ulit na nagtatanong kung may paraan upang magamit ito.
-> Matapos ang masusing pag-iisip, nagpasya kaming gumawa ng sarili at lumagda sa isang taunang kasunduang balangkas para sa Seedance sa Volcengine.
-> **Napagpasyahan din naming ialok ang Seedance 2.0 sa mismong halaga ng gastos sa panahon ng promosyon ng platform, nang walang kahit isang sentimong patong.**
-> Pagkatapos ng promosyon, maniningil kami ng napakaliit na bayad sa serbisyo. Sa ngayon, ang prayoridad namin ay mabigyan kayo ng access.
-> Higit pa rito, inilabas na bilang open source ang buong source code ng TF-Router: 【<a href="https://github.com/HBAI-Ltd/TF-Router" target="_blank">Source Code</a>】.
-> Hindi ninyo kami pinagkakatiwalaan? Ayos lang. Basahin ang code, i-deploy ito, at patakbuhin nang sarili.
-> Iyan ang aming paninindigan.
-> Kung susubukan ninyo ito, nagtitiwala kayo sa tanging paraan namin sa ngayon upang maipagpatuloy ang gawaing ito.
-> Kung hindi, ayos lang din. Patuloy na gamitin ang Toonflow, punahin kami, at magmungkahi ng mga feature.
-> Narito kami.
-> Isang huling bagay, mula sa puso:
-> Isa lamang kaming pangkat ng mga ordinaryong taong naniniwalang dapat para sa lahat ang mga tool sa paglikha.
-> Ang Toonflow ay hindi kailanman naging produkto lamang namin.
-> Ito ang kuwentong sama-sama nating isinusulat.
-> Hindi ang ikatlong muling pagsulat ang dulo.
-> Dito kami muling magsisimula.
-> Salamat sa lahat ng gumamit nito, pumuna, o nagbigay ng mungkahi.
-> Dahil sa inyo, umabot ito nang ganito kalayo.
-> Maraming salamat.
-
-</details>
-
----
-
-## 7. 👨‍👩‍👧‍👦 Komunidad sa WeChat
-
-I-scan ang QR code upang kontakin ang assistant para sa imbitasyon sa grupo:
-
-<img src="../images/qr.png" alt="QR code ng komunidad ng Toonflow" height="400"/>
-
-Maaari ring i-click ang icon upang sumali sa Discord:
-
-[![Sumali sa aming Discord](https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/67d00cf7266d2c75571aebde_Example.svg)](https://discord.gg/HEjKmpNpAZ)
-
-O gamitin ang link ng imbitasyon: [https://discord.gg/HEjKmpNpAZ](https://discord.gg/HEjKmpNpAZ)
-
----
-
-## 8. 💌 Makipag-ugnayan sa Amin
+## 4. 💌 Makipag-ugnayan sa Amin
 
 📧 Email: [ltlctools@outlook.com](mailto:ltlctools@outlook.com?subject=Toonflow咨询)
 
 ---
 
-## 9. 📜 Lisensya ng Open Source
+## 5. 📜 Lisensya ng Open Source
 
 Ang Toonflow ay nasa ilalim ng [Lisensyang MIT](../../LICENSE). Nananatiling sakop ng kani-kanilang lisensya at abiso sa copyright ang mga third-party dependency at asset.
 
@@ -481,20 +294,5 @@ Ang Toonflow ay nasa ilalim ng [Lisensyang MIT](../../LICENSE). Nananatiling sak
 > **Sugnay na hindi retroaktibo**: Ang mga gumamit ng mga bersyon bago ang v1.0.8 sa ilalim ng AGPL-3.0 ay patuloy na sakop ng AGPL-3.0. Ang mga bersyong v1.0.8 hanggang v1.1.8 ay patuloy na sakop ng Apache-2.0 at ng karagdagang kasunduan nito. Hindi sakop ng pagbabagong ito sa lisensya ang mga gumagamit na iyon.
 
 ---
-
-## 10. 🙏 Pasasalamat
-
-- **Mga katuwang**: 算能云, Tencent Hunyuan 3D, at AI Galaxy (智星云).
-- **Mga nag-aambag sa proyekto**: Salamat sa lahat ng nag-ambag ng code, nagpaunlad ng dokumentasyon, nagbahagi ng mga plugin, at tumulong sa paglutas ng mga problema.
-- **Mga kasapi ng komunidad**: Salamat sa lahat ng patuloy na nagbibigay ng feedback, nagbabahagi ng kanilang mga likha, at sumusuporta sa proyekto.
-
-仰起脸笑的像满月: nag-ambag ng mga computing resource na Codex 20x para sa development.
-Xi'an Zhongxing Digital Intelligence Technology Co., Ltd. (西安中星数字智能科技有限公司): nag-ambag ng paglagda gamit ang Apple certificate.
-
-<div align="center">
-
-Copyright © 2026 北京爱阿科技有限公司
-
-</div>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=90&section=footer" alt="Ibabang bahagi ng Toonflow" width="100%" />
