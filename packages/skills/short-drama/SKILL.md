@@ -29,6 +29,7 @@ license: MIT
 | 定人物音色、写逐句语气、把参考音频接到对白 | `$short-drama-voice` → `配音本.md` |
 | 按分镜情绪设计背景音乐乐段 | `$short-drama-music` → `配乐本.md` |
 | 实际生成媒体 | `$short-drama-produce`，先预览，再显式确认，最后运行 |
+| 把已定稿文档接到画布、建生成节点、按文档连线 | `$short-drama-canvas`，先出施工计划再确认 |
 | 把已生产的素材剪成成片 | `$short-drama-edit` → `剪辑单.md` 与 `制作成果/成片/` |
 | 审稿或校验 | `$short-drama-review`，仅在用户点名时 |
 | 初始化、Dashboard、归档点名文档 | 本技能 |

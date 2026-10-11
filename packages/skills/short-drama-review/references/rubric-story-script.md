@@ -6,6 +6,7 @@
 - [Episode](#episode-shape)
 - [Entry and serial memory](#entry-character-and-serial-memory)
 - [Adaptation fidelity](#adaptation-fidelity)
+- [Downstream fidelity](#downstream-fidelity-to-the-screenplay)
 - [Scene](#scene-test)
 - [Action](#action-and-production-meaning)
 - [Dialogue](#dialogue)
@@ -143,6 +144,26 @@ Active only when the project adapts a source. Read the source span each mapping 
   is a `STY-07` finding.
 - When an episode's opponent was manufactured to meet `opposed_reversals_per_episode_min`,
   say so: the profile deviation is the honest outcome, not a new antagonist.
+
+## Downstream fidelity to the screenplay
+
+Active for every project, not only adaptations. This is the highest-priority check:
+a downstream stage — storyboard, keyframe, image prompt, video prompt — must not
+rewrite the story while executing it. Full rules and the five absolute prohibitions
+are in [制作质量检查](production-quality-gates.md#0-剧情被改写最高优先级)；read that section
+before judging.
+
+- Does every downstream sentence that changes a character, prop, position, count,
+  relationship, information, or cause map back to a beat in `剧本.md`? A sentence that
+  does and cites no source beat is an addition.
+- Did any stage invent a **source action** for an existing action — taking out,
+  opening, picking up, handing over — that the screenplay never wrote?
+- Was a generic subject (`父母` / `家长` / `成人` / `某人`) concretized into a named
+  person, a specific count, or a fixed left/right hand?
+- Did a later version inherit an earlier AI-invented detail as if it were fact?
+  AI-added content never upgrades into story fact.
+- Camera, framing, lighting result, and foley are technical, not story changes — but
+  they still must not manufacture a new story fact.
 
 ## Scene test
 

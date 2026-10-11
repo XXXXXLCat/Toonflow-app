@@ -15,7 +15,7 @@
             <path d="M4 29C18 40 44 38 44 18C44 1 21 3 24 19C27 37 57 32 77 16M65 17L77 16L73 28" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </span>
-        <el-button round size="large" :icon="IconBrandGithub" tag="a" href="https://github.com/HBAI-Ltd/Toonflow-app" target="_blank" rel="noopener noreferrer">GitHub</el-button>
+        <el-button round size="large" :icon="IconBrandGithub" tag="a" href="https://github.com/XXXXXLCat/Toonflow-app" target="_blank" rel="noopener noreferrer">GitHub</el-button>
       </div>
     </el-header>
     <el-main class="pageContent">

@@ -127,6 +127,9 @@ async function start() {
     const { closeBrowsers } = await import("@toonflow/server/browser");
     const { hash, version } = await file(resolve(PATHS.RESOURCES_FOLDER, "version.json")).json();
     if (typeof hash !== "string" || !hash) throw new Error(t`应用构建标识缺失，无法同步内置插件`);
+    // ACT: 短剧技能脚本走随包分发的便携 Python；缺失时由 dramaScript 工具回退系统解释器。
+    const bundledPython = resolve(PATHS.VIEWS_FOLDER, "../python", process.platform === "win32" ? "python.exe" : "bin/python3");
+    if (existsSync(bundledPython)) process.env.TOONFLOW_PYTHON = bundledPython;
     const app = await createApp({
       webRoot: resolve(PATHS.VIEWS_FOLDER, "mainview"),
       appVersion: typeof version === "string" ? version : "",

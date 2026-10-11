@@ -6,7 +6,7 @@ import type { DesktopRuntime, desktopUpdateAttempt, updateSnapshot } from "@/typ
 
 const updateBaseUrls = {
   official: "https://api.toonflow.net/web/version/desktopUpdates",
-  github: "https://github.com/HBAI-Ltd/Toonflow-app/releases/latest/download",
+  github: "https://github.com/XXXXXLCat/Toonflow-app/releases/latest/download",
 };
 const updateRuntimeId = crypto.randomUUID();
 let cancelledUpdateAttempt: string | undefined;
@@ -59,7 +59,7 @@ function getInstallFailure(local: Awaited<ReturnType<DesktopRuntime["updater"]["
     currentVersion: local.version,
     currentHash: local.hash,
     message,
-    downloadUrl: "https://github.com/HBAI-Ltd/Toonflow-app/releases/latest",
+    downloadUrl: "https://github.com/XXXXXLCat/Toonflow-app/releases/latest",
   };
 }
 

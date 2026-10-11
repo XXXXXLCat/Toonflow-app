@@ -1,5 +1,6 @@
 import { inject, nextTick } from "vue";
 import { useNode, useVueFlow } from "@vue-flow/core";
+import type { NodeImageRequest } from "@toonflow/nodes-scaffold/runtime";
 import type { ImageInpaint } from "./imageInpaint";
 
 export const VARIATION_NODE = { builtin: "remote-imageGenerationNode", comfyui: "remote-comfyuiImageNode" } as const;
@@ -46,12 +47,42 @@ const NODE_LABELS: Record<string, string> = {
   [VARIATION_NODE.comfyui]: "ComfyUI 图片节点",
 };
 
+/**
+ * 玩法自带的额外参考图（如「制作资产」的版式引导图）。
+ *
+ * 为什么走「先落盘、再存路径」而不是直接把 data URI 交给供应商：
+ * 节点请求的 images 通道收的是**工作区文件路径**，供应商按路径读文件上传到 ComfyUI。
+ * 因此额外参考图必须先写进新节点自己的目录，再把路径挂到子节点 data 上；
+ * 子节点生成时（`startGeneration`）把它并入 images 数组，编号顺延在连线参考图之后。
+ *
+ * 落盘文件名固定（`guide.<ext>`），重跑时直接覆盖，不会在节点目录里堆垃圾。
+ */
+export async function persistVariationImages(files: { getWorkspaceFiles(): { mkdir(path: string): Promise<void>; write(path: string, content: string | Blob | ArrayBuffer, exclusive?: boolean): Promise<void> } }, nodeId: string, images: { url: string; mimeType?: string; name: string }[]) {
+  if (!images.length) return;
+  const workspace = files.getWorkspaceFiles();
+  const directory = `assets/${nodeId}`;
+  for (const path of ["assets", directory]) {
+    await workspace.mkdir(path).catch((error: { response?: { data?: { data?: { code?: string } } } }) => {
+      if (error.response?.data?.data?.code !== "EEXIST") throw error;
+    });
+  }
+  for (const image of images) {
+    const match = /^data:([^;,]+);base64,(.*)$/s.exec(image.url);
+    if (!match) throw new Error(`引导参考图 ${image.name} 不是内联数据，无法保存`);
+    // 走 Blob 而不是 ArrayBuffer/Buffer：与 uploadNodeFile 一致，且是 write 签名里的正式形态。
+    const binary = atob(match[2]!);
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+    await workspace.write(`${directory}/${image.name}`, new Blob([bytes], { type: match[1] }), false);
+  }
+}
+
 export function useImageVariationNode(options?: { nodeType?: string }) {
   const { id, node } = useNode();
   const { addNodes, addEdges, removeNodes, findNode, getNodes, nodeTypes } = useVueFlow();
   const batchHistory = inject<(action: () => Promise<void>) => Promise<void>>("batchCanvasHistory", action => action());
 
-  return async function createVariation(input: { label: string; prompt: string; model: string; size: string; ratio: string; rewritePrompt?: boolean; loras?: { name: string; strength: number }[]; multiplier?: string; nodeId?: string; inpaint?: ImageInpaint }, signal?: AbortSignal) {
+  return async function createVariation(input: { label: string; prompt: string; model: string; size: string; ratio: string; rewritePrompt?: boolean; loras?: { name: string; strength: number }[]; multiplier?: string; nodeId?: string; inpaint?: ImageInpaint; extraImages?: NonNullable<NodeImageRequest["images"]>; guideImage?: { path: string; mimeType: string; label: string } }, signal?: AbortSignal) {
     const type = options?.nodeType ?? VARIATION_NODE.builtin;
     signal?.throwIfAborted();
     if (!nodeTypes?.value?.[type]) throw new Error(`请先启用${NODE_LABELS[type] ?? type}插件`);
@@ -76,7 +107,12 @@ export function useImageVariationNode(options?: { nodeType?: string }) {
         // 放大（SeedVR2 等）同理：只有 ComfyUI 图片节点认 multiplier 字段，且它没有 LoRA / 尺寸通道。
         // 提示词为空时不要塞 [""] —— promptInput 会渲染出一个空行，而放大节点的输入框本就不显示。
         const promptModel = prompt ? prompt.split("\n").map(text => [{ type: "Write" as const, text }]) : [];
-        addNodes({ id: nodeId, type, position: { x, y }, data: { label: `${node.data.label || "图片"} · ${label}`, model, [variationSizeKey(type)]: size, ratio, prompt, promptModel, ...(type === VARIATION_NODE.comfyui ? { rewritePrompt: input.rewritePrompt ?? true, ...(input.loras?.length ? { loras: input.loras } : {}), ...(input.multiplier ? { multiplier: input.multiplier } : {}) } : {}), ...(input.inpaint ? { inpaint: input.inpaint } : {}) } });
+        // guideImage 是「当前这张额外参考图是什么」的一句话标记（如「制作资产 · 三头版式」）。
+        // 只用于在节点底栏把那行隐藏的额外参考显示出来，不参与生成；extraImages 才是真正下发的路径。
+        // 缺了它画布上就看不出「这张板是照哪个版式生成的」——用户反映过这个不可见的问题。
+        const data: Record<string, unknown> = { label: `${node.data.label || "图片"} · ${label}`, model, [variationSizeKey(type)]: size, ratio, prompt, promptModel, ...(type === VARIATION_NODE.comfyui ? { rewritePrompt: input.rewritePrompt ?? false, ...(input.loras?.length ? { loras: input.loras } : {}), ...(input.multiplier ? { multiplier: input.multiplier } : {}) } : {}), ...(input.inpaint ? { inpaint: input.inpaint } : {}), ...(input.extraImages?.length ? { extraImages: input.extraImages } : {}) };
+        if (input.guideImage) data.guideImage = input.guideImage;
+        addNodes({ id: nodeId, type, position: { x, y }, data });
         addEdges({ id: edgeId, source: id, sourceHandle: "image", target: nodeId, targetHandle: "in" });
       } catch (error) {
         removeNodes(nodeId, true, false);

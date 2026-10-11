@@ -768,6 +768,17 @@
         "vue": "^3.5.42",
       },
     },
+    "packages/tools/dramaScript": {
+      "name": "@toonflow/tool-drama-script",
+      "version": "1.0.0",
+      "dependencies": {
+        "zod": "^4.6.2",
+      },
+      "devDependencies": {
+        "@toonflow/tools-scaffold": "workspace:*",
+        "typescript": "~6.0.3",
+      },
+    },
     "packages/tools/ffmpeg": {
       "name": "@toonflow/tool-ffmpeg",
       "version": "2.0.0",
@@ -1457,6 +1468,8 @@
     "@toonflow/tool-browser": ["@toonflow/tool-browser@workspace:packages/tools/browser"],
 
     "@toonflow/tool-canvas": ["@toonflow/tool-canvas@workspace:packages/tools/canvas"],
+
+    "@toonflow/tool-drama-script": ["@toonflow/tool-drama-script@workspace:packages/tools/dramaScript"],
 
     "@toonflow/tool-ffmpeg": ["@toonflow/tool-ffmpeg@workspace:packages/tools/ffmpeg"],
 
@@ -2867,6 +2880,8 @@
     "@toonflow/tool-browser/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "@toonflow/tool-canvas/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
+
+    "@toonflow/tool-drama-script/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "@toonflow/web/typescript": ["typescript@6.0.3", "https://registry.npmmirror.com/typescript/-/typescript-6.0.3.tgz", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 

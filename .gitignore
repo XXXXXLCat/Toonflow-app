@@ -38,3 +38,9 @@ Thumbs.db
 /assets/
 # WorkBuddy 的项目记忆目录，本机数据。
 /.workbuddy/
+# 供应商与插件的交付备份包（data/ 被 gitignore，供应商文件只在这里留底）。
+/Toonflow-插件与供应商.zip
+/Toonflow-插件与供应商/
+/Toonflow-插件与供应商-v*.zip
+# 本地改动前的备份与审计暂存目录。
+/.tmp-review/

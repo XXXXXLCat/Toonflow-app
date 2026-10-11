@@ -40,6 +40,13 @@
         aria-label="多角度"
         @click.stop="openMultiAngle">多角度</el-button>
       <el-button
+        :icon="IconLayoutBoardSplit"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
+        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '制作资产：把单张立绘转成多角度角色板（六格一张）'"
+        text
+        aria-label="制作资产"
+        @click.stop="openMultiviewAsset">制作资产</el-button>
+      <el-button
         :icon="IconArrowsMaximize"
         :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
         :loading="outpaint?.generating"
@@ -120,16 +127,23 @@
     <template #bottom>
       <div v-if="lightingVisible" ref="lightingTarget" />
       <div v-else-if="multiAngleVisible" ref="multiAngleTarget" />
+      <div v-else-if="multiviewAssetVisible" ref="multiviewAssetTarget" />
       <div v-else-if="outpaintVisible" ref="outpaintTarget" />
       <div v-else-if="editor?.mode === 'inpaint'" ref="inpaintTarget" />
       <el-card v-else class="promptCard" shadow="never" :bodyStyle="{ padding: '14px 16px 12px' }">
         <!-- 重绘子节点在出图后仍能回看重绘区域：上面那条 v-else-if 已保证提示词卡不在重绘态渲染 -->
         <el-button v-if="inpaintGuideUrl" class="inpaintInfo" text :icon="IconBrush" @click="inpaintPreviewVisible = true">查看重绘标注</el-button>
-        <referenceItem
-          v-if="refList.length"
-          v-model="refList"
-          @preview="setReferencePreview"
-          @remove="removeReference" />
+        <!-- 引用区：连线引用（可拖拽排序/删除）+ 玩法预置的引导参考图（只读）。
+             两者都是本次生成真正会下发的参考图，排在一起用户才看得出「一共引用了什么」——
+             引导图不走连线，不显示的话画布上完全看不出它存在。 -->
+        <div v-if="refList.length || guideImage" class="referenceRow">
+          <referenceItem
+            v-if="refList.length"
+            v-model="refList"
+            @preview="setReferencePreview"
+            @remove="removeReference" />
+          <guideReferenceCard v-if="guideImage" :image="guideImage" />
+        </div>
         <!-- 放大类模型没有提示词通道，整块藏起来，不留任何说明文字 -->
         <promptInput v-if="!upscaleModel" v-model="data.promptModel" v-model:text="data.prompt" :references="referenceMentions" expandable />
         <div class="promptFooter">
@@ -214,6 +228,15 @@
     :nodeType="VARIATION_NODE.comfyui"
     :disabled="panelDisabled"
     @close="multiAngleVisible = false" />
+  <imageMultiviewAsset
+    v-if="multiviewAssetVisible"
+    ref="multiviewAsset"
+    :src="previewUrl"
+    :source="outputFile"
+    :target="multiviewAssetTarget"
+    :nodeType="VARIATION_NODE.comfyui"
+    :disabled="panelDisabled"
+    @close="multiviewAssetVisible = false" />
   <imagePanorama
     ref="panorama"
     :src="previewUrl"
@@ -241,19 +264,21 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onScopeDispose, ref } from "vue";
 import { ElButton, ElCard, ElSelect, ElOption, ElOptionGroup, ElLoading, ElImageViewer } from "element-plus";
-import { IconPhotoAi, IconSparkles, IconArrowUp, IconPlayerStop, IconLayoutGrid, IconTransfer, IconPencil, IconSun, IconCameraRotate, IconPanoramaHorizontal, IconChevronDown, IconArrowsMaximize, IconUserScan, IconBrush, IconZoomIn } from "@tabler/icons-vue";
+import { IconPhotoAi, IconSparkles, IconArrowUp, IconPlayerStop, IconLayoutGrid, IconTransfer, IconPencil, IconSun, IconCameraRotate, IconPanoramaHorizontal, IconChevronDown, IconArrowsMaximize, IconUserScan, IconBrush, IconZoomIn, IconLayoutBoardSplit } from "@tabler/icons-vue";
 import { nodeSkeleton, nodeTools, useNode, z, type NodeMediaModel, type NodeHandle } from "@toonflow/nodes-scaffold/runtime";
 import { groupNodeModels } from "@toonflow/node-shared/groupNodeModels";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
 import { useNodeGeneration } from "@toonflow/node-shared/useNodeGeneration";
 import { useNodeReferences } from "@toonflow/node-shared/useNodeReferences";
 import referenceItem from "@toonflow/node-shared/referenceItem";
+import guideReferenceCard from "@toonflow/node-shared/guideReferenceCard";
 import promptInput from "@toonflow/node-shared/promptInput";
 import mediaHistory from "@toonflow/node-shared/mediaHistory";
 import imageGridSplit from "@toonflow/node-shared/imageGridSplit";
 import imageEditor from "@toonflow/node-shared/imageEditor";
 import imageLighting from "@toonflow/node-shared/imageLighting";
 import imageMultiAngle from "@toonflow/node-shared/imageMultiAngle";
+import imageMultiviewAsset from "@toonflow/node-shared/imageMultiviewAsset";
 import imagePanorama from "@toonflow/node-shared/imagePanorama";
 import imageOutpaint from "@toonflow/node-shared/imageOutpaint";
 import imageInpaintPrompt from "@toonflow/node-shared/imageInpaintPrompt";
@@ -299,6 +324,9 @@ const lightingVisible = ref(false);
 const multiAngle = ref<InstanceType<typeof imageMultiAngle>>();
 const multiAngleTarget = ref<HTMLElement>();
 const multiAngleVisible = ref(false);
+const multiviewAsset = ref<InstanceType<typeof imageMultiviewAsset>>();
+const multiviewAssetTarget = ref<HTMLElement>();
+const multiviewAssetVisible = ref(false);
 const panorama = ref<InstanceType<typeof imagePanorama>>();
 const outpaint = ref<InstanceType<typeof imageOutpaint>>();
 const outpaintTarget = ref<HTMLElement>();
@@ -371,6 +399,9 @@ const inpaintPreviewVisible = ref(false);
 const modelBlocksPlaybook = computed(() => !!selectedModel.value && !imageCapable.value);
 // 面板打开期间底栏被面板接管，其余交互都要让路，避免读到半途的状态。
 const panelDisabled = computed(() => generating.value || deleting.value || uploading.value || !!editor.value?.busy || !!gridSplit.value?.splitting);
+// 玩法预置的引导参考图（「制作资产」的版式灰模等）。它不走连线，只在 data 上留一条标记，
+// 底栏据此把它显示成一张只读卡片——否则画布上看不出它存在。
+const guideImage = computed(() => (node.data as Record<string, unknown>).guideImage as { path: string; mimeType: string; label: string } | undefined);
 
 onMounted(() => loadModels().catch((error) => showNodeError(error, "图片模型读取失败")));
 onScopeDispose(() => {
@@ -425,6 +456,7 @@ function startEditor(mode: "inpaint" | "mark") {
   if (generating.value || deleting.value || uploading.value || gridSplit.value?.splitting || panorama.value?.busy) return;
   lightingVisible.value = false;
   multiAngleVisible.value = false;
+  multiviewAssetVisible.value = false;
   outpaintVisible.value = false;
   editor.value?.start(mode);
 }
@@ -435,11 +467,12 @@ async function createInpaint(input: InpaintDraftInput, signal: AbortSignal) {
   await editor.value.createInpaint(input, signal);
 }
 
-// 打光、多角度、扩图互斥：三者都把底栏换成自己的面板，同时开只会互相盖住。
+// 打光、多角度、制作资产、扩图互斥：四者都把底栏换成自己的面板，同时开只会互相盖住。
 function openLighting() {
   if (panelDisabled.value || !previewUrl.value) return;
   editor.value?.cancel();
   multiAngleVisible.value = false;
+  multiviewAssetVisible.value = false;
   outpaintVisible.value = false;
   lightingVisible.value = true;
 }
@@ -448,8 +481,21 @@ function openMultiAngle() {
   if (panelDisabled.value || !previewUrl.value) return;
   editor.value?.cancel();
   lightingVisible.value = false;
+  multiviewAssetVisible.value = false;
   outpaintVisible.value = false;
   multiAngleVisible.value = true;
+}
+
+// 制作资产：把单张立绘转成一张多角度角色板。与「多角度」是两件事——
+// 多角度出的是绕相机拍到的单张新视角图，制作资产出的是版式固定的资产板
+// （左段三格躯干 + 右段按版式 1/2/3 格头部；画幅随版式：单头 16:9，双头与三头 4:3）。
+function openMultiviewAsset() {
+  if (panelDisabled.value || !previewUrl.value) return;
+  editor.value?.cancel();
+  lightingVisible.value = false;
+  multiAngleVisible.value = false;
+  outpaintVisible.value = false;
+  multiviewAssetVisible.value = true;
 }
 
 function openOutpaint() {
@@ -457,6 +503,7 @@ function openOutpaint() {
   editor.value?.cancel();
   lightingVisible.value = false;
   multiAngleVisible.value = false;
+  multiviewAssetVisible.value = false;
   outpaintVisible.value = true;
 }
 
@@ -465,6 +512,7 @@ function openPanorama() {
   editor.value?.cancel();
   lightingVisible.value = false;
   multiAngleVisible.value = false;
+  multiviewAssetVisible.value = false;
   outpaintVisible.value = false;
 }
 
@@ -563,6 +611,9 @@ async function startGeneration() {
         // 局部重绘节点：父节点原图已经作为 original / guide 送进去了，
         // 这里再把连线带过来的同一张图加进去只会重复一遍。
         const inpaintData = (node.data as Record<string, unknown>).inpaint as ImageInpaint | undefined;
+        // 「制作资产」等玩法预置的引导参考图：已落盘在节点目录，路径存在 data 上。
+        // 它们排在连线参考图之后，所以 <imageN> / {{ref N}} 的编号对连线图仍成立。
+        const extraImages = ((node.data as Record<string, unknown>).extraImages as { path: string; mimeType: string }[] | undefined) ?? [];
         const references = refList.value.filter(item => !inpaintData || item.dataType !== "IMAGE" || item.value?.url !== inpaintData.source);
         const input = {
           providerId: choice.providerId,
@@ -575,7 +626,10 @@ async function startGeneration() {
           // 不传 ratio 表示比例跟随参考图（主 latent 取参考图编码），传了才按所选比例与百万像素重绘。
           ...(usesRatio.value ? { ratio: data.value.ratio } : {}),
           outputDirectory: `assets/${id}`,
-          images: references.flatMap(item => item.dataType === "IMAGE" && item.value ? [{ path: item.value.url, mimeType: item.value.mimeType }] : []),
+          images: [
+            ...references.flatMap(item => item.dataType === "IMAGE" && item.value ? [{ path: item.value.url, mimeType: item.value.mimeType }] : []),
+            ...extraImages,
+          ],
           // LoRA 堆叠：按面板里的顺序依次应用，最多 12 条。空数组不下发，供应商会全部槽位跳过。
           ...(data.value.loras?.length ? { loras: data.value.loras } : {}),
           // 放大类模型：尺寸与比例由它自己按原图推导，只下发放大倍数。
@@ -592,6 +646,20 @@ async function startGeneration() {
               : []
           );
           if (mapping.length) input.prompt += `\n当前节点参考编号对应关系：${mapping.join("；")}。`;
+        }
+        // 玩法预置的引导图排在连线参考图之后（见上面的 images 拼接顺序），编号自然顺延。
+        // 不点明这层对应关系，模型会把两张风格差别极大的图混成一张看。
+        // 「制作资产」的提示词用 <image1> / <image2> 指代两张图，这里的映射必须用同一套记号，
+        // 否则提示词里的 <image2> 落不到实处（模型不知道它对应第几张）。
+        if (extraImages.length) {
+          const offset = refList.value.filter(item => item.dataType === "IMAGE" && item.value).length;
+          const mapping = refList.value.flatMap((item, index) =>
+            item.dataType === "IMAGE" && item.value ? [`<image${index + 1}> 对应第 ${index + 1} 张图`] : []
+          );
+          extraImages.forEach((_image, index) => {
+            mapping.push(`<image${offset + index + 1}> 对应第 ${offset + index + 1} 张图`);
+          });
+          if (mapping.length) input.prompt += `\nImage reference mapping: ${mapping.join("; ")}.`;
         }
         // ACT: 工作流类供应商也没有原生 mask 通道，与内置节点一样走「标注图引导 + 本地蒙版合成」。
         return inpaintData ? generateInpaint(input, inpaintData, controller.signal) : ai.generateImage(input, controller.signal);
@@ -610,7 +678,7 @@ async function startGeneration() {
 
 nodeEvent.on("save", (reason) => {
   if (uploading.value || gridSplit.value?.splitting || panorama.value?.busy) throw new Error("图片处理中，请完成后再切换或刷新节点");
-  if (lighting.value?.generating || multiAngle.value?.generating || outpaint.value?.generating || animeToRealBusy.value || upscaleBusy.value) throw new Error("玩法正在生成，请完成后再切换或刷新节点");
+  if (lighting.value?.generating || multiAngle.value?.generating || multiviewAsset.value?.generating || outpaint.value?.generating || animeToRealBusy.value || upscaleBusy.value) throw new Error("玩法正在生成，请完成后再切换或刷新节点");
   if (reason === "reload" && generating.value) throw new Error("图片生成中，请完成后再刷新节点");
 });
 nodeEvent.on("delete", async () => {
@@ -640,6 +708,8 @@ function getConfig() {
     ratio: data.value.ratio,
     rewritePrompt: data.value.rewritePrompt,
     imageCapable: imageCapable.value,
+    // 放大类模型没有提示词与尺寸通道，只吃 multiplier；其余模型没有这一项。
+    ...(upscaleModel.value ? { multiplier: data.value.multiplier, multiplierOptions: multiplierOptions.value } : {}),
     megapixelOptions: megapixelOptions.value,
     ratioOptions: ratioOptions.value,
     models: models.value,
@@ -648,12 +718,65 @@ function getConfig() {
 
 nodeTools.register({
   name: "getConfig",
-  description: "读取此图片生成节点的当前模型、分辨率、比例、提示词重写开关及可选图片模型能力，不含密钥；imageCapable 为 true 表示该模型能接参考图",
+  description: "读取此图片生成节点的当前提示词、模型、分辨率（megapixels，百万像素档位）、比例（ratio，可选「自适应」表示跟随参考图）、提示词重写开关及可用模型与档位，不含密钥；imageCapable 为 true 表示该模型能接参考图；放大类模型改为只提供 multiplier 与 multiplierOptions；改提示词用 setPrompt，改配置用 setConfig",
   parameters: z.strictObject({}),
   async execute(_args, { signal }) {
     signal?.throwIfAborted();
     await loadModels();
     signal?.throwIfAborted();
+    return getConfig();
+  },
+});
+
+nodeTools.register({
+  name: "setPrompt",
+  description: "修改此节点的生成提示词，支持 {{ref 1}} 等参考标记（编号与引用列表、输入框 @ 提及一致）；不修改模型、分辨率、比例，不启动生成",
+  parameters: z.strictObject({ prompt: z.string() }),
+  execute({ prompt: value }) {
+    if (deleting.value) throw new Error("节点正在删除，请稍后修改");
+    if (upscaleModel.value) throw new Error("放大模型没有提示词通道，请先换成支持提示词的模型");
+    // 标记态下画布被标注层接管，此时改提示词会让人以为改的是待确认的那次重绘。
+    if (editor.value?.mode) throw new Error("请先完成图片标记，再修改提示词");
+    data.value.prompt = value;
+    data.value.promptModel = value.split("\n").map((text) => [{ type: "Write", text }]);
+    return { prompt: value };
+  },
+});
+
+nodeTools.register({
+  name: "setConfig",
+  description: "修改此节点的图片生成配置：模型、分辨率档位、比例与提示词重写开关；先用 getConfig 读取当前值与可选范围，providerId 与 modelId 必须成对提供；megapixels 用百万像素档位（按 1024 基数换算，如 1 = 1024×1024），ratio 可选「自适应」表示跟随参考图；rewritePrompt 控制生成前是否由工作流重写提示词，写好的成品提示词应设为 false；切换模型后不兼容的档位会落到该模型的首项；配置修改不触发生成",
+  parameters: z.strictObject({
+    providerId: z.string().min(1).optional(),
+    modelId: z.string().min(1).optional(),
+    megapixels: z.string().optional(),
+    ratio: z.string().optional(),
+    rewritePrompt: z.boolean().optional(),
+    multiplier: z.string().optional(),
+  }).refine(args => (args.providerId === undefined) === (args.modelId === undefined), "providerId 与 modelId 必须同时提供"),
+  execute(args) {
+    if (deleting.value) throw new Error("节点正在删除，请稍后修改配置");
+    if (generating.value) throw new Error("图片正在生成，请等待完成后再修改配置");
+    if (args.providerId !== undefined || args.modelId !== undefined) {
+      const choice = models.value.find(item => item.providerId === args.providerId && item.modelId === args.modelId);
+      if (!choice) throw new Error("请选择 getConfig 返回的有效图片模型");
+      data.value.model = JSON.stringify([choice.providerId, choice.modelId]);
+    }
+    // 档位按**换模型后**的可选范围校验：先落模型再校参数，否则会拿旧模型的档位去卡新模型。
+    if (args.megapixels !== undefined) {
+      if (!megapixelOptions.value.includes(args.megapixels)) throw new Error(`请选择 getConfig 返回的分辨率档位（${megapixelOptions.value.join(" / ")}）`);
+      data.value.megapixels = args.megapixels;
+    }
+    if (args.ratio !== undefined) {
+      if (!ratioOptions.value.includes(args.ratio)) throw new Error(`请选择 getConfig 返回的比例（${ratioOptions.value.join(" / ")}）`);
+      data.value.ratio = args.ratio;
+    }
+    if (args.rewritePrompt !== undefined) data.value.rewritePrompt = args.rewritePrompt;
+    // 放大倍数只有放大类模型有；flac 那种「无此项」的格式同理用 options 判空。
+    if (args.multiplier !== undefined) {
+      if (!multiplierOptions.value.includes(args.multiplier)) throw new Error(`请选择 getConfig 返回的放大倍数（${multiplierOptions.value.join(" / ")}）`);
+      data.value.multiplier = args.multiplier;
+    }
     return getConfig();
   },
 });
@@ -705,6 +828,15 @@ nodeTools.register({
 
 .promptCard {
   .inpaintInfo { margin-bottom: 8px; }
+  // 引用行：连线引用与引导参考图并排，共用一条横向滚动带（referenceItem 自带 overflow-x）。
+  .referenceRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-bottom: 8px;
+    overflow-x: auto;
+  }
   .promptFooter {
     display: flex;
     align-items: center;

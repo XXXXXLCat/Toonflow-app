@@ -24,9 +24,15 @@ license: MIT
 - 按本技能写出的正文 → 直接 `node:setPrompt`，并用 `node:setConfig({ rewritePrompt: false })`
   关掉重写。
 - **不要两边同时做。** 开着 `rewritePrompt` 再把成品正文喂进去，等于把成品重写一遍：白跑一次
-  语言模型，还可能改动已经定稿的措辞。**图片节点默认 `rewritePrompt` 为 `true`**，所以按本技能
-  写完后必须主动关掉，不能假设它是关的。
-- 只有手里只有三五个词的口头需求、又不打算自己扩写时，才保留 `rewritePrompt` 打开，交给工作流。
+  语言模型，还可能改动已经定稿的措辞。**节点级默认是 `true`**（节点上 `data.rewritePrompt ??= true`），
+  所以按本技能写完后必须主动关掉，不能假设它是关的。
+- **例外：由本仓库流程批量导出的节点默认就是关的**，不需要手动关。
+  `short-drama-canvas` 的 `board_apply.py` 导出画布时，图片与视频节点都写 `rewritePrompt = false`
+  （因为它从 `### 可复制提示词` 抽出的就是成品正文，与本技能同一口径）；
+  「制作资产」按钮下发的子节点也是 `false`（版式逐字写死，见 `$short-drama-image-prompts` 的
+  「多角度分段板」）。**只有画布上手动新建、或节点老数据补默认值时**才会落到 `true`。
+- 只有手里只有三五个词的口头需求、又不打算自己扩写时，才保留 `rewritePrompt` 打开，交给工作流
+  （「多角度/局部重绘/打光」这三个玩法正是这种：下发含 `{{ref N}}` 的短指令，默认开重写）。
 
 ## 输出契约
 
@@ -268,6 +274,12 @@ Your whole reply is used as the image prompt, so every extra word you add become
 `$short-drama-image-prompts` 决定；本技能改变的是它的正文组织方式，不改变它要固定的内容。两者
 同时适用时：先按上游技能锁定要固定的身份、状态、空间与禁止项，再按本技能的顺序把它们写成一段
 英文描述。上游要求"锁面原样出现"时，锁面照旧逐字出现在描述里。
+
+> **本技能已内置进 `$short-drama-image-prompts`**：同一套八步法在
+> `short-drama-image-prompts/references/qwen-dialect.md` 有一份 A 套体例的副本，用于
+> **首次从零生成、无参考图**的资产图（第一张人物立绘 / 第一版场景板 / 第一件道具图）。
+> **改书写标准时两边必须同步**，否则短剧流程内与独立使用会写出两种正文。
+> 在短剧项目里优先读内置方言，不必再进本技能。
 
 实际生成转 `$short-drama-produce` 或画布节点工具，先展示方案并取得确认；本技能不生成图片。
 
