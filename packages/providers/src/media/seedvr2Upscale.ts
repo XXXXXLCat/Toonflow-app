@@ -17,6 +17,8 @@ type Context = {
 
 type MediaAsset = { mediaType: "image"; type: "url"; url: string };
 
+const COMFY_URL = "http://127.0.0.1:8188";
+
 // 放大倍数：画布只暴露一个数字，范围 1.5~4（再小就没有放大意义，再大显存容易爆）。
 // 缺省 2×：质量与耗时较平衡；4× 更慢且显存压力大。
 function readMultiplier(value?: number): number {
@@ -54,7 +56,7 @@ async function uploadSourceImage(tool: Context["tool"], image: { data?: string; 
   const mimeType = image?.mimeType?.startsWith("image/") ? image.mimeType : "image/png";
   const filename = `toonflow_upscale_${Date.now()}.${extensionOf(mimeType)}`;
   const form = multipartImage("image", filename, mimeType, bytes);
-  const response = await tool.fetch("http://127.0.0.1:8188/upload/image", {
+  const response = await tool.fetch(`${COMFY_URL}/upload/image`, {
     method: "POST",
     headers: { "Content-Type": form.contentType },
     body: form.body,
@@ -70,7 +72,7 @@ export default {
   id: "seedvr2Upscale",
   label: "SeedVR2 图像超分辨率放大工作流",
   version: "2.1.0",
-  apiUrl: "http://127.0.0.1:8188",
+  apiUrl: COMFY_URL,
   readme: "接入本地 ComfyUI 的 SeedVR2 图像超分辨率放大工作流。只接一张图，倍率通过 resize_type.multiplier 下发（1.5–4，缺省 2）。超分不改画面内容，因此没有 LoRA 与提示词通道。",
   rules: [],
   models: [
@@ -255,7 +257,7 @@ export default {
       }
     };
 
-    const promptRes = await this.tool.fetch("http://127.0.0.1:8188/prompt", {
+    const promptRes = await this.tool.fetch(`${COMFY_URL}/prompt`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ prompt: workflow }),
@@ -275,7 +277,7 @@ export default {
     let imageUrl = "";
     while (!signal.aborted) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      const historyRes = await this.tool.fetch(`http://127.0.0.1:8188/history/${promptId}`, { signal });
+      const historyRes = await this.tool.fetch(`${COMFY_URL}/history/${promptId}`, { signal });
       if (!historyRes.ok) continue;
 
       const historyData = (await historyRes.json()) as Record<string, any>;
@@ -286,7 +288,7 @@ export default {
             const nodeOutput = outputs[nodeId];
             if (nodeOutput.images && nodeOutput.images.length > 0) {
               const imgInfo = nodeOutput.images[0];
-              imageUrl = `http://127.0.0.1:8188/view?filename=${encodeURIComponent(imgInfo.filename)}&subfolder=${encodeURIComponent(imgInfo.subfolder || "")}&type=${encodeURIComponent(imgInfo.type || "output")}`;
+              imageUrl = `${COMFY_URL}/view?filename=${encodeURIComponent(imgInfo.filename)}&subfolder=${encodeURIComponent(imgInfo.subfolder || "")}&type=${encodeURIComponent(imgInfo.type || "output")}`;
               break;
             }
           }

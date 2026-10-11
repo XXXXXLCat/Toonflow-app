@@ -379,6 +379,78 @@ export async function deleteMediaProvider(fileName: string, revision: string) {
   } finally { release(); }
 }
 
+// ComfyUI 连接地址：本地 127.0.0.1:8188 优先，连不上再走局域网备用 192.168.50.5:8188。
+// 也可在「设置 → 媒体模型」里手动指定单一地址（settings.comfyuiUrl），指定后只用那一个。
+// 落到这里是因为供应商文件运行在 vm 沙箱里、禁止 import 任何模块，地址兜底只能由宿主统一拦截。
+const DEFAULT_COMFY_BASE = "http://127.0.0.1:8188";
+const FALLBACK_COMFY_BASE = "http://192.168.50.5:8188";
+
+function comfyCandidates(): string[] {
+  const raw = conf.get("settings.comfyuiUrl");
+  if (typeof raw === "string" && raw.trim()) {
+    try {
+      const url = new URL(raw.trim());
+      // 只接受纯 HTTP(S) 地址（无凭据、无片段），避免把带密钥的 URL 当基址。
+      if ((url.protocol === "http:" || url.protocol === "https:") && !url.username && !url.password && !url.hash) {
+        return [url.origin]; // 手动指定：只用这一个地址
+      }
+    } catch { /* 落到默认兜底 */ }
+  }
+  return [DEFAULT_COMFY_BASE, FALLBACK_COMFY_BASE];
+}
+
+// 仅当请求目标是 ComfyUI 默认基址（127.0.0.1:8188，供应商统一写死的那个）时才做兜底；
+// 其它地址（如云端 API）原样发出，不受影响。
+function isComfyUrl(value: string): boolean {
+  try { return new URL(value).host === new URL(DEFAULT_COMFY_BASE).host; } catch { return false; }
+}
+
+let comfyBaseCache: { base: string; expires: number } | null = null;
+// 探测哪个候选地址当前可达，结果缓存 20 秒（桌面单用户场景足够，进程重启即刷新）。
+async function resolveComfyBase(fetchRequest: typeof fetch): Promise<string> {
+  const now = Date.now();
+  if (comfyBaseCache && comfyBaseCache.expires > now) return comfyBaseCache.base;
+  for (const base of comfyCandidates()) {
+    try { await fetchRequest(`${base}/`, { method: "GET", signal: AbortSignal.timeout(1500) }); comfyBaseCache = { base, expires: now + 20000 }; return base; }
+    catch { /* 试下一个候选 */ }
+  }
+  const fallback = comfyCandidates()[0];
+  comfyBaseCache = { base: fallback, expires: now + 20000 };
+  return fallback;
+}
+
+// 对指向 ComfyUI 的请求做本地优先、连不上走局域网的兜底。
+// 仅连接层失败（连不上 / 超时 / 被拒）才重试下一个候选；HTTP 错误状态码不重试（那是请求本身的问题，不是 ComfyUI 不在）。
+async function comfyAwareFetch(fetchRequest: typeof fetch, input: Parameters<typeof fetch>[0], init?: RequestInit): Promise<Response> {
+  const urlString = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request)?.url ?? "";
+  if (isComfyUrl(urlString)) {
+    let lastErr: unknown;
+    for (const base of comfyCandidates()) {
+      try {
+        const rewritten = urlString.replace(/^https?:\/\/[^/]+/, base);
+        const response = await fetchRequest(rewritten, init);
+        comfyBaseCache = { base, expires: Date.now() + 20000 };
+        return response;
+      } catch (err) { lastErr = err; }
+    }
+    throw lastErr;
+  }
+  return fetchRequest(input, init);
+}
+
+// 把生成结果里指向 ComfyUI 的地址统一改写成当前可达基址，保证前端能拉到产物
+//（本地 ComfyUI 没起时生成走了局域网备用地址，结果 URL 也得跟着改，否则浏览器会去打连不上的本地端口）。
+async function rewriteComfyResultUrls<T>(fetchRequest: typeof fetch, assets: T[]): Promise<T[]> {
+  const base = await resolveComfyBase(fetchRequest);
+  return assets.map(asset => {
+    const withUrl = asset as T & { url?: unknown };
+    if (withUrl && typeof withUrl.url === "string" && isComfyUrl(withUrl.url)) {
+      return { ...asset, url: withUrl.url.replace(/^https?:\/\/[^/]+/, base) };
+    }
+    return asset;
+  });
+}
+
 export async function loadMediaProviderSource(source: string, config: Record<string, unknown> = {}, signal?: AbortSignal, fetchRequest = fetch, cwd?: string) {
   signal?.throwIfAborted();
   const { id } = parseProvider(source);
@@ -401,13 +473,15 @@ export async function loadMediaProviderSource(source: string, config: Record<str
   const providerConfig = { ...Object.fromEntries(rules.map(rule => [rule.field, rule.value])), ...structuredClone(config) };
   const provider = {
     ...definition,
+    // 只把本地 ComfyUI 供应商的 apiUrl 改写为当前可达基址（云端供应商如 tfRouter 的 apiUrl 不动）。
+    apiUrl: definition.apiUrl === DEFAULT_COMFY_BASE ? await resolveComfyBase(fetchRequest) : definition.apiUrl,
     config: providerConfig,
     signal,
     tool: {
       fetch: signal ? Object.assign((input: Parameters<typeof fetch>[0], init?: RequestInit) => {
         signal.throwIfAborted();
         const requestSignal = init?.signal === null ? undefined : init?.signal ?? (input instanceof Request ? input.signal : undefined);
-        return fetchRequest(input, { ...init, signal: requestSignal ? AbortSignal.any([signal, requestSignal]) : signal });
+        return comfyAwareFetch(fetchRequest, input, { ...init, signal: requestSignal ? AbortSignal.any([signal, requestSignal]) : signal });
       }, { preconnect: fetchRequest.preconnect }) as typeof fetch : fetchRequest,
       // 取消后的善后请求通道：上面的 fetch 绑定了取消信号，一旦中止就会抛错，而中止远端已提交的
       // 任务恰恰要在这之后发出。这里不附加任何取消信号，也不检查中止状态。
@@ -417,7 +491,7 @@ export async function loadMediaProviderSource(source: string, config: Record<str
       // 没有 fetch，无法自行构造一个不带信号的通道。
       // 【配对使用】media/requests.ts 的取消接口发出中止 → 供应商在检测到 signal.aborted 后调用它
       // 撤销远端任务（如从 ComfyUI 队列摘除任务、执行中断）。
-      fetchDetached: (input, init) => fetchRequest(input, { ...init, signal: init?.signal ?? undefined }),
+      fetchDetached: (input, init) => comfyAwareFetch(fetchRequest, input, init),
       hash: Bun.hash,
       errorMessage: (value: unknown) => mediaErrorMessage(value, providerConfig),
       image: Bun.Image,
@@ -471,9 +545,12 @@ export async function loadMediaProviderSource(source: string, config: Record<str
       try {
         const prepared = definition.processMedia ? await definition.processMedia.call(context, request) : request;
         // ACT: 预处理沿用原生成类型，在动态分发边界按对应方法收窄请求。
-        if (name === "generateImage") return await generate.call(context, prepared as ImageRequest);
-        if (name === "generateVideo") return await generate.call(context, prepared as VideoRequest);
-        return await generate.call(context, prepared as AudioRequest);
+        const result = name === "generateImage" ? await generate.call(context, prepared as ImageRequest)
+          : name === "generateVideo" ? await generate.call(context, prepared as VideoRequest)
+          : await generate.call(context, prepared as AudioRequest);
+        // ACT: 把结果里指向 ComfyUI 的地址统一改写成当前可达基址，保证前端能拉到产物
+        //（本地 ComfyUI 没起时生成走了局域网备用地址，结果 URL 也得跟着改，否则浏览器会去打连不上的本地端口）。
+        return Array.isArray(result) ? await rewriteComfyResultUrls(fetchRequest, result) : result;
       }
       catch (error) {
         const info = error as { name?: unknown; message?: unknown } | null;
