@@ -43,6 +43,27 @@
 - 正文由节点编辑与保存，不直接写其 `textPath` 绕过界面。状态文件和版本快照用实际文本文件工具保存；快照不作为第二份可编辑正文。
 - 素材通过发现的 `node:setImage`、`node:setVideo`、`node:setAudio` 挂载，当前通常为 `{path,mimeType}`。`path` 使用工作区相对路径，指向本工作区实际存在、可读取的文件，不能填写预期输出或外部尚未导入的路径。
 - 新图以图片生成节点制作，已采用的图优先用图片素材节点固定。下一版使用新候选生成节点，保留已采用节点和连接；不为重生成替换仍被下游引用的源节点。
+
+### 节点选型：优先 ComfyUI 节点
+
+**同一类媒体有 ComfyUI 与云端两套节点时，默认选 ComfyUI 节点**（`comfyuiImageNode` / `comfyuiVideoNode` / `comfyuiAudioNode` / `comfyuiMusicNode`）。它们跑用户本机 `127.0.0.1:8188` 的 ComfyUI：
+
+- 不消耗 API 额度，算力授权只针对耗时与显存占用，不涉及费用；
+- 模型与工作流由用户在设置里配置，可用的底模只有本机装了的那些；
+- 节点工具集与云端不同（见下方「生成前准备」第 2 步的字段对照），参数一律以 `getConfig` 实际返回为准。
+
+云端节点在以下情况才使用：用户明确要求用云端/远程模型、本机 ComfyUI 未启动或该能力未安装、用户已明确指定某个云端模型。**不得因为「云端节点名字更熟悉」而默认选它**；反过来也不要把 ComfyUI 节点的字段名与模型名套到云端节点上。
+
+各节点的模型与能力差异（**不要跨节点假设**）：
+
+| 节点 | 可用模型 | 提示词工具 | 备注 |
+|---|---|---|---|
+| `comfyuiImageNode` | `qwenImage21`（文生图）、`qwenImageEdit`（图生图/全景/扩图/重绘）、`seedvr2Upscale`（放大） | `setPrompt` | 放大模型无提示词通道 |
+| `comfyuiVideoNode` | MiniMax-H3 系列，含 `minimaxH3ReferenceVideo` 参考转视频 | `setPrompt` | **没有 Seedance** |
+| `comfyuiAudioNode` | `breezeTts2`、`breezeTts2VoiceDirection` | `setText`（语音指令 + 待朗读文本） | TTS，不是音乐 |
+| `comfyuiMusicNode` | `yue2Music`（文本生成）、`yue2Cover`（翻唱，需接参考音频） | `setText`（Style + Lyrics） | 无 Seedance、无 gpt-image |
+
+因此：提示词里写「gpt-image」不能假定本地有该模型；写「Seedance 2.0/2.5」在本机 ComfyUI 上没有对应节点，命中 Seedance 路由但只发现 ComfyUI 节点时按上方第71 条报告能力冲突，不静默换模型。
 - 当前文本节点没有 Agent 可调用的 `generateText`，文字由助手完成后写入。文件工具不保证支持视频理解或二进制复制，具体边界见[交付](stateAndDelivery.md)。
 
 ## 真实引用与提示词
@@ -73,7 +94,15 @@
 ## 生成前准备
 
 1. 调用当前节点的 `node:getConfig`，核实可用模型、模式、参考类型与数量、画幅、图片尺寸或视频时长/分辨率、原生声音及音频输入能力。图片和视频的规格分开判断，不沿用不相关的默认值。
-2. 先接好实际素材，再读取当前匹配模式。通过 `node:setConfig` 设置配置：图片字段按 schema 使用 `providerId/modelId/size/ratio`；视频使用 `providerId/modelId/duration/resolution/ratio/mode/generateAudio`。只传所需且支持的字段，`providerId` 与 `modelId` 成对提供，mode 使用实际返回值。
+2. 先接好实际素材，再读取当前匹配模式。通过 `node:setConfig` 设置配置，只传所需且支持的字段，`providerId` 与 `modelId` 成对提供，mode 使用实际返回值。**字段名按目标节点 `getConfig` 的返回为准，两套节点不一样**：
+
+   | | ComfyUI 图片节点 | ComfyUI 视频节点 | 云端图片节点 |
+   |---|---|---|---|
+   | 分辨率 | `megapixels`（百万像素档位，按 1024 基数换算，1 = 1024×1024） | `resolution`，工作流模型另有 `megapixels` | `size`（`1K`/`2K` 档位） |
+   | 比例 | `ratio`，含特殊值 `自适应`（跟随参考图） | `ratio` | `ratio` |
+   | 其他 | 放大类模型只有 `multiplier`，无提示词与尺寸通道 | `duration`/`mode`/`generateAudio` | 无 |
+
+   档位取值必须来自该节点 `getConfig` 返回的 `megapixelOptions` / `ratioOptions` / `multiplierOptions` / `ratios`，不要沿用另一套节点的档位名，也不要把「自适应」写给不支持它的节点。
 3. 写入完整提示词，再读配置与画布，核对实际 prompt、引用、规格和调用前 output。缺必要参考就停该生成并继续文稿；不能静默将图生图或多参改成无参考模式。
 4. 固定本次方案：对象、数量、完整提示词、参数、参考文件与用途/顺序、执行次数；展示并沿用或取得具体消耗算力授权。算力无法查询时明确未知，不把对话 Token 当媒体消耗。
 5. **临执行复核。** 用户回复后再次读取当前画布与配置，比对授权方案，包含节点、提示词、模式、声音、引用与数量。若发生变化，沿用仍匹配的对象；受影响对象重新展示差异并核对授权。不要以“已确认”执行界面后来被修改的配置。
