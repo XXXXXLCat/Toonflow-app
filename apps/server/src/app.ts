@@ -12,7 +12,14 @@ import initializePlugins from "@/utils/plugins/initialize";
 import { languageRequest, resolveRequestLocale, runWithLocale, setLocaleFallback, translateError, translateMessage } from "@/lib/i18n";
 import { detectLocale, normalizeLocale } from "@toonflow/i18n";
 
-const autoInstallProviders = ["tfRouter.ts", "apiMart.ts", "metaso.ts", "compshare.ts"];
+// ACT: 内置供应商随构建同步；TF-router 与本地 ComfyUI 供应商一同在首次启动写入 data/providers。
+const autoInstallProviders = [
+  "tfRouter.ts",
+  "qwenImage21.ts", "qwenImageEdit.ts", "seedvr2Upscale.ts",
+  "minimaxH3Video.ts", "minimaxH3ReferenceVideo.ts",
+  "breezeTts2.ts", "breezeTts2VoiceDirection.ts",
+  "yue2Music.ts", "yue2Cover.ts",
+];
 
 export async function createApp({
   webRoot,
