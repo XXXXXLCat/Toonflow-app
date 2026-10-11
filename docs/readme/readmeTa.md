@@ -1,16 +1,8 @@
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=200&section=header&text=Toonflow&fontSize=90&fontColor=ffffff&animation=fadeIn&fontAlignY=50" alt="Toonflow" width="100%" />
 
 <p>
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app">
+  <a href="https://github.com/XXXXXLCat/Toonflow-app">
     <img src="https://img.shields.io/badge/GitHub-181717?style=flat-square&logo=github&logoColor=white" alt="GitHub" />
-  </a>
- | 
-  <a href="https://gitee.com/HBAI-Ltd/Toonflow-app">
-    <img src="https://img.shields.io/badge/Gitee-C71D23?style=flat-square&logo=gitee&logoColor=white" alt="Gitee" />
-  </a>
- | 
-  <a href="https://atomgit.com/HBAI-Ltd/Toonflow-app">
-    <img src="../images/atomgitLogo.svg" alt="AtomGit" height="20" />
   </a>
 </p>
 
@@ -56,36 +48,33 @@
 </a>
 
 <p align="center">
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app/stargazers">
-    <img src="https://img.shields.io/github/stars/HBAI-Ltd/Toonflow-app?style=for-the-badge&logo=github" alt="நட்சத்திரங்கள் பேட்ஜ்" />
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/stargazers">
+    <img src="https://img.shields.io/github/stars/XXXXXLCat/Toonflow-app?style=for-the-badge&logo=github" alt="நட்சத்திரங்கள் பேட்ஜ்" />
   </a>
   <a href="../../LICENSE">
     <img src="https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge" alt="MIT License பேட்ஜ்" />
   </a>
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app/releases">
-    <img src="https://img.shields.io/github/v/release/HBAI-Ltd/Toonflow-app?style=for-the-badge" alt="வெளியீடு" />
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">
+    <img src="https://img.shields.io/github/v/release/XXXXXLCat/Toonflow-app?style=for-the-badge" alt="வெளியீடு" />
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app/network/members">
-    <img src="https://img.shields.io/github/forks/HBAI-Ltd/Toonflow-app?style=for-the-badge&logo=github&color=orange" alt="ஃபோர்க்ஸ் பேட்ஜ்" />
-  </a>
-  <a href="https://atomgit.com/HBAI-Ltd/Toonflow-app">
-    <img src="https://img.shields.io/badge/AtomGit-G--Star%20No.540-FF6B35?style=for-the-badge&logo=git&logoColor=white" alt="AtomGit ஜி-ஸ்டார் எண்.540" />
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/network/members">
+    <img src="https://img.shields.io/github/forks/XXXXXLCat/Toonflow-app?style=for-the-badge&logo=github&color=orange" alt="ஃபோர்க்ஸ் பேட்ஜ்" />
   </a>
   <a href="https://discord.gg/HEjKmpNpAZ">
     <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
   </a>
 </p>
 <p align="center">
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app/issues">
-    <img src="https://img.shields.io/github/issues/HBAI-Ltd/Toonflow-app?style=for-the-badge&color=F48D73" alt="சிக்கல்கள்" />
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/issues">
+    <img src="https://img.shields.io/github/issues/XXXXXLCat/Toonflow-app?style=for-the-badge&color=F48D73" alt="சிக்கல்கள்" />
   </a>
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors/HBAI-Ltd/Toonflow-app?style=for-the-badge&color=2088FF" alt="பங்களிப்பாளர்கள்" />
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/XXXXXLCat/Toonflow-app?style=for-the-badge&color=2088FF" alt="பங்களிப்பாளர்கள்" />
   </a>
-  <a href="https://github.com/HBAI-Ltd/Toonflow-app/commits">
-    <img src="https://img.shields.io/github/last-commit/HBAI-Ltd/Toonflow-app?style=for-the-badge&color=blueviolet" alt="சமீபத்திய கமிட்" />
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/commits">
+    <img src="https://img.shields.io/github/last-commit/XXXXXLCat/Toonflow-app?style=for-the-badge&color=blueviolet" alt="சமீபத்திய கமிட்" />
   </a>
 </p>
 <p align="center">
@@ -97,7 +86,7 @@
 
 <p align="center">
   <a href="https://trendshift.io/repositories/24197?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-24197" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/24197/daily?language=TypeScript" alt="HBAI-Ltd/Toonflow-app | போக்கு மாற்றம்" width="250" height="55" />
+    <img src="https://trendshift.io/api/badge/trendshift/repositories/24197/daily?language=TypeScript" alt="XXXXXLCat/Toonflow-app | போக்கு மாற்றம்" width="250" height="55" />
   </a>
 </p>
 
@@ -107,25 +96,9 @@
 
 </div>
 
-<div align="center">
-  <table>
-    <tr>
-      <td width="50%" align="center">
-        <a href="../images/gStar.png">
-          <img src="../images/gStar.png" alt="Toonflow AtomGit ஜி-ஸ்டார் சான்றிதழ் எண்.540" width="100%" />
-        </a>
-      </td>
-      <td width="50%" align="center">
-        <a href="../images/gvp.jpg">
-          <img src="../images/gvp.jpg" alt="Toonflow Gitee GVP சான்றிதழ்" width="100%" />
-        </a>
-      </td>
-    </tr>
-  </table>
-</div>
 
 <p align="center">
-<a href="https://github.com/HBAI-Ltd/Toonflow-app/releases">பதிவிறக்கம்</a> ·
+<a href="https://github.com/XXXXXLCat/Toonflow-app/releases">பதிவிறக்கம்</a> ·
 <a href="https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf">பயனர் வழிகாட்டி</a> ·
 <a href="https://api.toonflow.net/console/plugIn">செருகுநிரல் சந்தை</a> ·
 <a href="https://qcn7xdsqgc4z.feishu.cn/docx/KNBNd9naqolsy6xjAOCcEAkqnRd"> டெவலப்பர் ஆவணம்</a> ·
@@ -232,9 +205,9 @@ Toonflow என்பது குறுநாடகங்கள், அனி�
 
 | இயக்க முறைமை | GitHub |
 | --- | --- |
-| Windows | [வெளியீடு](https://github.com/HBAI-Ltd/Toonflow-app/releases) |
-| macOS | [வெளியீடு](https://github.com/HBAI-Ltd/Toonflow-app/releases) |
-| Android ARM64 | [APK பதிவிறக்கம்](https://github.com/HBAI-Ltd/Toonflow-app/releases/latest) |
+| Windows | [வெளியீடு](https://github.com/XXXXXLCat/Toonflow-app/releases) |
+| macOS | [வெளியீடு](https://github.com/XXXXXLCat/Toonflow-app/releases) |
+| Android ARM64 | [APK பதிவிறக்கம்](https://github.com/XXXXXLCat/Toonflow-app/releases/latest) |
 
 Android செயலி ARM64 சாதனங்களை மட்டுமே ஆதரிக்கிறது. வெளியீட்டுப் பக்கத்திலிருந்து `toonflow-VERSION-android-arm64.apk` கோப்பைப் பதிவிறக்கி நிறுவவும். உள்ளூர் Bun பின்தளம் உள்ளடங்கியுள்ளதால் தனியாக இயங்க முடியும். முகப்புப் பக்கத்தில் உள்ள «சாதன இணைப்பு» மூலம் QR குறியீட்டை ஸ்கேன் செய்தோ இணைப்பு விவரங்களை உள்ளீடு செய்தோ உள்ளூர் வலையமைப்பு அல்லது இணையத்தில் பகிர்வு இயக்கப்பட்டுள்ள கணினி அல்லது பின்தளத்துடன் இணைக்கலாம்.
 
@@ -285,7 +258,7 @@ sudo spctl --master-disable
 மூலத்தை குளோன் செய்து பின்வருவனவற்றை களஞ்சிய மூலத்தில் இயக்கவும்:
 
 ```sh
-git clone https://github.com/HBAI-Ltd/Toonflow-app.git
+git clone https://github.com/XXXXXLCat/Toonflow-app.git
 cd Toonflow-app
 docker compose up -d --build
 ```
@@ -339,7 +312,7 @@ bun --version
 மூலத்தை குளோன் செய்து சேவையைத் தொடங்கவும்:
 
 ```sh
-git clone https://github.com/HBAI-Ltd/Toonflow-app.git
+git clone https://github.com/XXXXXLCat/Toonflow-app.git
 cd Toonflow-app
 bun install --frozen-lockfile
 
@@ -503,7 +476,7 @@ Discord இல் சேர ஐகானையும் கிளிக் ச�
 
 Toonflow ஆனது [MIT License](../../LICENSE) இன் கீழ் உரிமம் பெற்றது. மூன்றாம் தரப்பு சார்புகள் மற்றும் சொத்துக்கள் அந்தந்த உரிமங்கள் மற்றும் பதிப்புரிமை அறிவிப்புகளுக்கு உட்பட்டவை.
 
-[![Toonflow நட்சத்திர வரலாறு](https://api.star-history.com/svg?repos=HBAI-Ltd/Toonflow-app&type=Date)](https://www.star-history.com/#HBAI-Ltd/Toonflow-app&Date)
+[![Toonflow நட்சத்திர வரலாறு](https://api.star-history.com/svg?repos=XXXXXLCat/Toonflow-app&type=Date)](https://www.star-history.com/#XXXXXLCat/Toonflow-app&Date)
 
 > **முந்தைய பதிப்புகளுக்குப் பொருந்தாத மாற்றம்**: v1.0.8-க்கு முந்தைய பதிப்புகளை AGPL-3.0-இன் கீழ் பயன்படுத்தியவர்களுக்கு AGPL-3.0 தொடர்ந்து பொருந்தும். v1.0.8 முதல் v1.1.8 வரையிலான பதிப்புகளுக்கு Apache-2.0 மற்றும் அதன் கூடுதல் ஒப்பந்தம் தொடர்ந்து பொருந்தும். இந்த உரிம மாற்றம் அவர்களைப் பாதிக்காது.
 

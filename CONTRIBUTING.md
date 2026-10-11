@@ -6,7 +6,7 @@
 
 ## 从哪里开始
 
-- **报告问题**：在 [GitHub Issues](https://github.com/HBAI-Ltd/Toonflow-app/issues) 搜索已有记录，再补充信息或提交新问题。
+- **报告问题**：在 [GitHub Issues](https://github.com/XXXXXLCat/Toonflow-app/issues) 搜索已有记录，再补充信息或提交新问题。
 - **提出建议**：说明创作场景、遇到的限制和期望结果；较大的功能或架构调整建议先讨论范围与影响。
 - **改进文档**：修正错误、补全步骤，或提供能够复现的操作说明。
 - **开发扩展**：参考 [节点脚手架](./packages/nodeScaffold/readme.md)、[工具脚手架](./packages/toolScaffold/readme.md) 和现有实现。
@@ -40,7 +40,7 @@
 需要提交 PR 时，可以先 Fork 仓库，再克隆自己的 Fork；下面演示从项目仓库开始：
 
 ```sh
-git clone https://github.com/HBAI-Ltd/Toonflow-app.git
+git clone https://github.com/XXXXXLCat/Toonflow-app.git
 cd Toonflow-app
 bun install
 ```
