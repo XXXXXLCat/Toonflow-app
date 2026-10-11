@@ -11,6 +11,7 @@
     "./imageEditor": "./src/components/imageEditor.vue",
     "./imageLighting": "./src/components/imageLighting.vue",
     "./imageMultiAngle": "./src/components/imageMultiAngle.vue",
+    "./imageMultiviewAsset": "./src/components/imageMultiviewAsset.vue",
     "./imagePanorama": "./src/components/imagePanorama.vue",
     "./imageOutpaint": "./src/components/imageOutpaint.vue",
     "./loraStackPicker": "./src/components/loraStackPicker.vue",
@@ -20,6 +21,8 @@
     "./imagePanoramaSettings": "./src/imagePanorama.ts",
     "./imageLightingSettings": "./src/imageLighting.ts",
     "./imageMultiAngleSettings": "./src/imageMultiAngle.ts",
+    "./multiviewAsset": "./src/multiviewAsset.ts",
+    "./multiviewAssetRefs": "./src/multiviewAssetRefs.ts",
     "./imageOutpaintSettings": "./src/imageOutpaint.ts",
     "./imageAnimeToReal": "./src/imageAnimeToReal.ts",
     "./usePanoramaCapture": "./src/usePanoramaCapture.ts",
@@ -27,7 +30,8 @@
     "./showNodeError": "./src/showNodeError.ts",
     "./useNodeReferences": "./src/useNodeReferences.ts",
     "./useNodeGeneration": "./src/useNodeGeneration.ts",
-    "./groupNodeModels": "./src/groupNodeModels.ts"
+    "./groupNodeModels": "./src/groupNodeModels.ts",
+    "./guideReferenceCard": "./src/components/guideReferenceCard.vue"
   },
   "scripts": {
     "typecheck": "vue-tsc --noEmit"
