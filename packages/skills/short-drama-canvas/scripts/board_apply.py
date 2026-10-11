@@ -56,7 +56,10 @@ def build_payload(plan: Dict[str, Any], include_references: bool) -> Dict[str, A
             data["promptModel"] = []
             data["ratio"] = node.get("ratio") or "自适应"
             data["megapixels"] = "1"
-            data["rewritePrompt"] = True
+            # 这里的 prompt 是 board_plan 从《图片提示词.md》的「可复制提示词」下原样抽出的成品正文，
+            # 再经重写器扩写等于把定稿重写一遍：白跑一次语言模型，还可能改动措辞；
+            # 「制作资产」那类逐字写死的版式结构被改写就会直接废掉版式。
+            data["rewritePrompt"] = False
         else:
             data["model"] = ""
             data["promptModel"] = []
@@ -65,7 +68,8 @@ def build_payload(plan: Dict[str, Any], include_references: bool) -> Dict[str, A
             data["mode"] = ""
             data["generateAudio"] = True
             data["megapixels"] = "0.9"
-            data["rewritePrompt"] = True
+            # 同理：视频正文也是写好的成品，不再交给重写器。
+            data["rewritePrompt"] = False
             data["turbo"] = True
             if node.get("duration"):
                 data["duration"] = node["duration"]
