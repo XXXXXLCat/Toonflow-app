@@ -62,9 +62,6 @@
   <a href="https://github.com/XXXXXLCat/Toonflow-app/network/members">
     <img src="https://img.shields.io/github/forks/XXXXXLCat/Toonflow-app?style=for-the-badge&logo=github&color=orange" alt="Forks Badge" />
   </a>
-  <a href="https://discord.gg/HEjKmpNpAZ">
-    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
-  </a>
 </p>
 <p align="center">
   <a href="https://github.com/XXXXXLCat/Toonflow-app/issues">
@@ -84,72 +81,19 @@
   <img src="https://img.shields.io/badge/Desktop-Electrobun-8257E5?style=for-the-badge" alt="Electrobun" />
 </p>
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/24197?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-24197" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/24197/daily?language=TypeScript" alt="XXXXXLCat/Toonflow-app | Trendshift" width="250" height="55" />
-  </a>
-</p>
-
 **An open-source AI platform for short dramas, animated comics, and video creation**
 
 > 🚀 **All-in-one short drama creation**：Write scripts, manage assets, and generate images and videos, with your entire creative workflow organized on an infinite canvas.
 
 </div>
 
-
 <p align="center">
-  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">Download</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf">User Guide</a> ·
-  <a href="https://api.toonflow.net/console/plugIn">Plugin Marketplace</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/KNBNd9naqolsy6xjAOCcEAkqnRd">Developer Documentation</a> ·
-  <a href="https://api.toonflow.net/">Official Model Platform</a>
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">Download</a>
 </p>
 
 ---
 
-## 1. 💛 Sponsors and Support
-
-Thank you to the following partners for supporting the Toonflow open-source project.
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://metaso.cn/minimax-h3/?s=toon"><img src="../images/sponsors/metaso.svg" alt="Metaso" height="28" valign="middle" /> <strong>Metaso</strong></a>
-      <br />
-      <sub>Cost-effective MiniMax H3 video generation: just ¥0.09/second at 768P and ¥0.15/second at 2K (CNY). Supports native 2K, synchronized audio and video, an OpenAI-compatible API, ComfyUI, and infinite canvases, without deploying your own GPU. <a href="https://metaso.cn/minimax-h3/?s=toon">Register through this dedicated link</a> to receive bonus credits and exclusive offers. For business inquiries, contact metasota12 on WeChat.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://go.apimart.ai/gh-toonflow-app"><img src="../images/sponsors/apiMart.jpg" alt="APIMart" height="28" valign="middle" /> <strong>APIMart</strong></a>
-      <br />
-      <sub>Thank you to APIMart for sponsoring this project! APIMart is an affordable API platform for AI image and video generation. GPT-Image-2 starts at $0.006 per image, delivering 160+ images for $1. Images and videos share one asynchronous API: submit a task, receive its ID, and get results through a callback. Process batches of 10,000 images without timeouts and switch models without changing code. Pay as you go, with no monthly fees. <a href="https://go.apimart.ai/gh-toonflow-app">Register here</a> to get started.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow"><img src="../images/sponsors/compShare.png" alt="CompShare" height="28" valign="middle" /> <strong>CompShare</strong></a>
-      <br />
-      <sub>CompShare offers cost-effective H3 video generation, including text-to-video, first- and last-frame control, and all-in-one reference modes. Generate videos up to 30 seconds long in native 2K, with 768P priced at just CNY 0.08 per second. Supports API access, high concurrency for enterprises, and self-service invoicing.</sub>
-      <br /><br />
-      <sub>🎁 <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow">Register through this dedicated link</a> to receive CNY 5 in free platform trial credits!</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
-
-<details>
-<summary><strong>👉 Become a Sponsor 👈</strong></summary>
-
-<p align="center">
-  <img src="../images/businessQr.png" alt="WeChat QR code for business inquiries" width="200" />
-</p>
-
-<p align="center"><sub>This contact is for business inquiries only and does not provide technical support. For usage questions, please join the community groups. Submit feature requests and bugs through the feedback form. Thank you for your understanding.</sub></p>
-
-</details>
-
----
-
-## 2. 🌟 Highlights
+## 1. 🌟 Highlights
 
 Toonflow is an open-source AI creation platform for short dramas, animated comics, and short videos, bringing scripts, assets, and video clips together on one infinite canvas.
 
@@ -158,7 +102,7 @@ Toonflow is an open-source AI creation platform for short dramas, animated comic
 | 🏠 **Local deployment** | Keep projects and assets on your own device or server, with desktop, Android, Docker, and server deployment options. |
 | 🖼️ **Infinite canvas** | Organize scripts, characters, scenes, and video clips on the same canvas. |
 | 🔌 **MCP** | Connect external tools and services through MCP. |
-| 🧩 **Plugin marketplace** | Extend nodes, tools, and creative capabilities through the [Plugin Marketplace](https://api.toonflow.net/console/plugIn). |
+| 🧩 **Plugin marketplace** | Extend nodes, tools, and creative capabilities through the Plugin Marketplace. |
 | 🤖 **Open Agent** | Open access to prompts, tools, and A2A to customize Agent behavior and collaborate with external Agents. |
 | 🔧 **Flexible model integration** | Configure third-party APIs or connect local ComfyUI instances and LLMs. |
 | 🌐 **Multilingual support** | Supports 21 interface languages. |
@@ -171,7 +115,7 @@ Supported languages: 简体中文, 繁體中文, English, 日本語, Русск�
 
 ---
 
-## 3. 📸 Screenshots
+## 2. 📸 Screenshots
 
 <div align="center">
 
@@ -199,9 +143,9 @@ Supported languages: 简体中文, 繁體中文, English, 日本語, Русск�
 
 ---
 
-## 4. 🚀 Download and Install
+## 3. 🚀 Download and Install
 
-### 4.1 Client Installation
+### 3.1 Client Installation
 
 | Operating System | GitHub |
 | --- | --- |
@@ -244,11 +188,9 @@ This relaxes security restrictions for all apps. Afterward, we recommend restori
 
 </details>
 
-For more instructions, see the [User Guide](https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf).
-
 ---
 
-### 4.2 Docker Installation
+### 3.2 Docker Installation
 
 Install Git, [Docker Engine](https://docs.docker.com/engine/install/), and Docker Compose first. On Windows and macOS, you can use Docker Desktop in Linux container mode. The repository includes a [Dockerfile](../../Dockerfile), [Compose configuration](../../compose.yaml), and [build exclusions](../../.dockerignore). The image is built with Bun 1.3.14 and includes FFmpeg.
 
@@ -292,7 +234,7 @@ docker compose start
 
 ---
 
-### 4.3 Server Installation
+### 3.3 Server Installation
 
 Use this option to run Web and Server directly on a Linux server. The example below uses Ubuntu / Debian and the project's specified version, [Bun 1.3.14](https://bun.sh/docs/installation).
 
@@ -328,7 +270,7 @@ When you see “服务启动成功” (service started successfully), open `http
 
 ---
 
-### 4.4 Access and Data
+### 3.4 Access and Data
 
 - The service currently uses the fixed port `3000`. The web interface and API do not have separate login authentication. For server installations, restrict access to port `3000` through a firewall or security group. Public access requires a reverse proxy with authentication.
 - For personal remote access, run `ssh -N -L 3000:127.0.0.1:3000 username@server-address` on your own computer. Keep the connection open, then visit `http://127.0.0.1:3000`. You do not need to expose the server's port `3000` to the public internet.
@@ -337,142 +279,13 @@ When you see “服务启动成功” (service started successfully), open `http
 
 ---
 
-### 4.5 Cloud Deployment
-
-Our partner [AI Galaxy (智星云)](https://www.ai-galaxy.com/) provides an officially authorized commercial Toonflow image with a ready-to-use environment. For instructions, see the [illustrated image deployment guide](https://mp.weixin.qq.com/s/lq9X1ovQ1_TKeXMOLgicKg?scene=1).
-
----
-
-## 5. 🎬 Example Work
-
-https://github.com/user-attachments/assets/2d9fddac-dfdf-4640-b030-b09d7f7287e9
-
-### Production Details
-
-| Item | Recorded in the original repository |
-| --- | --- |
-| Production time and final length | Approximately 2 hours of work for a video of about 2 minutes. |
-| Video model | Seedance 2.0 |
-| Image model | GPT Image 2 |
-| Language model | Claude Opus 4.6 |
-| Model API costs | Approximately ¥130 CNY (Chinese yuan): about ¥10 for language, ¥120 for video, and less than ¥1 for images. |
-
-These costs are the recorded figures for this example and are provided for reference only. Actual costs depend on the model service, number of generations, and parameters. The demo video is a compressed 480p version.
-
----
-
-## 6. 🚀 TF-Router Official Model Gateway
-
-<p align="center">
-  <a href="https://api.toonflow.net/">
-    <img src="https://img.shields.io/badge/TF--Router_Official%20Model%20Gateway-181717?style=for-the-badge&logoColor=white" alt="TF-Router" />
-  </a>
-</p>
-
-TF-Router is Toonflow's official, self-operated model gateway. You are welcome to use it. Its entire source code is open source and available for self-hosting and auditing: [HBAI-Ltd/TF-Router](https://github.com/HBAI-Ltd/TF-Router).
-
-<details>
-<summary><strong>A Letter to the Toonflow Community (published 2026-06-08)</strong></summary>
-
-> ### A Letter to the Toonflow Community
-> 130 days.
-> Not long, but long enough for us to see some things clearly.
-> From our first line of committed code to today, 130 days have passed. We have released 20 versions, made 800+ commits, and written 213,765 lines of code containing 640,810 characters.
-> Two rewrites, a provider system, and a workflow we are proud of.
-> We thought that would be enough.
-> But it was not.
-> Some people told us they wanted to add their own module to Toonflow, but still could not figure out how to change it after hours of trying.
-> Some told us the community was too small and they could not find help when they ran into problems.
-> Some told us the commercial terms prevented them from putting their projects into use.
-> We heard you.
-> Over these 130 days, our team members have taken turns staying in the chat groups, answering every question 7×24. No sponsors, no subsidies: we have paid all the labor costs ourselves.
-> Not because we have a lot of money.
-> But because we believe this is worth doing.
-> So we have decided to undertake a third rewrite.
-> Every Toonflow rewrite has moved toward greater openness and open source.
-> This time, we have chosen to open everything up.
->
-> 1. MIT License
-> We have decided to replace Apache-2.0 with the MIT License and remove all additional commercial terms once the rewrite is complete.
-> It will be fully open, with no commercial restrictions.
-> You can use it for anything.
->
-> 2. A Fully Flexible Plugin System
-> We will redesign the entire plugin architecture.
-> Storyboards, panoramas, timelines, even mini-games.
-> If you can imagine it, you can add it.
-> Not through hacks, but by design.
->
-> 3. Drizzle ORM + Multiple Database Support
-> We will upgrade to Drizzle ORM.
-> Local storage, PostgreSQL, or MySQL: choose what you need.
-> Custom development will no longer be a nightmare.
->
-> 4. An End-to-End Monorepo Workflow
-> Plugin development, SDK integration, and releases, all connected.
-> Making contribution simple enough for one person to manage.
->
-> 5. New Modules
-> Infinite Canvas — more than space: freedom.
-> Inspiration Mode — built for creators.
-> Plugin Hub — helping great plugins get discovered.
-> Skill Hub — making experience shareable.
-> Provider Hub — where the ecosystem begins.
-> Complete Docker integration — making deployment accessible.
->
-> Now, something we have been reluctant to talk about.
-> Rewrites take time. During that time, the servers keep running, domains need renewing, the team works late, and coffee gets more expensive.
-> We have no investment funding, no advertising, and no hidden commercial plans.
-> But we need to stay afloat to finish what we have started.
-> That is why we launched TF-Router, the official Toonflow model gateway.
-> Honestly, we hesitated over this platform for a long time.
-> It was not something we wanted to build. We did not want a gateway to make people feel that Toonflow had started “cashing in.”
-> We carried that burden for a long time.
-> But many users could not get approved access to Seedance 2.0 and kept asking us whether there was a way to use it.
-> After much thought, we finally decided to build one ourselves and signed an annual Seedance framework agreement with Volcengine.
-> **We also decided to offer Seedance 2.0 at cost during the platform's promotional period, without earning a single cent in markup.**
-> After the promotion ends, we will charge a very small service fee. For now, our priority is to give you access.
-> More importantly, the entire TF-Router source code has been released as open source: 【<a href="https://github.com/HBAI-Ltd/TF-Router" target="_blank">Source Code</a>】.
-> Do not trust us? That is fine. Read the code, deploy it yourself, and run it yourself.
-> That is where we stand.
-> If you choose to try it, you are placing your trust in the only way we currently have to keep this work going.
-> If you do not, that is fine too. Keep using Toonflow, keep criticizing us, and keep asking for features.
-> We are here.
-> One last thing, from the heart:
-> We are just a group of ordinary people who believe that creative tools should belong to everyone.
-> Toonflow has never been just our product.
-> It is the story we are writing together.
-> The third rewrite is not the finish line.
-> It is where we start again.
-> Thank you to everyone who has used it, criticized it, or offered suggestions.
-> You are the reason it has made it this far.
-> Thank you.
-
-</details>
-
----
-
-## 7. 👨‍👩‍👧‍👦 WeChat Community
-
-Scan the QR code to contact the group invitation assistant:
-
-<img src="../images/qr.png" alt="Toonflow community QR code" height="400"/>
-
-You can also click the icon to join Discord:
-
-[![Join our Discord](https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/67d00cf7266d2c75571aebde_Example.svg)](https://discord.gg/HEjKmpNpAZ)
-
-Or use the invitation link: [https://discord.gg/HEjKmpNpAZ](https://discord.gg/HEjKmpNpAZ)
-
----
-
-## 8. 💌 Contact Us
+## 4. 💌 Contact Us
 
 📧 Email: [ltlctools@outlook.com](mailto:ltlctools@outlook.com?subject=Toonflow咨询)
 
 ---
 
-## 9. 📜 Open-Source License
+## 5. 📜 Open-Source License
 
 Toonflow is licensed under the [MIT License](../../LICENSE). Third-party dependencies and assets remain subject to their respective licenses and copyright notices.
 
@@ -481,20 +294,5 @@ Toonflow is licensed under the [MIT License](../../LICENSE). Third-party depende
 > **Non-retroactivity clause**: Users who used versions before v1.0.8 under AGPL-3.0 remain subject to AGPL-3.0. Versions v1.0.8 through v1.1.8 remain subject to Apache-2.0 and its additional agreement. These users are not bound by this license change.
 
 ---
-
-## 10. 🙏 Acknowledgments
-
-- **Partners**: 算能云, Tencent Hunyuan 3D, and AI Galaxy (智星云).
-- **Project contributors**: Thank you to everyone who has contributed code, improved documentation, shared plugins, and helped troubleshoot issues.
-- **Community users**: Thank you to everyone who continues to provide feedback, share creative work, and support the project.
-
-仰起脸笑的像满月: contributed Codex 20x development compute resources.
-Xi'an Zhongxing Digital Intelligence Technology Co., Ltd. (西安中星数字智能科技有限公司): contributed Apple certificate signing.
-
-<div align="center">
-
-Copyright © 2026 北京爱阿科技有限公司
-
-</div>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=90&section=footer" alt="Toonflow footer" width="100%" />

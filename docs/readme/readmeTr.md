@@ -62,9 +62,6 @@
   <a href="https://github.com/XXXXXLCat/Toonflow-app/network/members">
     <img src="https://img.shields.io/github/forks/XXXXXLCat/Toonflow-app?style=for-the-badge&logo=github&color=orange" alt="Çatallama Rozeti" />
   </a>
-  <a href="https://discord.gg/HEjKmpNpAZ">
-    <img src="https://img.shields.io/badge/Discord-Community-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" />
-  </a>
 </p>
 <p align="center">
   <a href="https://github.com/XXXXXLCat/Toonflow-app/issues">
@@ -84,72 +81,19 @@
   <img src="https://img.shields.io/badge/Desktop-Electrobun-8257E5?style=for-the-badge" alt="Electrobun" />
 </p>
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/24197?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-24197" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/trendshift/repositories/24197/daily?language=TypeScript" alt="XXXXXLCat/Toonflow-app | Trendshift" width="250" height="55" />
-  </a>
-</p>
-
 **Kısa dramalar, hareketli çizgi romanlar ve video üretimi için açık kaynaklı yapay zekâ platformu**
 
 > 🚀 **Kısa drama üretimi tek bir yerde**: Senaryo yazın, varlıkları yönetin, görsel ve video üretin; tüm yaratıcı iş akışınızı sonsuz bir tuval üzerinde düzenleyin.
 
 </div>
 
-
 <p align="center">
-  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">İndir</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf">Kullanıcı Kılavuzu</a> ·
-  <a href="https://api.toonflow.net/console/plugIn">Eklenti Pazarı</a> ·
-  <a href="https://qcn7xdsqgc4z.feishu.cn/docx/KNBNd9naqolsy6xjAOCcEAkqnRd">Geliştirici Belgeleri</a> ·
-  <a href="https://api.toonflow.net/">Resmî Model Platformu</a>
+  <a href="https://github.com/XXXXXLCat/Toonflow-app/releases">İndir</a>
 </p>
 
 ---
 
-## 1. 💛 Sponsorlar ve Destek
-
-Toonflow açık kaynak projesini destekleyen aşağıdaki iş ortaklarına teşekkür ederiz.
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://metaso.cn/minimax-h3/?s=toon"><img src="../images/sponsors/metaso.svg" alt="Metaso" height="28" valign="middle" /> <strong>Metaso</strong></a>
-      <br />
-      <sub>Uygun maliyetli MiniMax H3 video üretimi: 768P için saniyede yalnızca ¥0.09, 2K için ¥0.15 (CNY, Çin yuanı). Kendi GPU altyapınızı kurmadan doğal 2K çözünürlük, eşzamanlı ses ve video, OpenAI uyumlu API, ComfyUI ve sonsuz tuval desteği sunar. Ek kredi ve özel fırsatlardan yararlanmak için <a href="https://metaso.cn/minimax-h3/?s=toon">bu özel bağlantı üzerinden kaydolun</a>. Ticari sorularınız için WeChat üzerinden metasota12 ile iletişime geçin.</sub>
-    </td>
-    <td width="50%" valign="top">
-      <a href="https://go.apimart.ai/gh-toonflow-app"><img src="../images/sponsors/apiMart.jpg" alt="APIMart" height="28" valign="middle" /> <strong>APIMart</strong></a>
-      <br />
-      <sub>Bu projeye sponsor olan APIMart’a teşekkür ederiz! APIMart, yapay zekâyla görsel ve video üretimi için uygun fiyatlı bir API platformudur. GPT-Image-2 görsel başına $0.006’dan başlar; $1 ile 160’tan fazla görsel üretilebilir. Görseller ve videolar aynı asenkron API’yi kullanır: görevi gönderin, kimliğini alın ve sonuçları geri çağrı yoluyla edinin. 10,000 görsellik toplu işleri zaman aşımı olmadan işleyin, kodu değiştirmeden model değiştirin. Aylık ücret olmadan kullandıkça ödeyin. Başlamak için <a href="https://go.apimart.ai/gh-toonflow-app">buradan kaydolun</a>.</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow"><img src="../images/sponsors/compShare.png" alt="CompShare" height="28" valign="middle" /> <strong>CompShare</strong></a>
-      <br />
-      <sub>CompShare, metinden video üretimi, ilk ve son kare kontrolü ve hepsi bir arada referans modları dâhil olmak üzere uygun maliyetli H3 video üretimi sunar. Doğal 2K çözünürlükte 30 saniyeye kadar videolar üretin; 768P için fiyat saniyede yalnızca CNY 0.08’dir. API erişimi, kurumlar için yüksek eşzamanlılık ve kendi kendine fatura oluşturma olanağı sağlar.</sub>
-      <br /><br />
-      <sub>🎁 Platformu denemek için CNY 5 değerinde ücretsiz kredi almak üzere <a href="https://www.compshare.cn/video-studio?ytag=GPU_YY_YX_git_toonflow">bu özel bağlantı üzerinden kaydolun</a>!</sub>
-    </td>
-    <td width="50%" valign="top"></td>
-  </tr>
-</table>
-
-<details>
-<summary><strong>👉 Sponsor Olun 👈</strong></summary>
-
-<p align="center">
-  <img src="../images/businessQr.png" alt="Ticari sorular için WeChat QR kodu" width="200" />
-</p>
-
-<p align="center"><sub>Bu iletişim kanalı yalnızca ticari görüşmeler içindir; teknik destek sunmaz. Kullanımla ilgili sorularınız için topluluk gruplarına katılın. Özellik isteklerini ve hata bildirimlerini geri bildirim formuyla iletin. Anlayışınız için teşekkür ederiz.</sub></p>
-
-</details>
-
----
-
-## 2. 🌟 Öne Çıkan Özellikler
+## 1. 🌟 Öne Çıkan Özellikler
 
 Toonflow; senaryoları, varlıkları ve video kliplerini tek bir sonsuz tuvalde bir araya getiren, kısa dramalar, hareketli çizgi romanlar ve kısa videolar için açık kaynaklı bir yapay zekâ üretim platformudur.
 
@@ -158,7 +102,7 @@ Toonflow; senaryoları, varlıkları ve video kliplerini tek bir sonsuz tuvalde 
 | 🏠 **Yerel kurulum** | Masaüstü, Android, Docker ve sunucu kurulumu seçenekleriyle projeleri ve varlıkları kendi cihazınızda veya sunucunuzda tutun. |
 | 🖼️ **Sonsuz tuval** | Senaryoları, karakterleri, sahneleri ve video kliplerini aynı tuval üzerinde düzenleyin. |
 | 🔌 **MCP** | Harici araç ve hizmetleri MCP üzerinden bağlayın. |
-| 🧩 **Eklenti pazarı** | [Eklenti Pazarı](https://api.toonflow.net/console/plugIn) üzerinden düğümleri, araçları ve yaratıcı olanakları genişletin. |
+| 🧩 **Eklenti pazarı** | Eklenti Pazarı üzerinden düğümleri, araçları ve yaratıcı olanakları genişletin. |
 | 🤖 **Açık Agent** | Agent davranışını özelleştirmek ve harici Agent’larla iş birliği yapmak için istemlere, araçlara ve A2A’ya açık erişim. |
 | 🔧 **Esnek model entegrasyonu** | Üçüncü taraf API’leri yapılandırın veya yerel ComfyUI örnekleri ile büyük dil modellerini bağlayın. |
 | 🌐 **Çoklu dil desteği** | Arayüz 21 dili destekler. |
@@ -171,7 +115,7 @@ Desteklenen diller: 简体中文, 繁體中文, English, 日本語, Русски
 
 ---
 
-## 3. 📸 Ekran Görüntüleri
+## 2. 📸 Ekran Görüntüleri
 
 <div align="center">
 
@@ -199,9 +143,9 @@ Desteklenen diller: 简体中文, 繁體中文, English, 日本語, Русски
 
 ---
 
-## 4. 🚀 İndirme ve Kurulum
+## 3. 🚀 İndirme ve Kurulum
 
-### 4.1 Uygulama Kurulumu
+### 3.1 Uygulama Kurulumu
 
 | İşletim Sistemi | GitHub |
 | --- | --- |
@@ -244,11 +188,9 @@ Bu işlem tüm uygulamalar için güvenlik kısıtlamalarını gevşetir. İşin
 
 </details>
 
-Daha fazla bilgi için [Kullanıcı Kılavuzu’na](https://qcn7xdsqgc4z.feishu.cn/docx/RXFqdgR2Xo0dXZxGfd0cZCGgnwf) bakın.
-
 ---
 
-### 4.2 Docker Kurulumu
+### 3.2 Docker Kurulumu
 
 Önce Git, [Docker Engine](https://docs.docker.com/engine/install/) ve Docker Compose’u kurun. Windows ve macOS üzerinde Docker Desktop’ı Linux konteyner modunda kullanabilirsiniz. Depoda [Dockerfile](../../Dockerfile), [Compose yapılandırması](../../compose.yaml) ve [derleme dışında tutulan dosyaların listesi](../../.dockerignore) bulunur. İmaj Bun 1.3.14 ile oluşturulur ve FFmpeg içerir.
 
@@ -292,7 +234,7 @@ docker compose start
 
 ---
 
-### 4.3 Sunucu Kurulumu
+### 3.3 Sunucu Kurulumu
 
 Web ve Server’ı doğrudan bir Linux sunucusunda çalıştırmak için bu yöntemi kullanın. Aşağıdaki örnek Ubuntu / Debian’ı ve projenin belirlediği [Bun 1.3.14](https://bun.sh/docs/installation) sürümünü kullanır.
 
@@ -328,7 +270,7 @@ bun run start:server
 
 ---
 
-### 4.4 Erişim ve Veriler
+### 3.4 Erişim ve Veriler
 
 - Hizmet şu anda sabit `3000` portunu kullanır. Web arayüzünde ve API’de ayrı bir oturum açma doğrulaması yoktur. Sunucu kurulumlarında güvenlik duvarı veya güvenlik grubu kullanarak `3000` portuna erişimi kısıtlayın. İnternetten herkese açık erişim için kimlik doğrulama sağlayan bir ters vekil gerekir.
 - Kişisel uzaktan erişim için kendi bilgisayarınızda `ssh -N -L 3000:127.0.0.1:3000 username@server-address` komutunu çalıştırın. Bağlantıyı açık tutun ve `http://127.0.0.1:3000` adresine gidin. Sunucunun `3000` portunu internete açmanız gerekmez.
@@ -337,142 +279,13 @@ bun run start:server
 
 ---
 
-### 4.5 Buluta Dağıtım
-
-İş ortağımız [AI Galaxy (智星云)](https://www.ai-galaxy.com/), kullanıma hazır bir ortam içeren, resmî olarak yetkilendirilmiş ticari Toonflow imajı sunar. Yönergeler için [görselli imaj dağıtım kılavuzuna](https://mp.weixin.qq.com/s/lq9X1ovQ1_TKeXMOLgicKg?scene=1) bakın.
-
----
-
-## 5. 🎬 Örnek Çalışma
-
-https://github.com/user-attachments/assets/2d9fddac-dfdf-4640-b030-b09d7f7287e9
-
-### Üretim Ayrıntıları
-
-| Kalem | Orijinal depoda kaydedilen bilgiler |
-| --- | --- |
-| Üretim süresi ve nihai uzunluk | Yaklaşık 2 dakikalık video için yaklaşık 2 saat çalışma. |
-| Video modeli | Seedance 2.0 |
-| Görsel modeli | GPT Image 2 |
-| Dil modeli | Claude Opus 4.6 |
-| Model API maliyetleri | Yaklaşık ¥130 CNY (Çin yuanı): dil için yaklaşık ¥10, video için ¥120 ve görseller için ¥1’den az. |
-
-Bu maliyetler bu örnek için kaydedilen tutarlardır ve yalnızca fikir vermek amacıyla paylaşılmıştır. Gerçek maliyet model hizmetine, üretim sayısına ve parametrelere bağlıdır. Tanıtım videosu sıkıştırılmış 480p sürümüdür.
-
----
-
-## 6. 🚀 TF-Router Resmî Model Ağ Geçidi
-
-<p align="center">
-  <a href="https://api.toonflow.net/">
-    <img src="https://img.shields.io/badge/TF--Router_Official%20Model%20Gateway-181717?style=for-the-badge&logoColor=white" alt="TF-Router" />
-  </a>
-</p>
-
-TF-Router, Toonflow’un bizzat işlettiğimiz resmî model ağ geçididir. Kullanmanızı memnuniyetle karşılarız. Kaynak kodunun tamamı açıktır; kendiniz barındırabilir ve denetleyebilirsiniz: [HBAI-Ltd/TF-Router](https://github.com/HBAI-Ltd/TF-Router).
-
-<details>
-<summary><strong>Toonflow Topluluğuna Bir Mektup (yayımlanma: 2026-06-08)</strong></summary>
-
-> ### Toonflow Topluluğuna Bir Mektup
-> 130 gün.
-> Uzun bir süre değil, ama bazı şeyleri açıkça görmemize yetecek kadar uzun.
-> İlk kod satırımızı depoya gönderdiğimiz günden bugüne 130 gün geçti. 20 sürüm yayımladık, 800’den fazla commit yaptık ve 640,810 karakter içeren 213,765 satır kod yazdık.
-> İki yeniden yazım, bir sağlayıcı sistemi ve gurur duyduğumuz bir iş akışı.
-> Bunların yeterli olacağını düşünmüştük.
-> Ama olmadı.
-> Bazıları Toonflow’a kendi modülünü eklemek istediğini, ancak saatlerce uğraştıktan sonra bile kodu nasıl değiştireceğini anlayamadığını söyledi.
-> Bazıları topluluğun çok küçük olduğunu ve sorun yaşadığında yardım bulamadığını söyledi.
-> Bazıları da ticari koşullar yüzünden projelerini kullanıma alamadığını anlattı.
-> Sizi duyduk.
-> Bu 130 gün boyunca ekip üyelerimiz sohbet gruplarında nöbetleşe yer alarak her soruyu 7×24 yanıtladı. Sponsor yok, destek ödeneği yok; tüm emek maliyetini kendimiz karşıladık.
-> Çok paramız olduğundan değil.
-> Bu işi yapmaya değer bulduğumuzdan.
-> Bu yüzden üçüncü bir yeniden yazıma karar verdik.
-> Toonflow’un her yeniden yazımı daha fazla açıklığa ve açık kaynağa doğru ilerledi.
-> Bu kez her şeyi açmayı seçtik.
->
-> 1. MIT License
-> Yeniden yazım tamamlandığında Apache-2.0 yerine MIT License’a geçmeye ve ek ticari koşulların tümünü kaldırmaya karar verdik.
-> Ticari kısıtlama olmadan tamamen açık olacak.
-> Her amaçla kullanabileceksiniz.
->
-> 2. Tamamen Esnek Bir Eklenti Sistemi
-> Eklenti mimarisinin tamamını yeniden tasarlayacağız.
-> Hikâye panoları, panoramalar, zaman çizelgeleri, hatta küçük oyunlar.
-> Hayal edebiliyorsanız ekleyebileceksiniz.
-> Geçici çözümlerle değil, tasarımın sunduğu olanaklarla.
->
-> 3. Drizzle ORM ve Birden Çok Veritabanı Desteği
-> Drizzle ORM’ye geçeceğiz.
-> Yerel depolama, PostgreSQL veya MySQL; ihtiyacınız olanı seçin.
-> Özel geliştirme artık bir kâbus olmayacak.
->
-> 4. Uçtan Uca Monorepo İş Akışı
-> Eklenti geliştirme, SDK entegrasyonu ve sürüm yayımlama birbiriyle bağlantılı olacak.
-> Katkıda bulunmak, tek kişinin yönetebileceği kadar kolaylaşacak.
->
-> 5. Yeni Modüller
-> Sonsuz Tuval: yalnızca alan değil, özgürlük.
-> İlham Modu: yaratıcılar için tasarlandı.
-> Eklenti Merkezi: iyi eklentilerin keşfedilmesine yardımcı olacak.
-> Beceri Merkezi: deneyimi paylaşılabilir kılacak.
-> Sağlayıcı Merkezi: ekosistemin başladığı yer.
-> Tam Docker entegrasyonu: kurulumu herkes için erişilebilir kılacak.
->
-> Şimdi, konuşmaktan uzun süredir çekindiğimiz bir konu var.
-> Yeniden yazım zaman alıyor. Bu sırada sunucular çalışmaya devam ediyor, alan adlarının yenilenmesi gerekiyor, ekip gecelere kadar çalışıyor ve kahve pahalanıyor.
-> Yatırımımız, reklamımız veya gizli ticari planlarımız yok.
-> Ama başladığımız işi bitirmek için ayakta kalmamız gerekiyor.
-> Bu nedenle Toonflow’un resmî model ağ geçidi TF-Router’ı hayata geçirdik.
-> Açıkçası bu platform konusunda uzun süre tereddüt ettik.
-> Yapmak istediğimiz bir şey değildi. Bir ağ geçidi yüzünden insanların Toonflow’un artık “işi paraya döktüğünü” düşünmesini istemedik.
-> Bu yükü uzun süre taşıdık.
-> Fakat birçok kullanıcı Seedance 2.0 için onaylı erişim alamıyor, bize sürekli onu kullanmanın bir yolu olup olmadığını soruyordu.
-> Uzun süre düşündükten sonra sonunda kendimiz bir platform kurmaya karar verdik ve Volcengine ile yıllık bir Seedance çerçeve anlaşması imzaladık.
-> **Ayrıca platformun tanıtım döneminde Seedance 2.0’ı maliyetine, üzerine tek kuruş kâr koymadan sunmaya karar verdik.**
-> Tanıtım dönemi bitince çok küçük bir hizmet bedeli alacağız. Şimdilik önceliğimiz size erişim sağlamak.
-> Daha da önemlisi, TF-Router’ın kaynak kodunun tamamı açık kaynak olarak yayımlandı: 【<a href="https://github.com/HBAI-Ltd/TF-Router" target="_blank">Kaynak Kod</a>】.
-> Bize güvenmiyor musunuz? Sorun değil. Kodu okuyun, kendiniz kurun ve kendiniz çalıştırın.
-> Duruşumuz bu.
-> Denemeyi seçerseniz, şu anda bu işi sürdürebilmek için sahip olduğumuz tek yola güveninizi vermiş olacaksınız.
-> Seçmezseniz de sorun yok. Toonflow’u kullanmaya, bizi eleştirmeye ve özellik istemeye devam edin.
-> Buradayız.
-> Son olarak içten bir söz:
-> Biz, yaratıcı araçların herkese ait olması gerektiğine inanan sıradan bir grup insanız.
-> Toonflow hiçbir zaman yalnızca bizim ürünümüz olmadı.
-> Birlikte yazdığımız hikâye oldu.
-> Üçüncü yeniden yazım bitiş çizgisi değil.
-> Yeniden başladığımız nokta.
-> Kullanan, eleştiren veya öneri sunan herkese teşekkür ederiz.
-> Bu noktaya gelmesinin nedeni sizsiniz.
-> Teşekkürler.
-
-</details>
-
----
-
-## 7. 👨‍👩‍👧‍👦 WeChat Topluluğu
-
-Gruba davet asistanıyla iletişime geçmek için QR kodunu tarayın:
-
-<img src="../images/qr.png" alt="Toonflow topluluğu QR kodu" height="400"/>
-
-Simgeye tıklayarak Discord’a da katılabilirsiniz:
-
-[![Discord topluluğumuza katılın](https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/67d00cf7266d2c75571aebde_Example.svg)](https://discord.gg/HEjKmpNpAZ)
-
-Veya davet bağlantısını kullanın: [https://discord.gg/HEjKmpNpAZ](https://discord.gg/HEjKmpNpAZ)
-
----
-
-## 8. 💌 Bize Ulaşın
+## 4. 💌 Bize Ulaşın
 
 📧 E-posta: [ltlctools@outlook.com](mailto:ltlctools@outlook.com?subject=Toonflow咨询)
 
 ---
 
-## 9. 📜 Açık Kaynak Lisansı
+## 5. 📜 Açık Kaynak Lisansı
 
 Toonflow, [MIT License](../../LICENSE) kapsamında lisanslanmıştır. Üçüncü taraf bağımlılıklar ve varlıklar kendi lisanslarına ve telif hakkı bildirimlerine tabi olmaya devam eder.
 
@@ -481,20 +294,5 @@ Toonflow, [MIT License](../../LICENSE) kapsamında lisanslanmıştır. Üçünc�
 > **Geriye yürümezlik maddesi**: v1.0.8 öncesi sürümleri AGPL-3.0 kapsamında kullanan kullanıcılar AGPL-3.0’a tabi olmaya devam eder. v1.0.8 ile v1.1.8 arasındaki sürümler Apache-2.0’a ve ek sözleşmesine tabi olmaya devam eder. Bu lisans değişikliği söz konusu kullanıcılar için geçerli değildir.
 
 ---
-
-## 10. 🙏 Teşekkürler
-
-- **İş ortakları**: 算能云, Tencent Hunyuan 3D ve AI Galaxy (智星云).
-- **Projeye katkıda bulunanlar**: Kod yazan, belgeleri iyileştiren, eklenti paylaşan ve sorunları çözmeye yardımcı olan herkese teşekkür ederiz.
-- **Topluluk kullanıcıları**: Geri bildirim vermeye, yaratıcı çalışmalarını paylaşmaya ve projeyi desteklemeye devam eden herkese teşekkür ederiz.
-
-仰起脸笑的像满月: Codex 20x geliştirme hesaplama kaynakları sağladı.
-Xi'an Zhongxing Digital Intelligence Technology Co., Ltd. (西安中星数字智能科技有限公司): Apple sertifikasıyla imzalama desteği sağladı.
-
-<div align="center">
-
-Telif Hakkı © 2026 北京爱阿科技有限公司
-
-</div>
 
 <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&customColorList=6,11,20&height=90&section=footer" alt="Toonflow alt bilgisi" width="100%" />
