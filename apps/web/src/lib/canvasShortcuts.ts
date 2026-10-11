@@ -15,7 +15,7 @@ export const defaultCanvasShortcuts = {
   handTool: "KeyH",
   arrange: "Alt+Shift+KeyF",
   search: `${primaryModifier}+KeyF`,
-  delete: "Backspace",
+  delete: "Delete",
   copy: `${primaryModifier}+KeyC`,
   paste: `${primaryModifier}+KeyV`,
   undo: `${primaryModifier}+KeyZ`,
