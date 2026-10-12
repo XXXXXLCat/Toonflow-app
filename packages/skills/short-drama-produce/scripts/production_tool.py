@@ -124,16 +124,11 @@ CREATOR_SOURCE_NAMES = {
 # copyable body.
 CREATOR_SOURCE_ENTRIES = {
     "图片提示词.md": ("IMG-", r"可复制(?:通用)?提示词", "参考"),
-    "视频提示词.md": ("MOTION-", r"可复制(?:通用)?提示词", "输入参考"),
-    "分镜.md": ("SHOT-", r"冻结关键帧提示词", "输入参考"),
+    "视频提示词.md": ("MOTION-", r"可复制(?:通用)?提示词", "输入参考图"),
+    "分镜.md": ("SHOT-", r"冻结关键帧提示词", "输入参考图"),
 }
 
-# Han as well as ASCII, for the same reason VOICE_SLOT_NAME carries it: a voice
-# slot is named after the character it speaks for and a video slot after the
-# clip's loan, and a Chinese project has no ASCII spelling for either.
-REF_SLOT_RE = re.compile(
-    r"REF-[A-Z0-9\u3400-\u9fff][A-Z0-9\u3400-\u9fff-]{0,79}"
-)
+REF_SLOT_RE = re.compile(r"REF-[A-Z0-9][A-Z0-9-]{0,79}")
 # A slot head, not a bare substring: a real reference file may legitimately be
 # named `plan-sheet.png`, and that is not a creator-supplied declaration.
 PLAN_SLOT_HEAD_RE = re.compile(r"PLAN-[A-Za-z0-9][A-Za-z0-9-]{0,79}（顺序：")
@@ -154,46 +149,15 @@ REFERENCE_LINE_RE = re.compile(
     re.IGNORECASE,
 )
 
-# A MOTION's voice slots: the speaking character's accepted voice, written as
-# `REF-VOICE-...` after the picture slots of the same 输入参考 field (VID-27).
-# They compile to role `reference_audio` after the picture bindings, so the
-# audio 顺序 -- its own sequence from 1, separate from the pictures' -- stays
-# the provider's audio numbering (`@音频N`, `<Audio N>`).
+# A MOTION's `- 参考音频：` line: the speaking character's accepted voice. It
+# compiles to role `reference_audio` after the picture bindings, so the audio
+# 顺序 stays the provider's own audio numbering (`@音频N`, `<Audio N>`).
 AUDIO_REFERENCE_ROLE = "reference_audio"
-# Han as well as ASCII: a voice slot is named after the character it belongs
-# to, and a character entry in a Chinese project has no ASCII spelling.
-VOICE_SLOT_NAME = r"[A-Z0-9\u3400-\u9fff][A-Z0-9\u3400-\u9fff-]*"
 AUDIO_REFERENCE_LINE_RE = re.compile(
-    rf"(REF-VOICE-{VOICE_SLOT_NAME})（顺序：([1-9]\d*)）· "
+    r"(REF-[A-Z0-9][A-Z0-9-]{0,79})（顺序：([1-9]\d*)）· "
     r"([^；\n]+?\.(?:wav|mp3|m4a|aac|flac))《([^》\n]+)》"
     r"（用途：[^；）\n]+；角色：([^；）\n]+)；控制：([^；）\n]+)；不得控制：([^）\n]+)）",
     re.IGNORECASE,
-)
-# A MOTION's video slots: a clip the project already holds, written as
-# `REF-VIDEO-...` between the picture slots and the voice slots of the same
-# 输入参考 field (VID-28). They compile to role `reference_video`, which the
-# provider adapters already accept -- Seedance's edit and extend even require
-# one -- so the clip's 顺序 is the provider's own video numbering (`@视频N`).
-VIDEO_REFERENCE_ROLE = "reference_video"
-VIDEO_SUFFIX_RE = r"(?:mp4|mov|webm|mkv|m4v|avi)"
-VIDEO_REFERENCE_LINE_RE = re.compile(
-    rf"(REF-VIDEO-{VOICE_SLOT_NAME})（顺序：([1-9]\d*)）· "
-    rf"([^；\n]+?\.{VIDEO_SUFFIX_RE})《([^》\n]+)》"
-    r"（用途：[^；）\n]+；控制：([^；）\n]+)；不得控制：([^）\n]+)）",
-    re.IGNORECASE,
-)
-# Matched as a head rather than a substring of the whole field, so a field that
-# carries voices only is "no video" instead of "a video nobody can parse".
-VIDEO_SLOT_HEAD_RE = re.compile(r"REF-VIDEO-", re.IGNORECASE)
-# Voice slots are written last, so cutting the value at the first one leaves
-# the picture declaration untouched.
-VOICE_TAIL_RE = re.compile(
-    rf"(?:^|；)REF-VOICE-{VOICE_SLOT_NAME}（顺序：[\s\S]*$"
-)
-# Video and voice slots are both written after the pictures, so the picture
-# declaration ends at whichever of the two comes first.
-MEDIA_TAIL_RE = re.compile(
-    rf"(?:^|；)REF-(?:VIDEO|VOICE)-{VOICE_SLOT_NAME}（顺序：[\s\S]*$"
 )
 
 
@@ -874,7 +838,7 @@ def _contains_plan_token(value: str) -> bool:
 def _field_values(section: str, field_name: str) -> list[str]:
     """Every value of one `- 字段：值` field, read the way the creator checker reads it.
 
-    `- **输入参考**：…` is the same field to a human and to
+    `- **参考音频**：…` is the same field to a human and to
     creator_markdown_check.py; reading it any other way here would let the
     checker validate a binding that production then silently omits.
     """
@@ -895,14 +859,8 @@ def _markdown_reference_bindings(
     if len(lines) != 1:
         raise ValueError(f"source entry has duplicate {field_name} declarations")
     value = lines[0].strip()
-    # Video and voice slots share this field with the pictures and are written
-    # after them, so both are cut before the picture declaration is read.
-    # Leaving them in would make every 输入参考 that binds a clip or a voice
-    # fail to parse.
-    if field_name == "输入参考":
-        value = MEDIA_TAIL_RE.sub("", value).rstrip("；;。 ")
     if (
-        field_name == "输入参考"
+        field_name == "输入参考图"
         and not _contains_ref_token(value)
         and re.fullmatch(r"无(?:（[^）\n]+）)?。?", value)
     ):
@@ -952,63 +910,16 @@ def _markdown_reference_bindings(
     ]
 
 
-def _markdown_video_bindings(section: str) -> list[dict[str, Any]]:
-    """The MOTION's `REF-VIDEO-...` slots of 输入参考, in video order."""
-    lines = _field_values(section, "输入参考")
-    if not lines:
-        return []
-    if len(lines) != 1:
-        raise ValueError("source entry has duplicate 输入参考 declarations")
-    head = MEDIA_TAIL_RE.search(lines[0].strip())
-    if head is None:
-        return []
-    value = lines[0].strip()[head.start() :].lstrip("；;")
-    # The voices are written after the videos, so cutting the value at the
-    # first one leaves the video declaration untouched.
-    voice = VOICE_TAIL_RE.search(value)
-    if voice is not None:
-        value = value[: voice.start()].rstrip("；;。 ")
-    if not value or VIDEO_SLOT_HEAD_RE.search(value) is None:
-        return []
-    matches = list(VIDEO_REFERENCE_LINE_RE.finditer(value))
-    cursor = 0
-    for index, match in enumerate(matches):
-        if value[cursor : match.start()] != ("" if index == 0 else "；"):
-            matches = []
-            break
-        cursor = match.end()
-    if not matches or value[cursor:] not in {"", "。"}:
-        raise ValueError("source entry 视频槽位 declaration is invalid")
-    bindings = sorted(
-        (
-            {
-                "slot_id": match.group(1),
-                "order": int(match.group(2)),
-                "path": _relative_path(match.group(3)),
-                "label": match.group(4).strip(),
-                "may_control": _scope_items(match.group(5)),
-                "must_not_control": _scope_items(match.group(6)),
-            }
-            for match in matches
-        ),
-        key=lambda binding: binding["order"],
-    )
-    if [binding["order"] for binding in bindings] != list(range(1, len(bindings) + 1)):
-        raise ValueError("source entry 视频槽位 order must be contiguous from 1")
-    return bindings
-
-
 def _markdown_audio_bindings(section: str) -> list[dict[str, Any]]:
-    """The MOTION's `REF-VOICE-...` slots of 输入参考, in audio order."""
-    lines = _field_values(section, "输入参考")
+    """The MOTION's 参考音频 slots in audio order; empty when there is none."""
+    lines = _field_values(section, "参考音频")
     if not lines:
         return []
     if len(lines) != 1:
-        raise ValueError("source entry has duplicate 输入参考 declarations")
-    head = VOICE_TAIL_RE.search(lines[0].strip())
-    if head is None:
+        raise ValueError("source entry has duplicate 参考音频 declarations")
+    value = lines[0].strip()
+    if not _contains_ref_token(value) and re.fullmatch(r"无(?:（[^）\n]+）)?。?", value):
         return []
-    value = lines[0].strip()[head.start() :].lstrip("；;")
     matches = list(AUDIO_REFERENCE_LINE_RE.finditer(value))
     cursor = 0
     for index, match in enumerate(matches):
@@ -1017,7 +928,7 @@ def _markdown_audio_bindings(section: str) -> list[dict[str, Any]]:
             break
         cursor = match.end()
     if not matches or value[cursor:] not in {"", "。"}:
-        raise ValueError("source entry 音色槽位 declaration is invalid")
+        raise ValueError("source entry 参考音频 declaration is invalid")
     bindings = sorted(
         (
             {
@@ -1034,7 +945,7 @@ def _markdown_audio_bindings(section: str) -> list[dict[str, Any]]:
         key=lambda binding: binding["order"],
     )
     if [binding["order"] for binding in bindings] != list(range(1, len(bindings) + 1)):
-        raise ValueError("source entry 音色槽位 order must be contiguous from 1")
+        raise ValueError("source entry 参考音频 order must be contiguous from 1")
     return bindings
 
 
@@ -1061,38 +972,24 @@ def _verify_markdown_source(
         # reference field records creative intent, not this job's inputs.
         creator_supplied_ok=source_path.name == "分镜.md",
     )
-    # Videos and voices follow the pictures, in that order, so no numbering
-    # moves another. A declared clip or voice missing from the job fails here
-    # instead of being dropped on the way to the provider.
-    video = (
-        _markdown_video_bindings(section)
-        if source_path.name == "视频提示词.md"
-        else []
-    )
+    # Voices follow the pictures, so neither numbering moves the other. A
+    # declared voice missing from the job fails here instead of being dropped
+    # on the way to the provider.
     audio = (
         _markdown_audio_bindings(section)
         if source_path.name == "视频提示词.md"
         else []
     )
-    for media in (video, audio):
-        declared = declared + [
-            {**binding, "order": len(declared) + binding["order"]}
-            for binding in media
-        ]
-    video_slots = {binding["slot_id"] for binding in video}
+    declared = declared + [
+        {**binding, "order": len(declared) + binding["order"]} for binding in audio
+    ]
     audio_slots = {binding["slot_id"] for binding in audio}
     for binding in bindings:
         if (binding["slot_id"] in audio_slots) != (
             binding["role"] == AUDIO_REFERENCE_ROLE
         ):
             raise ValueError(
-                "a REF-VOICE-... slot binds role reference_audio, and only it does"
-            )
-        if (binding["slot_id"] in video_slots) != (
-            binding["role"] == VIDEO_REFERENCE_ROLE
-        ):
-            raise ValueError(
-                "a REF-VIDEO-... slot binds role reference_video, and only it does"
+                "a 参考音频 slot binds role reference_audio, and only it does"
             )
     comparable = [
         {key: binding[key] for key in (
@@ -1481,7 +1378,7 @@ def _require_adapter_roles(
             f"adapter profile {job['adapter']} does not declare reference_roles "
             + ", ".join(unsupported)
             + "; nothing was submitted. Declare them only if this profile's model "
-            "accepts them, or remove the binding (音色槽位) from the source entry"
+            "accepts them, or remove the binding (参考音频) from the source entry"
         )
 
 

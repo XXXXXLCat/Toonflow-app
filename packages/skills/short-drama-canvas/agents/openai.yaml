@@ -1,0 +1,4 @@
+interface:
+  display_name: "短剧画布施工"
+  short_description: "把已定稿的创作文档接进 Toonflow 画布：建图片、视频、对白音频与配乐节点，按文档连线"
+  default_prompt: "使用 $short-drama-canvas 把 EP001 的创作文档接到画布并生成施工计划。"

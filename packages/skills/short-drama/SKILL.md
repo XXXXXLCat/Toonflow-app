@@ -26,10 +26,7 @@ license: MIT
 | 写资产图片提示词 | `$short-drama-image-prompts` → `图片提示词.md` |
 | 做镜头和冻结关键帧 | `$short-drama-storyboard` → `分镜.md` |
 | 写视频/时间线音乐提示词 | `$short-drama-video-prompts` → `视频提示词.md` |
-| 定人物音色、写逐句语气、把参考音频接到对白 | `$short-drama-voice` → `配音本.md` |
-| 按分镜情绪设计背景音乐乐段 | `$short-drama-music` → `配乐本.md` |
-| 实际生成媒体 | `$short-drama-produce`，先预览，再显式确认，最后运行 |
-| 把已定稿文档接到画布、建生成节点、按文档连线 | `$short-drama-canvas`，先出施工计划再确认 |
+| 实际生成媒体 | `$short-drama-canvas`：先给方案与确认，再在画布节点生成（项目外 adapter 才用 `$short-drama-produce`） |
 | 把已生产的素材剪成成片 | `$short-drama-edit` → `剪辑单.md` 与 `制作成果/成片/` |
 | 审稿或校验 | `$short-drama-review`，仅在用户点名时 |
 | 初始化、Dashboard、归档点名文档 | 本技能 |
@@ -43,10 +40,6 @@ license: MIT
 五份创作文档记录剧本、视觉与提示词；剪辑单在素材生产后记录取舍和后期处理。
 修改故事、镜头职责或上游时长声明时，回到负责该内容的文档。
 
-**衍生生产输入**（`配音本.md`、`配乐本.md`）不是第六、第七份创作文档：它们不改变剧情、视觉或分镜，
-只是把已定稿的创作事实翻译成可执行的生产参数——谁用什么音色说哪句、哪几个镜头共用哪段配乐。
-它们由对应技能拥有，随上游改动重新生成，不参与跨文档结构核对。
-
 ## 执行请求
 
 1. 找到用户给出的项目或资料，只读当前任务的直接输入。
@@ -56,7 +49,7 @@ license: MIT
 5. 不自动开始用户没点名的审查、归档或生产。
 6. 请求横跨视觉设定、图片提示词、分镜或视频提示词时，结束前按当前五文档做一次视觉依赖对账；
    不因图片提示词和分镜可并行，就把后完成的一支留在另一支的旧引用之外。
-7. 视频提示词请求遇到「输入参考：无」或仍带「待补参考图」时，先路由分镜 owner 检查项目已有图片并刷新绑定。有匹配图就同请求续跑；有必要图缺失就列表停下。
+7. 视频提示词请求遇到「输入参考图：无」或仍带「待补参考图」时，先路由分镜 owner 检查项目已有图片并刷新绑定。有匹配图就同请求续跑；有必要图缺失就列表停下。
    停下时把三条路一起给出：把已有图片放进项目绑成 `REF-...`；由创作者在自己的工具里出图、本轮先用
    `PLAN-...` 写出逐镜挂图计划并照常产出视频提示词；或者明确改走文生视频。用本套件生产参考图需要项目外的
    adapter 与凭据，只是第一条路的一种做法，不要把它说成唯一入口，也不要只给「生成参考图 / 文生视频」两个选项。
@@ -66,23 +59,18 @@ license: MIT
    `production_profile` 还是 `unset` 时，先把这个选择连同它带来的原生时长、参考方式和正文语言写进档案，
    再继续下游阶段。会话里的一句点名不落到档案上，下一轮就会退回通用路径，方言和时长要重猜。
 
-## 初始化与进度查看
+## 初始化与 Dashboard
 
 需要项目配置时运行：
 
 ```bash
-python3 {技能目录}/scripts/project_tool.py init ./my-drama --title "示例短剧" --aspect-ratio 9:16
+python3 {技能目录}/scripts/project_tool.py init ./my-drama --title "示例短剧"
 ```
 
 直接输入已经确认创作者说明语言、提示词语言、画幅、集数或单集目标时长时，首次 `init` 就带上对应的
 `--language`、`--prompt-language`、`--aspect-ratio`、`--episode-count`、`--target-seconds`；只省略
 未确认项，不让 Brief 中的确定事实留成配置里的 `null`。写入已确认的生产档案时，状态统一为
 `accepted`；`unset` 只表示尚未决定，不另造中间状态。
-
-**画幅是下游进画布的前置输入，必须在这一步定下来。** 创作者没说时先问一次——一次问清，之后全流程
-沿用，不再逐镜确认。它写进 `format.aspect_ratio`，`$short-drama-canvas` 建节点时按它设置关键帧与
-视频的画幅。项目建好之后才知道，或要变更时用 `$short-drama-canvas` 的 `board_ratio.py` 读写该字段，
-不必重建项目。
 `init` 只建立配置和空目录；第一次创作时再把文档写入 `剧集/<EP>/`，不预建空文件。
 项目已经建好、用户之后才定下目标视频模型时，把选择写进档案，并同时展示它对时长区间、参考方式和
 正文语言的影响。档案只接受已发布并已接受的创作者决策，所以是三步，不是一步。先写一行决策记录
@@ -106,17 +94,29 @@ python3 {技能目录}/scripts/project_tool.py set-authority <project> \
 各字段取值由命中的模型方言给出：`$short-drama-video-prompts` 的 MiniMax H3 / Seedance / Wan 3.0 方言文件都写了
 推荐档案。写完用 `status` 复核 `video_model_profile` 是否已经出现。
 
-项目定位与安全写入见 [运行预检](references/runtime-preflight.md)。
-
-本环境不提供本地创作台 Dashboard：它是常驻本地服务，Toonflow 桌面版不为它启动独立进程，
-`dashboard_server.py` 也不在可执行脚本范围内。用户要求看进度、下一步或分集状态时运行：
+项目定位与安全写入见 [运行预检](references/runtime-preflight.md)。用户明确要求 Dashboard 时运行：
 
 ```bash
-python3 {技能目录}/scripts/project_tool.py status <project>
+python3 {技能目录}/scripts/dashboard_server.py --workspace <workspace> --port 0 --detach --open
 ```
 
-把返回的 `artifacts`、`authority`、`format` 与 `layout` 概括成当前进度、未决项和下一步，在对话里汇报；
-每集目标时长取自 `format`，节奏对照只用已接受的 `rhythm_profile`。不承诺打开界面，也不声称已启动创作台。
+`--detach` 让服务进程脱离当前 shell 独立运行，会话结束、终端关闭或智能体退出都不会带走它；
+链接因此在整个创作期间保持有效。运行中的地址、端口和 pid 记录在
+`<workspace>/.short-drama/dashboard.json`（仅本人可读），日志在同目录 `dashboard.log`：
+
+```bash
+python3 {技能目录}/scripts/dashboard_server.py --workspace <workspace> --status   # 打印当前链接
+python3 {技能目录}/scripts/dashboard_server.py --workspace <workspace> --stop     # 停止
+```
+
+同一 workspace 已有在跑的 Dashboard 时，再次启动只会打印同一个链接，不再开第二个端口；确实要换
+端口或换令牌时加 `--restart`。不加 `--detach` 时行为不变：前台运行，Ctrl-C 结束。
+
+Dashboard 按阶段展示项目：全剧页给出下一步和分集进度，每集分剧本、设定、分镜、提示词、成片、审查
+六个视图，⌘K 搜索全剧。结构视图只读，改动在「编辑原文」里保存 Markdown。画面只认文档里的绑定：
+缩略图是分镜里 `用途：起始帧` 的 `REF-...`，每镜素材是剪辑单的「来源」，成片是剪辑输出；没有绑定
+就显示空位，不按文件名配图。它不负责工作流编排或媒体生产，需要写作或生成的地方只复制一句请求交回对话。
+每集目标时长取自 `status` 的 `format`，节奏对照只用已接受的 `rhythm_profile`。
 
 ## 项目级创作决定
 

@@ -45,7 +45,7 @@
   exactly `slot_id`, contiguous `order`, project-relative `path`, Chinese `label`,
   non-empty `role`, and non-empty `may_control` / `must_not_control` lists. When
   `source_entry` is present, these fields must exactly match that entry's
-  `参考` (IMG) or `输入参考` (SHOT/MOTION) declaration (except `role`, which is
+  `参考` (IMG) or `输入参考图` (SHOT/MOTION) declaration (except `role`, which is
   production metadata). Allowed and prohibited scopes may not overlap.
   The creator declaration also carries a `用途` — what this picture decides in
   this shot, from the closed set in the storyboard skill. `role` is its
@@ -58,19 +58,12 @@
   `reference_video`, `reference_audio` for MiniMax, and the three `reference_*`
   values for Seedance. A video job carrying references without bindings fails
   closed there rather than having a role guessed for it.
-  A `MOTION-*` entry's `REF-VIDEO-...` slots — video slots written after the
-  picture slots of the same `输入参考` field (VID-28), each locating a clip the
-  project already holds — bind after the pictures, in video `顺序`, each with
-  role `reference_video`. Its `REF-VOICE-...` slots — voice slots written last
-  (VID-27) — bind after the videos, in audio `顺序`, each with role
-  `reference_audio` and `character` copied exactly from its `角色` field. Both
-  continue the job's `order` where the pictures left it, so the binding array
-  reads 图片 → 视频 → 音色 exactly as the field is written and no sequence
-  renumbers another. Only those slots may use those roles. Leaving a declared
-  clip, voice or character out, binding a `REF-VIDEO-...` to anything but
-  `reference_video`, or swapping characters, fails `prepare`. Adapters must
-  preserve this character binding; bundled compilers derive the voice label from
-  `character`, not the free-form asset `label`.
+  A `MOTION-*` entry's `参考音频` line binds after the pictures: its slots follow
+  the `输入参考图` bindings in audio `顺序`, continuing the job's `order`, each with
+  role `reference_audio` and `character` copied exactly from its `角色` field. Only those
+  slots may use that role. Leaving a declared voice or its character out, or swapping
+  characters, fails `prepare`. Adapters must preserve this character binding; bundled
+  compilers derive the voice label from `character`, not the free-form asset `label`.
 - `references`: zero to sixteen current project files actually sent to production.
   It may be omitted when `reference_bindings` is present, in which case the paths
   are derived in binding order. If both are present, they must match exactly.

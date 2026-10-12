@@ -6,8 +6,6 @@ license: MIT
 
 # 确认后生产
 
-> **本环境说明（Toonflow 桌面版）**：`prepare`、`confirm`、`status`、`audit` 可直接执行，用来预览与确认本次生产范围。`run` 与 `collect` 需要**项目外**的 adapter 配置与供应商凭据，本环境不提供运行方式，因此不执行它们，也不声称已实际出图或出片。创作者确认生产范围后，把本次完整提示词、参考文件与参数交给画布节点工具执行生成，结果仍按本技能的记录要求落回项目。
-
 本技能只负责把已经写好的生产规格安全送到运行环境配置的 adapter。图片提示词仍归
 `$short-drama-image-prompts`，视频提示词归 `$short-drama-video-prompts`，台词与录音表归
 `$short-drama-write`，声音身份归 `$short-drama-assets`。
@@ -27,13 +25,10 @@ license: MIT
 （MiniMax 为 `first_frame`/`last_frame`/`reference_image`/`reference_video`/`reference_audio`，
 Seedance 为三个 `reference_*`）；带参考图却没有绑定的 job 会直接失败，不替它猜一个 role。
 本地图片由内置 adapter 按 base64 data URI 直接送出，不需要自建上传服务。
-`MOTION-*` 的 `REF-VIDEO-...` 与 `REF-VOICE-...` 槽位（写在该条目「输入参考」的图片槽位之后）同样逐条进
-`reference_bindings`：视频槽位排在图片之后、role 固定为 `reference_video`，音色槽位排在视频之后、
-role 固定为 `reference_audio`、`character` 照抄该槽位的 `角色`。三类槽位按 图片 → 视频 → 音色
-的次序进入绑定数组，与它们在字段里的书写次序一致。adapter profile 没有声明接受
-`reference_video` / `reference_audio` 时 `run` 在提交前失败，见
+`MOTION-*` 的「参考音频」行同样逐条进 `reference_bindings`，排在图片之后、role 固定为 `reference_audio`、`character` 照抄该行的 `角色`；
+adapter profile 没有声明接受 `reference_audio` 时 `run` 在提交前失败，见
 [adapter-contract.md](references/adapter-contract.md#adapter-config)。
-条目的「输入参考」写成 `PLAN-...` 时，那些图片在创作者自己的工具里，项目内没有文件可送：
+条目的「输入参考图」写成 `PLAN-...` 时，那些图片在创作者自己的工具里，项目内没有文件可送：
 `prepare` 直接失败并说明先把真实文件放进项目、改写成 `REF-...`，不拿计划当输入，也不静默丢掉参考。
 `references` 可以省略并由绑定顺序生成，也可以作为相同顺序的显式镜像。输出放在
 `剧集/<EP>/制作成果/`；这个 job 是生产工具的临时输入，不是第六份创作文档：
@@ -60,7 +55,7 @@ python3 {技能目录}/scripts/production_tool.py prepare <project> --job <临�
 job、prompt、参数、输出路径或直接输入任一变化，旧确认立即失效。不得代替创作者填写确认。
 当前已确认 job 是本轮唯一工作单元；运行结束后回报结果并交还控制权，不自动准备下一批或启动审查。
 
-`分镜.md` 的「输入参考」路径只是创作阶段的可读依据与使用意图，不是生产输入快照。进入生产时，
+`分镜.md` 的「输入参考图」路径只是创作阶段的可读依据与使用意图，不是生产输入快照。进入生产时，
 creator-first job 必须从 `图片提示词.md` 或 `视频提示词.md` 的对应条目建立绑定；`prepare` 展示的
 `reference_bindings`、`references` 与已确认 job 才是本次 adapter 实际读取哪些文件字节、各自允许
 影响什么的权威。非 creator 的结构化规格可不填 `source_entry`/`reference_bindings`，继续只使用显式

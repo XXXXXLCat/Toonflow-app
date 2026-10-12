@@ -54,22 +54,6 @@
 | CON-06 | structural_invariant | A continuity change names every existing downstream document it affects; future work is described, not pre-created. |
 | CON-07 | structural_invariant | A continuity lock declared in `视觉设定.md` fixes one verbatim surface plus its shot and image scope; every in-scope frozen keyframe, motion prompt, and named image prompt carries that surface unchanged. |
 
-### `COL`
-
-色彩方法论，正文见 [光与色的设计（色彩篇）](color-craft.md)。光位、明暗与关注层次仍归 `lighting-craft.md`；
-本表只管颜色。
-
-| ID | Class | Knowledge |
-|---|---|---|
-| COL-01 | reviewed_invariant | 物体本色、环境受光和后期观感分三层；参考图里的颜色不等于资产本色，调色要求不得改变服装、肤色、墙体与物件材质。 |
-| COL-02 | craft_default | 只拿到风格词时先把情绪改写成观看任务，用剧情事实限定可变化范围；不按类型查配色，不同场每句台词换一次滤镜。 |
-| COL-03 | craft_default | 从画面问题选调色手段：看不清先处理明暗，看错重点处理颜色竞争，跨镜变色检查共同参照；每项对应一个可核验目标。 |
-| COL-04 | craft_default | 数值只在含义明确时使用：带作用对象、单位或标度、参照基准；色温、白平衡与视觉冷暖是不同概念，不能互推。 |
-| COL-05 | craft_default | 按媒介换控制对象（二维平涂/水彩/三维/真人各有优先控制与误用）；先沿用既定媒介与现有资产。 |
-| COL-06 | taste_option | 用少数风格关系选方案（克制的自然层次／柔和亮部／有限冷暖分离／少量亮区与浓密暗部），只给两三个候选。 |
-| COL-07 | reviewed_invariant | 场内继承同一基底，场间统一的是关系与处理方式而非同一白平衡；变化写「触发→起态→可见过程→终态→影响范围」。 |
-| COL-08 | craft_default | 合入提示词时先定资产与空间，再写光源事件，最后合入简短色彩观感；发现问题按层次定位，不一并重做所有设计。 |
-
 规则分级由高到低：`structural_invariant`（结构缺陷，阻断）、
 `reviewed_invariant`（需证据判断）、`craft_default`（常用做法，可覆盖）、
 `taste_option`（创作者选择，不作缺陷）。创作者已接受的事实优先于本表。

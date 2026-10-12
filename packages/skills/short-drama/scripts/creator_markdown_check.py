@@ -30,10 +30,6 @@ REQUIRED_DOCUMENTS = (
 )
 SECTION_RE = re.compile(r"^## ((?:SHOT|MOTION)-[A-Z0-9-]+)\b", re.MULTILINE)
 IMG_RE = re.compile(r"\b(IMG-[A-Z0-9-]+)《([^》]+)》（控制：([^）]+)）")
-# A slot's own name. It carries Han as well as ASCII: a voice slot is named
-# after the character it belongs to (VID-27), and a character entry in a
-# Chinese project has no ASCII spelling to fall back on.
-SLOT_NAME = r"[A-Z0-9\u3400-\u9fff][A-Z0-9\u3400-\u9fff-]*"
 # 用途 is optional in the pattern on purpose: a declaration written before this
 # field existed still parses, so the creator gets "REF 缺少用途" instead of the
 # generic syntax error that gives no hint about what to add.
@@ -69,79 +65,34 @@ REF_PURPOSES = (
     "结束帧",
     "风格",
 )
-# A character's voice is a `REF-VOICE-...` slot living in the same 输入参考
-# field as the pictures (VID-27), written after them. The picture slots number
-# `@图片N`/`<Picture N>`/`图N` and the voice slots number `@音频N`/`<Audio N>`/`音频N`,
-# each sequence from 1, so adding a voice slot renumbers no picture.
+# A character's voice travels on its own line, `- 参考音频：`, never inside
+# 输入参考图: the picture slots number `@图片N`/`<Picture N>`/`图N` and the audio
+# slots number `@音频N`/`<Audio N>`/`音频N`, each from 1, so mixing them in one
+# field would renumber every picture after the first voice.
 AUDIO_SUFFIXES = ("wav", "mp3", "m4a", "aac", "flac")
-# The slot grammar is the picture one's with 角色 inserted, so the locator is
-# what tells the two apart: REF_RE cannot match an audio path and this cannot
-# match a picture, and a `REF-VOICE-` name on a picture path is a slot nobody
-# asked for rather than a voice reference.
-VOICE_SLOT_RE = re.compile(
-    r"(REF-VOICE-" + SLOT_NAME + r")（顺序：([1-9]\d*)）· "
+AUDIO_REF_RE = re.compile(
+    r"(REF-[A-Z0-9-]+)（顺序：([1-9]\d*)）· "
     r"([^；\n]+?\.(?:" + "|".join(AUDIO_SUFFIXES) + r"))《([^》\n]+)》"
     r"（用途：([^；）\n]+)；角色：([^；）\n]+)；控制：([^；）]+)；不得控制：([^）]+)）",
     re.IGNORECASE,
 )
-# A voice slot whose grammar is broken. Reported as such: the generic REF
-# syntax error below points at the pictures, and its obvious repair is
-# deleting the voice slot.
-VOICE_HEAD_RE = re.compile(
-    r"REF-VOICE-" + SLOT_NAME + r"（顺序：", re.IGNORECASE
-)
 AUDIO_PURPOSE = "音色"
 AUDIO_SYNTAX = (
-    "REF-VOICE-<槽位>（顺序：<n>）· <音频路径>《<中文名>》"
+    "REF-<槽位>（顺序：<n>）· <音频路径>《<中文名>》"
     "（用途：音色；角色：<人物名>；控制：<范围>；不得控制：<范围>）"
 )
-# How each slot kind is named in a diagnostic. REF and PLAN are the words the
-# creator wrote; a voice or video slot has no such word, so it is named by what
-# it is.
-SLOT_KIND_LABEL = {
-    "REF": "REF",
-    "PLAN": "PLAN",
-    "VIDEO": "视频槽位",
-    "VOICE": "音色槽位",
-}
-# 音色 only ever locks timbre: whatever the model hears in the sample, the line
-# itself is the screenplay's, not the sample's.
-AUDIO_MUST_NOT = ("台词", "语气", "情绪")
-# A `REF-VIDEO-...` slot is the third kind the 输入参考 field carries (VID-28),
-# written between the pictures and the voices. Its locator is a video file, and
-# its 用途 says what the take borrows from the clip -- which is what separates
-# it from a picture: a picture can show a pose, only a clip can show how the
-# pose is arrived at. Every video slot compiles to the same provider role
-# (`reference_video`), so unlike REF_PURPOSES this vocabulary describes the
-# loan rather than choosing a role.
-VIDEO_SUFFIXES = ("mp4", "mov", "webm", "mkv", "m4v", "avi")
-VIDEO_PURPOSES = ("动作", "运镜", "节奏", "表演", "风格")
-VIDEO_SLOT_RE = re.compile(
-    r"(REF-VIDEO-" + SLOT_NAME + r")（顺序：([1-9]\d*)）· "
-    r"([^；\n]+?\.(?:" + "|".join(VIDEO_SUFFIXES) + r"))《([^》\n]+)》"
-    r"（用途：([^；）\n]+)；控制：([^；）]+)；不得控制：([^）]+)）",
-    re.IGNORECASE,
+# An audio file or 用途：音色 in a picture field is a voice binding written in
+# the wrong place; the generic "broken REF syntax" would not say where it goes.
+AUDIO_IN_IMAGE_FIELD_RE = re.compile(
+    r"\.(?:" + "|".join(AUDIO_SUFFIXES) + r"|opus)《|用途：音色", re.IGNORECASE
 )
-# The same role as VOICE_HEAD_RE: a video slot whose grammar is broken, so the
-# repair hint names the video syntax instead of the picture one.
-VIDEO_HEAD_RE = re.compile(
-    r"REF-VIDEO-" + SLOT_NAME + r"（顺序：", re.IGNORECASE
-)
-VIDEO_SYNTAX = (
-    "REF-VIDEO-<槽位>（顺序：<n>）· <视频路径>《<中文名>》"
-    "（用途：<用途>；控制：<范围>；不得控制：<范围>）"
-)
-# A clip carries a body and a face the project did not cast. Identity is what
-# the picture slots and 视觉设定.md already own, so a video loan is always
-# declared as not reaching it -- the way a voice loan never reaches 台词.
-VIDEO_MUST_NOT = ("身份",)
 # Where 《视觉设定.md》 records a character's accepted voice reference: one
 # line under that 人物 entry, path first.
 VOICE_RECORD_RE = re.compile(
     r"^[ \t　]*[-*+][ \t　]*声音参考[：:](.*)$", re.MULTILINE
 )
 # Same filename rule as the binding's locator (`[^；\n]+?`), so any path a
-# voice slot may name can also be the recorded one -- spaces included.
+# 参考音频 slot may name can also be the recorded one -- spaces included.
 VOICE_RECORD_PATH_RE = re.compile(
     r"([^（；\n]+?\.(?:" + "|".join(AUDIO_SUFFIXES) + r"))(?=（|$)", re.IGNORECASE
 )
@@ -169,7 +120,9 @@ CLAUSE_BREAK_RE = re.compile(r"[。！？；.!?;]")
 # `EP001-SC001` is the documented shape, but a project that scopes ids by season
 # writes `S01-EP001-SC001`. Both are one stable scene id, so the pattern takes
 # any hyphenated prefix rather than exactly one segment.
-SLOT_HEAD_RE = re.compile(r"(?:REF|PLAN)-" + SLOT_NAME + r"（顺序：", re.IGNORECASE)
+SLOT_HEAD_RE = re.compile(
+    r"(?:REF|PLAN)-[A-Za-z0-9][A-Za-z0-9-]*（顺序：", re.IGNORECASE
+)
 SCENE_ID_PATTERN = r"(?:[A-Za-z0-9]+-)+SC[0-9]+"
 SCENE_HEADING_RE = re.compile(
     r"^## (" + SCENE_ID_PATTERN + r")\b", re.MULTILINE
@@ -192,11 +145,6 @@ SPOKEN_SPAN_RE = re.compile(r"<d>([^<]*)</d>|[\"“]([^\"”]*)[\"”]|「([^」
 SPOKEN_RUN_RE = re.compile(r"[\u3400-\u9fff]{4,}")
 EXPLICIT_TEXT_TO_VIDEO = "无（创作者已明确选择文生视频）"
 PENDING_REFERENCE_SUFFIX_RE = re.compile(r"；待补参考图：[^；。\n]+。?$")
-# The same field may open with the explicit no-picture marker and then carry
-# voice slots: a text-to-video take whose character still speaks needs its 音色
-# reference, and the marker is what keeps 生成方式 honest. Cut it the way the
-# trailing gap list is cut, so the slots that follow still parse.
-NONE_PREFIX_RE = re.compile(r"^无（[^）\n]+）(?:；|$)")
 VISUAL_CATEGORIES = ("人物", "造型", "地点", "道具")
 # A malformed entry always tries to name something; a heading that is only the
 # category word is a section divider ("## 人物"), and rejecting it left the
@@ -414,67 +362,18 @@ class EntryIndex(NamedTuple):
     shots: frozenset
 
 
-# The order the three kinds are written in, and the order they are checked in.
-# Pictures first because they carry the start frame and the identity; video next
-# because it loans motion; voice last because VID-27 already fixed it there.
-SLOT_KINDS = (
-    ("REF", REF_RE),
-    ("PLAN", PLAN_RE),
-    ("VIDEO", VIDEO_SLOT_RE),
-    ("VOICE", VOICE_SLOT_RE),
-)
-# What a slot of each kind is counted as when the picture part of a declaration
-# is compared across documents: REF and PLAN are the pictures.
-PICTURE_KINDS = frozenset({"REF", "PLAN"})
-# Which block of the field a slot of each kind belongs to, pictures first.
-SLOT_BLOCK_ORDER = {"REF": 0, "PLAN": 0, "VIDEO": 1, "VOICE": 2}
-
-
 def _slot_matches(value: str) -> list:
-    """Every `REF-...`, `PLAN-...`, `REF-VIDEO-...` and `REF-VOICE-...` slot in `value`.
+    """Every `REF-...` and `PLAN-...` slot in `value`, in written order.
 
-    The four patterns cannot match the same span: a REF locator has to end in a
-    picture suffix, a PLAN locator has to be an `IMG-`/`SHOT-` id, a video
-    locator has to end in a video suffix and a voice locator in an audio one.
-    Each entry is `(start, end, kind, groups)` so a caller can both slice the
-    source text and read the slot's own fields.
+    The two patterns cannot match the same span: a REF locator has to be an
+    image path and a PLAN locator has to be an `IMG-`/`SHOT-` id.
     """
     found = []
-    for kind, pattern in SLOT_KINDS:
+    for kind, pattern in (("REF", REF_RE), ("PLAN", PLAN_RE)):
         for match in pattern.finditer(value):
             found.append((match.start(), match.end(), kind, match.groups()))
     found.sort(key=lambda item: item[0])
     return found
-
-
-def _slot_purpose(item: tuple) -> str:
-    """A slot's 用途, which sits at a different group index once 角色 is present."""
-    return (item[3][4] or "").strip()
-
-
-def _slot_bounds(item: tuple) -> tuple[str, str]:
-    """A slot's 控制 and 不得控制, likewise."""
-    return (item[3][5], item[3][6]) if item[2] != "VOICE" else (item[3][6], item[3][7])
-
-
-def _picture_part(value: str) -> str:
-    """The 输入参考 text without its video and voice slots.
-
-    VID-24 asks the motion document to copy the shot's declaration; VID-27 and
-    VID-28 let the motion add voice and video slots on its own authority.
-    Comparing the two therefore compares picture slots only -- and those slots
-    are written first, so cutting the text at the head of the first non-picture
-    slot does that without re-parsing either side.
-    """
-    text = _plain(value)
-    heads = [
-        head.start()
-        for head in (VIDEO_HEAD_RE.search(text), VOICE_HEAD_RE.search(text))
-        if head is not None
-    ]
-    if heads:
-        text = text[: min(heads)]
-    return text.rstrip("；;。 \t")
 
 
 def _references(
@@ -483,19 +382,17 @@ def _references(
     project_root: Path,
     errors: list[str],
     entries: Optional[EntryIndex] = None,
-) -> list:
-    """Validate one 输入参考/参考 declaration; return its slots as `_slot_matches` entries.
-
-    The returned list is what a caller needs in order to run the checks that
-    reach past this field -- a MOTION's voice slots are matched against the
-    screenplay and 视觉设定.md, which only that caller can supply.
-    """
+) -> frozenset:
+    """Validate one 输入参考图/参考 declaration; return the slot kinds it uses."""
     if _is_none(value):
-        return []
+        return frozenset()
+    if AUDIO_IN_IMAGE_FIELD_RE.search(value):
+        errors.append(
+            f"{owner}: 输入参考图只收图片；角色音色参考写在《视频提示词.md》"
+            "该 MOTION 的「- 参考音频：」行"
+        )
+        return frozenset()
     reference_value = PENDING_REFERENCE_SUFFIX_RE.sub("", value.strip())
-    none_prefix = NONE_PREFIX_RE.match(reference_value)
-    if none_prefix is not None:
-        reference_value = reference_value[none_prefix.end() :]
     matches = _slot_matches(reference_value)
     cursor = 0
     separators_are_valid = True
@@ -524,68 +421,29 @@ def _references(
                 "缺口之间只用、分隔"
             )
         elif _contains_plan_token(value) and not _contains_ref_token(value):
-            errors.append(f"{owner}: 输入参考必须使用完整 PLAN 语法")
-        elif VOICE_HEAD_RE.search(value):
-            errors.append(
-                f"{owner}: 音色槽位必须写成 {AUDIO_SYNTAX}，"
-                "写在视频槽位之后，多条用；连接"
-            )
-        elif VIDEO_HEAD_RE.search(value):
-            errors.append(
-                f"{owner}: 视频槽位必须写成 {VIDEO_SYNTAX}，"
-                "写在图片槽位之后，多条用；连接"
-            )
+            errors.append(f"{owner}: 输入参考图必须使用完整 PLAN 语法")
         else:
-            errors.append(f"{owner}: 输入参考必须使用完整 REF 语法")
-        return []
-    picture = [item for item in matches if item[2] in PICTURE_KINDS]
-    video = [item for item in matches if item[2] == "VIDEO"]
-    voice = [item for item in matches if item[2] == "VOICE"]
-    slots = [item[3][0] for item in matches]
-    locators = [item[3][2] for item in matches]
-    purposes = [_slot_purpose(item) for item in matches]
+            errors.append(f"{owner}: 输入参考图必须使用完整 REF 语法")
+        return kinds
+    groups = [item[3] for item in matches]
+    slot_kinds = [item[2] for item in matches]
+    slots = [group[0] for group in groups]
+    orders = [int(group[1]) for group in groups]
+    locators = [group[2] for group in groups]
+    purposes = [(group[4] or "").strip() for group in groups]
     # A declaration made only of PLAN slots is not a REF declaration, so its
     # diagnostics must not send the creator looking for a REF line.
     noun = "PLAN" if kinds == frozenset({"PLAN"}) else "REF"
     if len(slots) != len(set(slots)):
-        errors.append(f"{owner}: {noun} 槽位重复：图片、视频、音色槽位不能同名")
-    # Three numbering sequences (VID-27, VID-28), each from 1: the pictures
-    # answer to `@图片N`/`<Picture N>`/`图N` in the body, the videos to `@视频N`
-    # and the voices to `@音频N`/`<Audio N>`/`音频N` -- which is exactly how the
-    # provider adapter counts them, so a video or voice slot added later
-    # renumbers no picture.
-    for label, items, tail in (
-        (noun + " ", picture, ""),
-        ("视频槽位", video, "，与图片分开数"),
-        ("音色槽位", voice, "，与图片、视频分开数"),
+        errors.append(f"{owner}: {noun} 槽位重复")
+    if len(orders) != len(set(orders)) or sorted(orders) != list(
+        range(1, len(orders) + 1)
     ):
-        orders = [int(item[3][1]) for item in items]
-        if not orders:
-            continue
-        if len(set(orders)) != len(orders) or sorted(orders) != list(
-            range(1, len(orders) + 1)
-        ):
-            errors.append(f"{owner}: {label}顺序必须唯一且从 1 连续编号{tail}")
-    # One block per kind, in one order. A creator reading the field top to
-    # bottom meets the frames and identities first, then the motion loans, then
-    # the voices; interleaving them would also break the picture comparison of
-    # VID-24, which stops at the first non-picture head.
-    if [SLOT_BLOCK_ORDER[item[2]] for item in matches] != sorted(
-        SLOT_BLOCK_ORDER[item[2]] for item in matches
-    ):
-        errors.append(f"{owner}: 槽位必须按 图片 → 视频 → 音色 的顺序书写，不得交错")
-    # Pictures are the storyboard's business; a video loan and a voice loan are
-    # both inputs to the take the video document alone decides on.
-    for label, items in (("视频槽位", video), ("音色槽位", voice)):
-        if items and not owner.startswith("MOTION-"):
-            errors.append(
-                f"{owner}: {label}只写在《视频提示词.md》的 MOTION 条目里"
-            )
+        errors.append(f"{owner}: {noun} 顺序必须唯一且从 1 连续编号")
     locator_purposes = list(zip(locators, purposes))
     if len(locator_purposes) != len(set(locator_purposes)):
         errors.append(f"{owner}: {noun} 路径与用途完全重复")
-    for item in picture:
-        slot, purpose = item[3][0], _slot_purpose(item)
+    for slot, purpose in zip(slots, purposes):
         if not purpose:
             errors.append(
                 f"{owner}: {noun} 缺少用途: {slot}；用途只能是"
@@ -596,54 +454,29 @@ def _references(
                 f"{owner}: {noun} 用途不在允许集合内: {slot}（{purpose}）；"
                 f"只能是{'、'.join(REF_PURPOSES)}"
             )
-    for item in voice:
-        purpose = _slot_purpose(item)
-        if purpose != AUDIO_PURPOSE:
-            errors.append(
-                f"{owner}: 音色槽位用途只能是{AUDIO_PURPOSE}: "
-                f"{item[3][0]}（{purpose}）"
-            )
-    for item in video:
-        slot, purpose = item[3][0], _slot_purpose(item)
-        if purpose not in VIDEO_PURPOSES:
-            errors.append(
-                f"{owner}: 视频槽位用途不在允许集合内: {slot}（{purpose}）；"
-                f"只能是{'、'.join(VIDEO_PURPOSES)}"
-            )
-    picture_purposes = [_slot_purpose(item) for item in picture]
     for role in ("起始帧", "结束帧"):
-        if picture_purposes.count(role) > 1:
+        if purposes.count(role) > 1:
             errors.append(f"{owner}: 同一条目只能有一张{role}参考图")
-    if "结束帧" in picture_purposes and "起始帧" not in picture_purposes:
+    if "结束帧" in purposes and "起始帧" not in purposes:
         errors.append(f"{owner}: 绑定结束帧参考图时必须同时绑定起始帧")
-    for item in matches:
-        kind, group = item[2], item[3]
+    for index, (kind, group) in enumerate(zip(slot_kinds, groups)):
         slot, raw_locator, label = group[0], group[2], group[3]
-        may_control, must_not_control = _slot_bounds(item)
-        if kind == "PLAN":
-            _plan_locator(
-                raw_locator, label, owner, slot, _slot_purpose(item), entries, errors
-            )
-        else:
+        may_control, must_not_control = group[5], group[6]
+        if kind == "REF":
             _check_project_file(raw_locator, owner, project_root, errors)
-        name = SLOT_KIND_LABEL[kind]
+        else:
+            _plan_locator(
+                raw_locator, label, owner, slot, purposes[index], entries, errors
+            )
         if not re.search(r"[\u4e00-\u9fff]", label):
-            errors.append(f"{owner}: {name} 缺少中文名称: {slot}")
+            errors.append(f"{owner}: {kind} 缺少中文名称: {slot}")
         if not may_control.strip() or not must_not_control.strip():
-            errors.append(f"{owner}: {name} 必须同时声明控制与不得控制: {slot}")
-        allowed = {part.strip() for part in re.split(r"[、,，]", may_control)}
-        prohibited = {part.strip() for part in re.split(r"[、,，]", must_not_control)}
+            errors.append(f"{owner}: {kind} 必须同时声明控制与不得控制: {slot}")
+        allowed = {item.strip() for item in re.split(r"[、,，]", may_control)}
+        prohibited = {item.strip() for item in re.split(r"[、,，]", must_not_control)}
         if "" in allowed or "" in prohibited or allowed & prohibited:
-            errors.append(f"{owner}: {name} 控制与不得控制范围冲突: {slot}")
-        if kind == "VOICE" and not set(AUDIO_MUST_NOT) <= prohibited:
-            errors.append(
-                f"{owner}: 音色槽位不得控制至少包含{'、'.join(AUDIO_MUST_NOT)}: {slot}"
-            )
-        if kind == "VIDEO" and not set(VIDEO_MUST_NOT) <= prohibited:
-            errors.append(
-                f"{owner}: 视频槽位不得控制至少包含{'、'.join(VIDEO_MUST_NOT)}: {slot}"
-            )
-    return matches
+            errors.append(f"{owner}: {kind} 控制与不得控制范围冲突: {slot}")
+    return kinds
 
 
 def _check_project_file(
@@ -790,7 +623,7 @@ def _voice_records(visual: str, errors: list[str]) -> dict[str, str]:
 
 
 class VoiceContext(NamedTuple):
-    """What a MOTION's voice slots are checked against."""
+    """What a MOTION's 参考音频 line is checked against."""
 
     characters: frozenset
     records: dict[str, str]
@@ -800,34 +633,61 @@ class VoiceContext(NamedTuple):
 
 
 def _audio_references(
-    slots: list,
+    value: str,
     owner: str,
+    project_root: Path,
     errors: list[str],
     *,
+    image_slots: list[str],
     prompt: Optional[str],
     voices: VoiceContext,
     scenes: list[str],
 ) -> None:
-    """Hold each `REF-VOICE-...` slot of one MOTION to the character it names.
-
-    The syntax, the numbering, the file and the 用途/角色 grammar were already
-    settled by `_references` on the same field; what is left is the part only
-    this document pair can answer -- is that character a 人物 entry, does he
-    speak in this take, and is the audio the one 视觉设定.md accepted.
-    """
-    if not slots:
+    """Validate one MOTION's 参考音频 line against the character it names."""
+    if _is_none(value):
         return
     # A line said in another scene is not evidence for this shot.
     in_scope = [line for line in voices.dialogue if not scenes or line.scene in scenes]
     quotes = _quote_speakers(prompt, in_scope, voices.names)
-    speakers = [item[3][5].strip() for item in slots]
+    plain = value.strip()
+    matches = list(AUDIO_REF_RE.finditer(plain))
+    cursor = 0
+    for index, match in enumerate(matches):
+        if plain[cursor : match.start()] != ("" if index == 0 else "；"):
+            matches = []
+            break
+        cursor = match.end()
+    if not matches or plain[cursor:] not in {"", "。"}:
+        errors.append(f"{owner}: 参考音频必须写成 {AUDIO_SYNTAX}，多条用；连接")
+        return
+    slots = [match.group(1) for match in matches]
+    orders = sorted(int(match.group(2)) for match in matches)
+    if len(set(slots)) != len(slots) or set(slots) & set(image_slots):
+        errors.append(f"{owner}: 参考音频槽位重复，或与输入参考图的槽位重名")
+    if orders != list(range(1, len(orders) + 1)):
+        errors.append(f"{owner}: 参考音频顺序必须唯一且从 1 连续编号，与图片分开数")
+    speakers = [match.group(6).strip() for match in matches]
     for name in sorted({name for name in speakers if speakers.count(name) > 1}):
-        errors.append(f"{owner}: 人物「{name}」绑定了不止一个音色槽位")
-    for item in slots:
-        slot, locator, name = item[3][0], item[3][2], item[3][5].strip()
+        errors.append(f"{owner}: 人物「{name}」绑定了不止一条参考音频")
+    for match in matches:
+        slot, _, locator, label, purpose, _, may, must = match.groups()
+        name = match.group(6).strip()
+        _check_project_file(locator, owner, project_root, errors)
+        if purpose.strip() != AUDIO_PURPOSE:
+            errors.append(
+                f"{owner}: 参考音频用途只能是{AUDIO_PURPOSE}: {slot}（{purpose.strip()}）"
+            )
+        if not re.search(r"[\u4e00-\u9fff]", label):
+            errors.append(f"{owner}: REF 缺少中文名称: {slot}")
+        allowed = {item.strip() for item in re.split(r"[、,，]", may)}
+        prohibited = {item.strip() for item in re.split(r"[、,，]", must)}
+        if "" in allowed or "" in prohibited or allowed & prohibited:
+            errors.append(f"{owner}: REF 控制与不得控制范围冲突: {slot}")
+        if not {"台词", "语气", "情绪"} <= prohibited:
+            errors.append(f"{owner}: 参考音频不得控制至少包含台词、语气、情绪: {slot}")
         if name not in voices.characters:
             errors.append(
-                f"{owner}: 音色槽位的角色不是《视觉设定.md》里的人物条目: {name}"
+                f"{owner}: 参考音频的角色不是《视觉设定.md》里的人物条目: {name}"
             )
             continue
         shared = [span for span, speakers in quotes if name in speakers]
@@ -845,7 +705,7 @@ def _audio_references(
         else:
             errors.append(
                 f"{owner}: 人物「{name}」在本镜可复制提示词里没有说出《剧本.md》记在其名下的台词；"
-                "不说话的人物不绑定音色槽位"
+                "不说话的人物不绑定参考音频"
             )
         record = voices.records.get(name)
         recorded = VOICE_RECORD_PATH_RE.match(record.strip()) if record else None
@@ -861,7 +721,7 @@ def _audio_references(
             )
         elif recorded.group(1) != locator:
             errors.append(
-                f"{owner}: 音色槽位 {slot} 的路径 {locator} 与《视觉设定.md》"
+                f"{owner}: 参考音频 {slot} 的路径 {locator} 与《视觉设定.md》"
                 f"人物「{name}」登记的声音参考 {recorded.group(1)} 不一致"
             )
 
@@ -1706,15 +1566,13 @@ def validate_episode(episode: Path, project_root: Optional[Path] = None) -> list
             elif label != image_headings[image_id]:
                 errors.append(f"{shot_id}: IMG 中文名称与标题不一致: {image_id}")
 
-        shot_input = fields.get("输入参考", "")
+        shot_input = fields.get("输入参考图", "")
         if not shot_input:
-            errors.append(f"{shot_id}: 缺少输入参考字段")
-        for stray in ("参考音频", "参考视频"):
-            if stray in fields:
-                errors.append(
-                    f"{shot_id}: {stray}写在《视频提示词.md》MOTION 的「输入参考」"
-                    "槽位里，分镜不登记"
-                )
+            errors.append(f"{shot_id}: 缺少输入参考图字段")
+        if "参考音频" in fields:
+            errors.append(
+                f"{shot_id}: 参考音频写在《视频提示词.md》的 MOTION 条目里，分镜不登记"
+            )
         _references(shot_input, shot_id, project_root, errors, entries)
 
         basis_value = fields.get("视觉依据", "")
@@ -1777,27 +1635,26 @@ def validate_episode(episode: Path, project_root: Optional[Path] = None) -> list
             _check_spoken_lines(
                 copyable_prompt, motion_id, spoken_sources, errors
             )
-        motion_input = motion_fields.get("输入参考", "")
-        motion_slots = _references(motion_input, motion_id, project_root, errors, entries)
-        # VID-24 asks for the shot's declaration copied verbatim; VID-27 and
-        # VID-28 let the motion add voice and video slots on its own authority.
-        # What has to match is the picture part, so neither is a drift.
-        if _picture_part(motion_input) != _picture_part(shot_input):
-            errors.append(f"{motion_id}: 输入参考与 {shot_id} 不一致")
-        for stray, kind in (("参考视频", "视频"), ("参考音频", "音色")):
-            if stray in motion_fields:
-                errors.append(
-                    f"{motion_id}: {kind}参考写在「输入参考」的{kind}槽位里，"
-                    f"不再单列{stray}字段"
-                )
-        _audio_references(
-            [item for item in motion_slots if item[2] == "VOICE"],
-            motion_id,
-            errors,
-            prompt=copyable_prompt,
-            voices=voices,
-            scenes=shot_scenes,
-        )
+        motion_input = motion_fields.get("输入参考图", "")
+        _references(motion_input, motion_id, project_root, errors, entries)
+        if _plain(motion_input) != _plain(shot_input):
+            errors.append(f"{motion_id}: 输入参考图与 {shot_id} 不一致")
+        if "参考音频" in motion_fields:
+            _audio_references(
+                motion_fields["参考音频"],
+                motion_id,
+                project_root,
+                errors,
+                image_slots=[
+                    item[3][0]
+                    for item in _slot_matches(
+                        PENDING_REFERENCE_SUFFIX_RE.sub("", motion_input.strip())
+                    )
+                ],
+                prompt=copyable_prompt,
+                voices=voices,
+                scenes=shot_scenes,
+            )
 
         if _has_pending_references(shot_input):
             errors.append(f"{motion_id}: 仍有待补参考图，不能生成最终视频提示词")
@@ -1813,7 +1670,7 @@ def validate_episode(episode: Path, project_root: Optional[Path] = None) -> list
         if not sends_pictures:
             if not _is_explicit_text_to_video(shot_input):
                 errors.append(
-                    f"{motion_id}: 无真实输入参考时不能静默降级为文生视频；"
+                    f"{motion_id}: 无真实输入参考图时不能静默降级为文生视频；"
                     "请先绑定已有图片、列出待补图片，或记录创作者已明确选择文生视频"
                 )
             anchor = _plain(motion_fields.get("静态视觉锚点", ""))
