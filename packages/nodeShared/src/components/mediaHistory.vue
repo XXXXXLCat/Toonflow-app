@@ -1,6 +1,6 @@
 <template>
-  <el-button :icon="IconHistory" :disabled="disabled" text title="历史记录" aria-label="历史记录" @click.stop="visible = true">历史记录</el-button>
-  <el-dialog v-model="visible" :title="`${mediaType === 'image' ? '图片' : '视频'}历史记录`" width="min(760px, calc(100vw - 32px))" appendToBody destroyOnClose>
+  <el-button :icon="IconHistory" :disabled="disabled" text :title="`${mediaLabel}历史记录`" :aria-label="`${mediaLabel}历史记录`" @click.stop="visible = true">历史记录</el-button>
+  <el-dialog v-model="visible" :title="`${mediaLabel}历史记录`" width="min(760px, calc(100vw - 32px))" appendToBody destroyOnClose>
     <div v-loading="loading" class="mediaHistory nodrag nopan nowheel" @pointerdown.stop @mousedown.stop @dblclick.stop @keydown.stop>
       <el-alert v-if="loadError" :title="loadError" type="error" :closable="false" />
       <el-empty v-else-if="!loading && !items.length" description="暂无历史记录" />
@@ -23,7 +23,21 @@
           <div class="historyPreview" v-loading="!!selected && !previewReady && !previewError">
             <el-alert v-if="previewError" :title="previewError" type="error" :closable="false" />
             <img v-else-if="previewUrl && mediaType === 'image'" :src="previewUrl" alt="历史图片预览" @load="previewReady = true" @error="previewError = '无法预览该图片'" />
-            <video v-else-if="previewUrl" :src="previewUrl" controls playsinline preload="auto" aria-label="历史视频预览" @loadeddata="previewReady = true" @error="previewError = '无法预览该视频'" />
+            <video v-else-if="previewUrl && mediaType === 'video'" :src="previewUrl" controls playsinline preload="auto" aria-label="历史视频预览" @loadeddata="previewReady = true" @error="previewError = '无法预览该视频'" />
+            <!-- 音频没有画面，占位图标 + 原生播放器一起给：既看得出「已选中一条音频」，也直接能听。 -->
+            <template v-else-if="previewUrl">
+              <div class="audioPreview">
+                <IconMusicBolt :size="56" stroke="1.25" aria-hidden="true" />
+                <audio
+                  :src="previewUrl"
+                  controls
+                  preload="auto"
+                  aria-label="历史音频预览"
+                  @loadedmetadata="previewReady = true"
+                  @canplay="previewReady = true"
+                  @error="previewError = '无法预览该音频'" />
+              </div>
+            </template>
           </div>
         </div>
         <el-pagination v-model:currentPage="page" :pageSize="pageSize" :total="items.length" layout="prev, pager, next" hideOnSinglePage />
@@ -40,12 +54,14 @@
 import { computed, ref, watch } from "vue";
 import { useNode } from "@vue-flow/core";
 import { ElAlert, ElButton, ElDialog, ElEmpty, ElLoading, ElPagination } from "element-plus";
-import { IconHistory } from "@tabler/icons-vue";
+import { IconHistory, IconMusicBolt } from "@tabler/icons-vue";
 import { useNodeFiles } from "@toonflow/nodes-scaffold/workspaceFiles";
 import type { NodeMediaValue } from "@toonflow/nodes-scaffold/values";
 
-const props = defineProps<{ mediaType: "image" | "video"; current?: NodeMediaValue; disabled?: boolean }>();
+const props = defineProps<{ mediaType: "image" | "video" | "audio"; current?: NodeMediaValue; disabled?: boolean }>();
 const emit = defineEmits<{ select: [value: NodeMediaValue] }>();
+const mediaLabels = { image: "图片", video: "视频", audio: "音频" } as const;
+const mediaLabel = computed(() => mediaLabels[props.mediaType]);
 const vLoading = ElLoading.directive;
 const { id } = useNode();
 const files = useNodeFiles();
@@ -63,6 +79,9 @@ const mimeTypes: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp", gif: "image/gif",
   avif: "image/avif", apng: "image/apng", bmp: "image/bmp", svg: "image/svg+xml", ico: "image/x-icon", tif: "image/tiff", tiff: "image/tiff",
   mp4: "video/mp4", m4v: "video/mp4", webm: "video/webm", mov: "video/quicktime", mkv: "video/x-matroska", avi: "video/x-msvideo", ogv: "video/ogg",
+  // 音频：ComfyUI 的 SaveAudioAdvanced 只落 mp3 / flac / opus，其余是「替换音频」上传或旧节点留下的常见格式。
+  mp3: "audio/mpeg", flac: "audio/flac", opus: "audio/ogg", ogg: "audio/ogg", oga: "audio/ogg", wav: "audio/wav",
+  wave: "audio/wav", m4a: "audio/mp4", aac: "audio/aac", weba: "audio/webm", aif: "audio/aiff", aiff: "audio/aiff",
 };
 const previewFile = computed(() => visible.value ? selected.value : undefined);
 watch(previewFile, () => { previewError.value = ""; }, { flush: "sync" });
@@ -158,6 +177,16 @@ function selectOutput() {
       background: var(--el-fill-color-light);
       border-radius: var(--el-border-radius-base);
 
+      .audioPreview {
+        display: grid;
+        justify-items: center;
+        gap: 16px;
+        width: 100%;
+        padding: 0 24px;
+        color: var(--el-text-color-secondary);
+
+        audio { width: 100%; }
+      }
       img, video { width: 100%; max-height: 360px; object-fit: contain; }
     }
   }

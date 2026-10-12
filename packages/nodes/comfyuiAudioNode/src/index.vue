@@ -12,6 +12,7 @@
     <template #topActions>
       <el-button :icon="IconScissors" :disabled="busy || !previewUrl" text title="截取音频" aria-label="截取音频" @click.stop="actions?.open('clip')">截取</el-button>
       <el-button :icon="IconGauge" :disabled="busy || !previewUrl" text title="音频变速" aria-label="音频变速" @click.stop="actions?.open('speed')">变速</el-button>
+      <mediaHistory mediaType="audio" :current="outputFile" :disabled="busy" @select="outputs.audio = { dataType: 'AUDIO', value: $event }" />
       <el-button :icon="IconTransfer" :loading="uploading" :disabled="busy" text title="替换音频" aria-label="替换音频" @click.stop="fileInput?.click()">替换音频</el-button>
       <input ref="fileInput" type="file" accept="audio/*" hidden aria-label="选择替换音频" :disabled="busy" @change="replaceOutput" />
     </template>
@@ -99,6 +100,7 @@ import { useNodeGeneration } from "@toonflow/node-shared/useNodeGeneration";
 import { useNodeReferences } from "@toonflow/node-shared/useNodeReferences";
 import audioPlayer from "@toonflow/node-audio/audioPlayer";
 import audioActions from "@toonflow/node-audio/audioActions";
+import mediaHistory from "@toonflow/node-shared/mediaHistory";
 import promptInput from "@toonflow/node-shared/promptInput";
 import referenceItem from "@toonflow/node-shared/referenceItem";
 import generationSettings from "./components/generationSettings.vue";
@@ -215,10 +217,13 @@ async function startGeneration() {
   if (!generationText.value) throw new Error("请输入待朗读的文本");
   if (refList.value.some(item => item.value === undefined)) throw new Error("引用节点暂无内容，请先补充引用内容");
   if (!formatOptions.includes(data.value.format)) throw new Error("请重新选择有效的输出格式");
-  const workspace = files.getWorkspaceFiles();
   const controller = new AbortController();
+  generationController = controller;
   // 随机模式在每次生成前现摇一个种子并留在节点上——听到满意的声音后切到「固定」就能复现它。
   if (data.value.seedMode !== "fixed") data.value.seedValue = randomSeed();
+  // 与图片节点一致：每次生成都写进本节点的资产目录（文件名唯一，互不覆盖），
+  // 节点输出切到最新一条，旧的全部留在「历史记录」里随时试听、切回。
+  const workspace = files.getWorkspaceFiles();
   const referenceText = data.value.referenceText.trim() || undefined;
   // 模型不支持参考音频时不带它：读了文件也只是被供应商丢掉，白耗一次 IO。界面上已明确提示。
   const audios = supportsReferenceAudio.value ? refList.value.flatMap(item => item.dataType === "AUDIO" && item.value
@@ -237,7 +242,6 @@ async function startGeneration() {
     seed: data.value.seedValue,
     outputDirectory: `assets/${id}`,
   };
-  generationController = controller;
   generation = generationState.run(async () => {
     const { directory } = await workspace.list();
     controller.signal.throwIfAborted();
@@ -383,7 +387,7 @@ nodeTools.register({
 });
 nodeTools.register({
   name: "generateAudio",
-  description: "使用当前待朗读文本、语音指令、模型与输出格式启动后台生成；立即返回已开始，用 getGenerationStatus 查询结果、cancelGeneration 停止（会一并撤销 ComfyUI 上已提交的任务）",
+  description: "使用当前待朗读文本、语音指令、模型与输出格式启动后台生成；重复生成会覆盖节点输出，但历次音频都留在本节点的资产目录里，可用「历史记录」试听并切回；立即返回已开始，用 getGenerationStatus 查询结果、cancelGeneration 停止（会一并撤销 ComfyUI 上已提交的任务）",
   parameters: z.strictObject({}),
   execute(_args, { signal }) {
     signal?.throwIfAborted();
