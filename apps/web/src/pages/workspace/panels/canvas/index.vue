@@ -111,11 +111,36 @@
         <icon-unlink :size="16" />
       </el-button>
     </teleport>
+    <el-dialog
+      v-model="imageChoice.visible"
+      title="导入为哪种图片节点"
+      :show-close="false"
+      align-center
+      width="380px"
+      append-to-body>
+      <p class="imageChoiceHint">拖入的图片要建成哪种节点？普通图片节点只做展示与通用生成；ComfyUI 图片生成节点自带扩图、动漫转真人、制作资产、放大等玩法。</p>
+      <template #footer>
+        <div class="imageChoiceFooter">
+          <el-checkbox v-model="imageChoice.remember">记住选择（不再询问）</el-checkbox>
+          <div class="imageChoiceButtons">
+            <el-button @click="cancelImageNodeType">取消</el-button>
+            <el-button @click="confirmImageNodeType(IMAGE_NODE_CHOICES.normal)">普通图片节点</el-button>
+            <el-button
+              type="primary"
+              :disabled="!comfyuiNodeAvailable"
+              :title="comfyuiNodeAvailable ? '' : '请先在「设置 → 媒体模型」中启用 ComfyUI 图片生成节点'"
+              @click="confirmImageNodeType(IMAGE_NODE_CHOICES.comfyui)">
+              ComfyUI 图片生成节点
+            </el-button>
+          </div>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, onScopeDispose, provide, ref, shallowReactive, shallowRef, watch } from "vue";
+import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, onScopeDispose, provide, reactive, ref, shallowReactive, shallowRef, watch } from "vue";
 import axios from "axios";
 import { debounce } from "lodash-es";
 import { ElMessage } from "element-plus";
@@ -166,7 +191,7 @@ import { useNodeEvent } from "@toonflow/nodes-scaffold/nodeEvent";
 import type { NodeDocumentContext, NodeDocumentState } from "@toonflow/nodes-scaffold/nodeDocument";
 import { useNodeToolsContext } from "@toonflow/nodes-scaffold/nodeTools";
 import { useWorkspaceStore } from "@/stores/workspace";
-import { generalSettings } from "@/stores/settings";
+import { generalSettings, settings, saveSettings } from "@/stores/settings";
 import { getShortcutBindings, shortcutLabel, shortcutMatches, shortcutPressed } from "@/lib/canvasShortcuts";
 import useWorkspaceFiles from "@/lib/workspaceFiles";
 import anonymousData from "@/lib/anonymousData";
@@ -471,11 +496,45 @@ function dragFilesOver(event: DragEvent) {
   return true;
 }
 
+// 拖入/选择图片时，让用户决定建成「普通图片节点」还是「ComfyUI 图片生成节点」，
+// 后者自带扩图、动漫转真人、制作资产、放大等玩法（节点本身只调 ComfyUI）。
+// 选择可记住为默认，写入 settings.imageDropNodeType，下次不再询问。
+const IMAGE_NODE_CHOICES = { normal: "remote-imageNode", comfyui: "remote-comfyuiImageNode" } as const;
+const imageChoice = reactive<{ visible: boolean; remember: boolean; resolve?: (value: string | null) => void }>({ visible: false, remember: false });
+const comfyuiNodeAvailable = computed(() => availableNodes.value.some(node => node.type === IMAGE_NODE_CHOICES.comfyui));
+function chooseImageNodeType(): Promise<string | null> {
+  const saved = settings.value.imageDropNodeType;
+  if (saved === IMAGE_NODE_CHOICES.normal || saved === IMAGE_NODE_CHOICES.comfyui) return Promise.resolve(saved);
+  return new Promise((resolve) => {
+    imageChoice.resolve = resolve;
+    imageChoice.remember = false;
+    imageChoice.visible = true;
+  });
+}
+function confirmImageNodeType(type: string) {
+  const resolve = imageChoice.resolve;
+  imageChoice.visible = false;
+  imageChoice.resolve = undefined;
+  if (imageChoice.remember) {
+    settings.value.imageDropNodeType = type;
+    void saveSettings();
+  }
+  resolve?.(type);
+}
+function cancelImageNodeType() {
+  const resolve = imageChoice.resolve;
+  imageChoice.visible = false;
+  imageChoice.resolve = undefined;
+  resolve?.(null);
+}
+
 async function dropFiles(event: DragEvent) {
   const directory = project.value?.directory;
   if (!directory || !dragFilesOver(event)) return;
+  const type = await chooseImageNodeType();
+  if (!type) return;
   try {
-    await canvasHistory.batch(() => dropCanvasFiles(event, { directory, availableNodes: availableNodes.value, signal: canvasController.signal, flow }));
+    await canvasHistory.batch(() => dropCanvasFiles(event, { directory, availableNodes: availableNodes.value, signal: canvasController.signal, flow }, type));
   } catch (error) {
     ElMessage.error(error instanceof Error ? error.message : "文件导入失败");
   }
@@ -491,8 +550,10 @@ function selectFiles(position: { x: number; y: number }) {
   input.onchange = async () => {
     const files = Array.from(input.files ?? []);
     if (!files.length || context.signal.aborted) return;
+    const type = await chooseImageNodeType();
+    if (!type) return;
     try {
-      await canvasHistory.batch(() => importCanvasFiles(files, position, context));
+      await canvasHistory.batch(() => importCanvasFiles(files, position, context, type));
     } catch (error) {
       ElMessage.error(error instanceof Error ? error.message : "文件导入失败");
     }
@@ -1141,6 +1202,7 @@ const defaultEdgeOptions = markRaw({
   width: 100%;
   height: 100%;
 
+
   &.compositingEnabled :deep(.vue-flow__transformationpane) {
     will-change: transform;
   }
@@ -1183,5 +1245,26 @@ const defaultEdgeOptions = markRaw({
   height: 32px;
   padding: 0;
   transform: translate(-50%, -50%);
+}
+
+.imageChoiceHint {
+  margin: 0;
+  color: var(--el-text-color-regular);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.imageChoiceFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.imageChoiceButtons {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 </style>

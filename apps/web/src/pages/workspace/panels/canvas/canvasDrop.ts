@@ -70,7 +70,7 @@ type CanvasFileContext = {
   flow: Pick<ReturnType<typeof useVueFlow>, "addNodes" | "screenToFlowCoordinate">;
 };
 
-export async function dropCanvasFiles(event: DragEvent, context: CanvasFileContext) {
+export async function dropCanvasFiles(event: DragEvent, context: CanvasFileContext, imageNodeType: string = "remote-imageNode") {
   const transfer = event.dataTransfer;
   if (!transfer) return;
   const path = transfer.getData(assetDragType);
@@ -83,13 +83,13 @@ export async function dropCanvasFiles(event: DragEvent, context: CanvasFileConte
       const { data } = await axios.get<Blob>("/api/assets/read", { params: { path }, responseType: "blob", signal });
       droppedFiles = [new File([data], path.split("/").pop()!, { type: data.type })];
     }
-    await importCanvasFiles(droppedFiles, position, context);
+    await importCanvasFiles(droppedFiles, position, context, imageNodeType);
   } catch (error) {
     if (!signal.aborted) showError(error);
   }
 }
 
-export async function importCanvasFiles(droppedFiles: File[], position: { x: number; y: number }, context: CanvasFileContext) {
+export async function importCanvasFiles(droppedFiles: File[], position: { x: number; y: number }, context: CanvasFileContext, imageNodeType: string = "remote-imageNode") {
   const { signal, flow, availableNodes } = context;
   const files = useWorkspaceFiles(context.directory);
   for (const [index, file] of droppedFiles.entries()) {
@@ -103,7 +103,9 @@ export async function importCanvasFiles(droppedFiles: File[], position: { x: num
       const kind = mimeType.startsWith("image/") ? "image" : mimeType.startsWith("audio/") ? "audio" : mimeType.startsWith("video/") ? "video"
         : mimeType.startsWith("text/") || /^application\/(json|xml|javascript|x-ndjson)$/.test(mimeType) ? "text" : undefined;
       if (!kind) throw new Error(`${file.name}：该文件类型暂不支持导入画布`);
-      const type = `remote-${kind}Node`;
+      // 图片允许在导入时选择建成哪种节点：普通图片节点（纯载体/通用生成）或 ComfyUI 图片生成节点（自带扩图、动漫转真人等玩法）。
+      // 其余媒体类型仍按各自默认节点建。
+      const type = kind === "image" ? imageNodeType : `remote-${kind}Node`;
       if (!availableNodes.some(node => node.type === type)) throw new Error(`${file.name}：请先安装并启用对应的基础节点`);
       let output: NodeOutput | undefined;
       let textSnapshot: string | undefined;

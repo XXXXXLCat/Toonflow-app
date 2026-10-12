@@ -379,11 +379,10 @@ export async function deleteMediaProvider(fileName: string, revision: string) {
   } finally { release(); }
 }
 
-// ComfyUI 连接地址：本地 127.0.0.1:8188 优先，连不上再走局域网备用 192.168.50.5:8188。
-// 也可在「设置 → 媒体模型」里手动指定单一地址（settings.comfyuiUrl），指定后只用那一个。
+// ComfyUI 连接地址：默认仅 http://127.0.0.1:8188；其它地址（如局域网）需在「设置 → 常规配置」手动指定
+// （settings.comfyuiUrl），指定后只用那一个，不再自动尝试其它地址。
 // 落到这里是因为供应商文件运行在 vm 沙箱里、禁止 import 任何模块，地址兜底只能由宿主统一拦截。
 const DEFAULT_COMFY_BASE = "http://127.0.0.1:8188";
-const FALLBACK_COMFY_BASE = "http://192.168.50.5:8188";
 
 function comfyCandidates(): string[] {
   const raw = conf.get("settings.comfyuiUrl");
@@ -394,9 +393,9 @@ function comfyCandidates(): string[] {
       if ((url.protocol === "http:" || url.protocol === "https:") && !url.username && !url.password && !url.hash) {
         return [url.origin]; // 手动指定：只用这一个地址
       }
-    } catch { /* 落到默认兜底 */ }
+    } catch { /* 落到默认地址 */ }
   }
-  return [DEFAULT_COMFY_BASE, FALLBACK_COMFY_BASE];
+  return [DEFAULT_COMFY_BASE];
 }
 
 // 仅当请求目标是 ComfyUI 默认基址（127.0.0.1:8188，供应商统一写死的那个）时才做兜底；
@@ -419,7 +418,7 @@ async function resolveComfyBase(fetchRequest: typeof fetch): Promise<string> {
   return fallback;
 }
 
-// 对指向 ComfyUI 的请求做本地优先、连不上走局域网的兜底。
+// 对指向 ComfyUI 的请求按 comfyCandidates() 里的地址列表重写并重试。
 // 仅连接层失败（连不上 / 超时 / 被拒）才重试下一个候选；HTTP 错误状态码不重试（那是请求本身的问题，不是 ComfyUI 不在）。
 async function comfyAwareFetch(fetchRequest: typeof fetch, input: Parameters<typeof fetch>[0], init?: RequestInit): Promise<Response> {
   const urlString = typeof input === "string" ? input : input instanceof URL ? input.href : (input as Request)?.url ?? "";

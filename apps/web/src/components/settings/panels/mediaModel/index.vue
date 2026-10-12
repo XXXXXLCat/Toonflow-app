@@ -1,13 +1,5 @@
 <template>
-  <div v-if="loaded">
-    <el-card class="comfyAddress" shadow="never">
-      <div class="comfyAddressHeader">
-        <el-text class="comfyAddressTitle" tag="strong">ComfyUI 地址</el-text>
-        <el-text size="small" type="info">留空默认 http://127.0.0.1:8188，连不上自动走 http://192.168.50.5:8188；手动指定后只用这一个地址。</el-text>
-      </div>
-      <el-input v-model="comfyuiUrl" placeholder="http://127.0.0.1:8188" clearable class="comfyAddressInput" />
-    </el-card>
-  </div>
+  <div class="mediaModelPanel">
   <div v-if="loaded" class="providerList">
     <div class="itemList">
       <el-card v-for="item in sortedProviders" :key="item.fileName" class="providerItem" shadow="never">
@@ -47,6 +39,7 @@
     <component :is="mediaProviderDialog" v-model="providerDialogVisible" :mode="addMode" @added="saveProviderItem" />
     <component :is="editProviderDialog" v-model="editorVisible" :provider="editingProvider" @saved="saveProviderItem" />
   </div>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -71,11 +64,6 @@ const editorVisible = ref(false);
 const addMode = ref<"builtin" | "custom">("builtin");
 const editingProvider = ref<MediaProvider>();
 const deletingFile = ref("");
-// ComfyUI 地址：手动设定（留空则用默认本地地址 + 局域网兜底）。settings 深度 watch 会自动存盘。
-const comfyuiUrl = computed<string>({
-  get: () => typeof settings.value.comfyuiUrl === "string" ? settings.value.comfyuiUrl : "",
-  set: (value) => { settings.value = { ...settings.value, comfyuiUrl: value }; },
-});
 const fetchingFile = ref("");
 let loadRequest = 0;
 
@@ -180,8 +168,4 @@ function saveProviderItem(provider: MediaProvider) {
 </script>
 
 <style lang="scss" scoped src="../../providerList.scss"></style>
-<style lang="scss" scoped>
-.comfyAddress { margin-bottom: 16px; }
-.comfyAddressHeader { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; }
-.comfyAddressInput { max-width: 420px; }
-</style>
+<style lang="scss" scoped></style>
