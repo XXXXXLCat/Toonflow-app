@@ -89,6 +89,11 @@ export async function createAgentTools(cwd: string, canvas?: CanvasContext, ques
     const { plugin, metadata } = await loadTool(item.name);
     const config = validateToolConfig(plugin, item.config);
     const definitions = await plugin.createTools({ ...context, config });
+    // ACT: 画布类工具依赖运行时注入的画布上下文；缺少上下文时插件会返回空数组，
+    // 表现为「工具不存在」而掩盖真实原因（未打开画布/页面未连接），此处留下可排查的痕迹。
+    if (!definitions.length && item.name === "canvas") {
+      console.warn(`[tools] 画布工具未注册：${canvas ? "画布上下文缺少可执行方法" : "本轮未注入画布上下文（通常表示发起对话时没有打开的画布，或 MCP 页面未连接）"}`);
+    }
     for (const tool of definitions) {
       if (!tool.name || typeof tool.execute !== "function") throw new Error(t`${item.displayName} 返回了无效的工具`);
       if (names.has(tool.name)) throw new Error(t`工具名称重复：${tool.name}`);

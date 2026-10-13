@@ -85,6 +85,26 @@ function setDocumentPanel(value: Element | ComponentPublicInstance | null) {
 provide("canvas", () => canvasPanelRef.value?.getCanvasContext());
 provide("mentionCanvas", () => canvasPanelRef.value?.mentionSource);
 provide("activateCanvasPanel", () => switchPanel("canvas"));
+// ACT: 对话发送前确保拿到画布上下文：切到画布面板并等待就绪，与 MCP 通道同一套逻辑。
+// 未打开画布文件时 getCanvasContext() 返回 undefined（canvasId 为空），此处如实返回 undefined 由调用方提示。
+provide("ensureCanvasContext", async (signal?: AbortSignal) => {
+  if (canvasPanelRef.value?.canvasReady && canvasPanelRef.value.canvasId) return canvasPanelRef.value.getCanvasContext();
+  if (!(await switchPanel("canvas"))) return undefined;
+  if (canvasPanelRef.value?.canvasReady && canvasPanelRef.value.canvasId) return canvasPanelRef.value.getCanvasContext();
+  // 画布正在加载时等待就绪，超时后放弃（不阻塞发送），由调用方按 undefined 处理。
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(new Error("画布加载超时")), 8000);
+  const abort = () => controller.abort(signal?.reason ?? new Error("已取消"));
+  signal?.addEventListener("abort", abort, { once: true });
+  try {
+    return await waitForControlValue(() => (canvasPanelRef.value?.canvasReady ? canvasPanelRef.value.getCanvasContext() : undefined), controller.signal);
+  } catch {
+    return undefined;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener("abort", abort);
+  }
+});
 provide("performWorkspaceFileAction", (directory: string, action: "copy" | "rename" | "move" | "delete", path: string, target?: string, entryType: "canvas" | "directory" = "canvas") =>
   documentPanelRef.value ? documentPanelRef.value.performFileAction(directory, action, path, target, entryType) : performFileAction(directory, action, path, target));
 

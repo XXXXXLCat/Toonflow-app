@@ -15,6 +15,13 @@ import { isWithin, lockWorkspaceFiles, protectWorkspaceRoot, renameWorkspaceFile
 
 const targetSchema = z.strictObject({ connectionId: z.uuid().optional(), directory: z.string().min(1).max(4096).optional(), canvasId: z.string().min(1).max(256).optional() });
 const requestSchema = z.strictObject({ target: targetSchema.optional(), args: z.record(z.string(), z.unknown()) });
+// ACT: 画布插件提供的工具名（与 packages/tools/canvas/src/runtime.ts 的 canvasOperations 一致），
+// 用于在工具缺失时区分「页面未连接」与「插件被禁用」。
+const canvasNames = new Set([
+  "getCanvas", "findCanvasNodes", "getCanvasNodes", "getCanvasEdges", "getNodeTools", "nodeTools",
+  "addCanvas", "switchCanvas", "renameCanvas", "addNode", "deleteNodes", "moveNodes", "renameNodes",
+  "connectNodes", "deleteEdges", "selectNodes", "arrangeCanvas", "fitCanvas",
+]);
 let authorizationController = new AbortController();
 for (const key of ["settings.mcp.enabled", "settings.mcp.token"] as const) conf.onDidChange(key, () => {
   authorizationController.abort();
@@ -132,7 +139,12 @@ export async function getMcpTools(): Promise<McpTool[]> {
         call: (request, callSignal) => callControl(connection.id, request.name, request.args, callSignal ?? signal, directory),
       } : undefined;
       const current = (await createAgentTools(directory!, canvas)).find(tool => tool.name === definition.name);
-      if (!current) throw new Error("工具已禁用，或所需 Toonflow 页面未连接，请重新读取工具列表");
+      // ACT: 画布类工具在缺少页面连接时会被整组丢弃，与「工具被用户禁用」症状相同；
+      // 这里按真实原因区分，避免把「页面未连接」误报成「工具已禁用」。
+      if (!current) {
+        if (!connection && canvasNames.has(definition.name)) throw new Error("所需 Toonflow 页面未连接：请保持画布页面打开后重新读取工具列表");
+        throw new Error("工具已禁用，请检查插件设置后重新读取工具列表");
+      }
       // ACT: 现有插件依赖 createTools 注入的宿主能力；MCP 没有 Pi 对话，访问会话能力时明确报错。
       const context = new Proxy({ cwd: directory, mode: "rpc", hasUI: false, model: undefined, signal }, {
         get(value, key) { if (Reflect.has(value, key)) return Reflect.get(value, key); throw new Error(t`MCP 不提供内置 Agent 会话能力：${String(key)}`); },

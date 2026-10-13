@@ -197,6 +197,7 @@ const workspaceStore = useWorkspaceStore();
 const directory = workspaceStore.project?.directory;
 const draftAttachments = ref<AgentAttachment[]>([]);
 const createCanvasContext = inject<(() => CanvasContext | undefined) | undefined>("canvas", undefined);
+const ensureCanvasContext = inject<((signal?: AbortSignal) => Promise<CanvasContext | undefined>) | undefined>("ensureCanvasContext", undefined);
 const messages = ref<AgentMessage[]>((props.initialSession?.messages ?? []).map(message => ({ ...message })));
 const browserMessages = computed(() => {
   const groups = new Map<string, { id: string; tools: AgentToolCall[] }>();
@@ -618,7 +619,12 @@ async function sendMessage(source?: AgentMessage) {
   if (!model) return ElMessage.warning("请先选择模型");
 
   const requestController = new AbortController();
-  const canvasContext = createCanvasContext?.();
+  // ACT: 与 MCP 通道对齐——发送前确保画布上下文可用（必要时自动切到画布面板并等待就绪），
+  // 否则画布工具组会在服务端被整组丢弃，agent 会误报「工具不存在」。
+  const canvasContext = ensureCanvasContext ? await ensureCanvasContext(requestController.signal) : createCanvasContext?.();
+  if (!canvasContext && ensureCanvasContext) {
+    ElMessage.warning("当前没有打开的画布，本次对话无法使用画布工具；请先在左侧打开一张画布");
+  }
   controller = requestController;
   busy.value = true;
   compacting.value = false;
