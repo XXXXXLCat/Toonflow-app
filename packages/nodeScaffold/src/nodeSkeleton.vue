@@ -34,7 +34,46 @@
       @keydown.stop
       @contextmenu.stop>
       <slot name="top">
-        <el-card class="mediaToolbar" shadow="never" :bodyStyle="{ padding: '6px' }">
+        <!-- 两行版（按钮多的图片节点用）：第一行是出图玩法，第二行是承载与输出管理。
+             ⚠️ 两处「添加到素材库 / 下载 / 全屏」是同一组按钮的两种排法，改一处要同步改另一处。 -->
+        <el-card v-if="toolbarTwoRow" class="mediaToolbar twoRow" shadow="never" :bodyStyle="{ padding: '6px' }">
+          <div class="toolbarRow">
+            <slot name="topActions" />
+          </div>
+          <div class="toolbarRow secondaryRow">
+            <el-button
+              :icon="IconFolderPlus"
+              :disabled="!assetOutputs.length || !saveNodeToAssets"
+              text
+              title="添加到素材库"
+              aria-label="添加到素材库"
+              @click.stop="handleCommand('saveAsset')">添加到素材库</el-button>
+            <slot name="topSecondaryActions" />
+            <slot name="topRightActions" />
+            <el-button
+              :tag="downloadUrl ? 'a' : 'button'"
+              :href="downloadUrl || undefined"
+              :download="downloadName"
+              :icon="IconDownload"
+              :disabled="!downloadUrl"
+              :loading="downloading"
+              :aria-busy="downloading"
+              text
+              :title="downloading ? '正在保存…' : '下载'"
+              aria-label="下载"
+              @downloadstate="downloading = $event.detail"
+              @click.stop />
+            <el-button
+              v-if="fullscreenVisible"
+              :icon="IconMaximize"
+              :disabled="!downloadUrl"
+              text
+              title="全屏"
+              aria-label="全屏"
+              @click.stop="emit('fullscreen')" />
+          </div>
+        </el-card>
+        <el-card v-else class="mediaToolbar" shadow="never" :bodyStyle="{ padding: '6px' }">
           <el-button
             :icon="IconFolderPlus"
             :disabled="!assetOutputs.length || !saveNodeToAssets"
@@ -202,6 +241,12 @@ const props = withDefaults(
       downloadUrl?: string;
       downloadName?: string;
       fullscreenVisible?: boolean;
+      /**
+       * 工具条排两行：第一行放 `#topActions`（出图玩法），第二行放「添加到素材库」、
+       * `#topSecondaryActions`（承载 / 管理）、`#topRightActions`、下载与全屏。
+       * 按钮多的图片节点用（15 个按钮单行 1045px，比多数图片节点宽好几倍）。
+       */
+      toolbarTwoRow?: boolean;
     }
   >(),
   {
@@ -627,6 +672,24 @@ watch(
         margin: 0;
         padding: 0 8px;
         text-decoration: none;
+      }
+
+      /* 两行版：两行各自横向排，行间用一条细线分隔。 */
+      &.twoRow :deep(.el-card__body) {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .toolbarRow {
+        display: flex;
+        align-items: center;
+      }
+
+      .secondaryRow {
+        margin-top: 4px;
+        padding-top: 4px;
+        border-top: 1px solid var(--el-border-color-lighter);
       }
     }
   }

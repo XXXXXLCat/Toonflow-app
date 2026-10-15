@@ -8,6 +8,9 @@
     "./referenceItem": "./src/components/referenceItem.vue",
     "./mediaHistory": "./src/components/mediaHistory.vue",
     "./imageGridSplit": "./src/components/imageGridSplit.vue",
+    "./imageMirror": "./src/components/imageMirror.vue",
+    "./imageToonSwap": "./src/components/imageToonSwap.vue",
+    "./imageUpscale": "./src/components/imageUpscale.vue",
     "./imageEditor": "./src/components/imageEditor.vue",
     "./imageLighting": "./src/components/imageLighting.vue",
     "./imageMultiAngle": "./src/components/imageMultiAngle.vue",
@@ -31,6 +34,10 @@
     "./useNodeReferences": "./src/useNodeReferences.ts",
     "./useNodeGeneration": "./src/useNodeGeneration.ts",
     "./groupNodeModels": "./src/groupNodeModels.ts",
+    "./imageCapable": "./src/imageCapable.ts",
+    "./playbookDefaults": "./src/playbookDefaults.ts",
+    "./imageAdjust": "./src/imageAdjust.ts",
+    "./imageAdjustPanel": "./src/components/imageAdjust.vue",
     "./guideReferenceCard": "./src/components/guideReferenceCard.vue"
   },
   "scripts": {

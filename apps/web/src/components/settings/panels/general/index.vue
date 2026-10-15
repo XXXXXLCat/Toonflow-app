@@ -64,7 +64,7 @@
       <div class="settingHeader">
         <div class="settingInfo">
           <h3 id="imageDropNodeTitle">拖入图片默认节点</h3>
-          <p class="description">从文件管理器拖入或选择图片时，默认创建的节点类型。选「每次询问」后，每次拖入都会弹出选择框；「ComfyUI 图片生成节点」需先启用对应的 ComfyUI 节点。</p>
+          <p class="description">从文件管理器拖入或选择图片时，默认创建的节点类型。选「每次询问」后，每次拖入都会弹出选择框；「ComfyUI 图片」节点需先启用对应插件，它自带全部图片玩法，生成由旁边自动新建的生成节点完成。</p>
         </div>
         <el-radio-group
           :modelValue="imageDropNodeType"
@@ -72,8 +72,8 @@
           aria-label="拖入图片默认节点类型"
           @change="(value) => imageDropNodeType = value as string">
           <el-radio-button value="ask">每次询问</el-radio-button>
-          <el-radio-button value="remote-imageNode">普通图片节点</el-radio-button>
-          <el-radio-button value="remote-comfyuiImageNode">ComfyUI 图片生成节点</el-radio-button>
+          <el-radio-button value="remote-imageNode">图片</el-radio-button>
+          <el-radio-button value="remote-comfyuiPictureNode">ComfyUI 图片</el-radio-button>
         </el-radio-group>
       </div>
     </section>
@@ -102,8 +102,12 @@ import canvasShortcuts from "./canvasShortcuts.vue";
 
 // 拖入/选择图片时默认创建的节点类型。值为空（"ask"）时每次都弹出选择框；
 // 与画布拖入弹窗里「记住选择」写入的是同一个 settings.imageDropNodeType。
+// 旧的「ComfyUI 图片生成」已不再是拖入目标，遇到该值按未设置处理（回落到每次询问）。
 const imageDropNodeType = computed<string>({
-  get: () => (settings.value.imageDropNodeType as string | undefined) ?? "ask",
+  get: () => {
+    const saved = settings.value.imageDropNodeType as string | undefined;
+    return saved === "remote-imageNode" || saved === "remote-comfyuiPictureNode" ? saved : "ask";
+  },
   set: (value) => {
     settings.value.imageDropNodeType = value === "ask" ? undefined : value;
   },

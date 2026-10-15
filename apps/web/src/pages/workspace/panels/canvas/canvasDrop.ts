@@ -103,7 +103,7 @@ export async function importCanvasFiles(droppedFiles: File[], position: { x: num
       const kind = mimeType.startsWith("image/") ? "image" : mimeType.startsWith("audio/") ? "audio" : mimeType.startsWith("video/") ? "video"
         : mimeType.startsWith("text/") || /^application\/(json|xml|javascript|x-ndjson)$/.test(mimeType) ? "text" : undefined;
       if (!kind) throw new Error(`${file.name}：该文件类型暂不支持导入画布`);
-      // 图片允许在导入时选择建成哪种节点：普通图片节点（纯载体/通用生成）或 ComfyUI 图片生成节点（自带扩图、动漫转真人等玩法）。
+      // 图片允许在导入时选择建成哪种节点：「图片」（基础载体）或「ComfyUI 图片」（自带扩图、动漫转真人等全部玩法）。
       // 其余媒体类型仍按各自默认节点建。
       const type = kind === "image" ? imageNodeType : `remote-${kind}Node`;
       if (!availableNodes.some(node => node.type === type)) throw new Error(`${file.name}：请先安装并启用对应的基础节点`);

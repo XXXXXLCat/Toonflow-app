@@ -8,68 +8,72 @@
     :downloadName="outputFile?.url.split(/[\\/]/).at(-1)"
     @fullscreen="previewVisible = true"
     :bottomWidth="660"
+    toolbar-two-row
     :style="{ width: (previewUrl || inpaintGuideUrl) && imageWidth ? `${imageWidth + 18}px` : undefined }">
     <template v-if="editor?.mode" #top><div ref="paintToolbar" /></template>
     <template #topActions>
       <el-button
         :icon="IconPanoramaHorizontal"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '全景图'"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl"
         text
+        title="全景图"
         aria-label="全景图"
         @click.stop="panorama?.open($event)">全景图<icon-chevron-down :size="14" /></el-button>
       <el-button
         :icon="IconBrush"
-        :disabled="generating || deleting || uploading || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel || panorama?.busy"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '局部重绘'"
+        :disabled="generating || deleting || uploading || gridSplit?.splitting || !previewUrl || panorama?.busy"
         text
+        title="局部重绘"
         aria-label="局部重绘"
         @click.stop="startEditor('inpaint')">局部重绘</el-button>
       <el-button
         :icon="IconSun"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '打光'"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl"
         text
+        title="打光"
         aria-label="打光"
         @click.stop="openLighting">打光</el-button>
       <el-button
         :icon="IconCameraRotate"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '多角度'"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl"
         text
+        title="多角度"
         aria-label="多角度"
         @click.stop="openMultiAngle">多角度</el-button>
       <el-button
         :icon="IconLayoutBoardSplit"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '制作资产：把单张立绘转成多角度角色板（六格一张）'"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl"
         text
+        title="制作资产：把单张立绘转成多角度角色板（六格一张）"
         aria-label="制作资产"
         @click.stop="openMultiviewAsset">制作资产</el-button>
       <el-button
         :icon="IconArrowsMaximize"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl"
         :loading="outpaint?.generating"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '扩图'"
         text
+        title="扩图"
         aria-label="扩图"
         @click.stop="openOutpaint">扩图</el-button>
       <el-button
         :icon="IconUserScan"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || upscaleModel"
-        :loading="animeToRealBusy"
-        :title="modelBlocksPlaybook ? '当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）' : '动漫转真人'"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl"
+        :loading="toonSwap?.busy"
         text
-        aria-label="动漫转真人"
-        @click.stop="startAnimeToReal">动漫转真人</el-button>
+        title="漫 / 真互转：动漫转真人、真人转动漫"
+        aria-label="漫/真互转"
+        @click.stop="toonSwap?.open($event)">漫/真互转</el-button>
       <el-button
         :icon="IconZoomIn"
-        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || modelBlocksPlaybook || !upscaleModelChoice"
-        :loading="upscaleBusy"
-        :title="upscaleModelChoice ? `放大（${upscaleModelChoice.label}，${data.multiplier || '2'}×）` : '请先在设置里安装放大模型（如 SeedVR2）'"
+        :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !previewUrl || !upscaleModelChoice"
+        :loading="upscale?.busy"
+        :title="upscaleTitle"
         text
         aria-label="放大"
-        @click.stop="startUpscale">放大</el-button>
+        @click.stop="upscale?.open($event)">放大</el-button>
+    </template>
+    <!-- 第二行：承载型（宫格切分 / 镜像）与管理类（替换图片 / 历史记录）——它们只搬动像素或管理产物，不生成新画面。 -->
+    <template #topSecondaryActions>
       <el-button
         :icon="IconLayoutGrid"
         :disabled="generating || deleting || uploading || editor?.busy || !previewUrl || panorama?.busy"
@@ -78,6 +82,22 @@
         title="宫格切分"
         aria-label="宫格切分"
         @click.stop="gridSplit?.open($event)">宫格切分</el-button>
+      <el-button
+        :icon="IconFlipHorizontal"
+        :disabled="generating || deleting || uploading || editor?.busy || !previewUrl || panorama?.busy"
+        :loading="mirror?.mirroring"
+        text
+        title="镜像 / 旋转：左右翻转、上下翻转、顺时针 90°、逆时针 90°、180°"
+        aria-label="镜像"
+        @click.stop="mirror?.open($event)">镜像</el-button>
+      <el-button
+        :icon="IconAdjustmentsHorizontal"
+        :disabled="generating || deleting || uploading || editor?.busy || !previewUrl || panorama?.busy"
+        :loading="adjust?.busy"
+        text
+        title="调整：亮度、曝光、对比度、阴影、晕影、饱和度、暖色、淡色、清晰度"
+        aria-label="调整"
+        @click.stop="adjust?.open($event)">调整</el-button>
       <el-button
         :icon="IconTransfer"
         :loading="uploading"
@@ -105,6 +125,7 @@
         :toolbarTarget="paintToolbar"
         :disabled="generating || deleting || uploading"
         :nodeType="VARIATION_NODE.comfyui"
+        :carrierNodeType="VARIATION_NODE.comfyui"
         alt="生成的图片"
         @load="resizeImage"
         @error="showNodeError(new Error('无法预览该图片'), '图片预览失败')" />
@@ -191,7 +212,7 @@
           <el-button
             class="sendButton"
             :icon="generating ? IconPlayerStop : IconArrowUp"
-            :disabled="deleting || panorama?.visible || animeToRealBusy || (!generating && (!selectedModel || (!upscaleModel && !generationPrompt) || (upscaleModel && !refList.some(item => item.dataType === 'IMAGE' && item.value))))"
+            :disabled="deleting || panorama?.visible || !!toonSwap?.busy || (!generating && (!selectedModel || (!upscaleModel && !generationPrompt) || (upscaleModel && !refList.some(item => item.dataType === 'IMAGE' && item.value))))"
             :title="generating ? '停止生成' : '生成图片'"
             :aria-label="generating ? '停止生成' : '生成图片'"
             @click="generating ? generationController?.abort() : startGeneration().catch((error) => showNodeError(error, '图片生成失败'))" />
@@ -209,7 +230,14 @@
     :urlList="[inpaintGuideUrl]"
     teleported
     @close="inpaintPreviewVisible = false" />
-  <imageGridSplit ref="gridSplit" :src="previewUrl" :disabled="generating || deleting" :active="node.selected" />
+  <imageAdjustPanel
+    ref="adjust"
+    :src="previewUrl"
+    :disabled="generating || deleting || !!editor?.busy"
+    :active="node.selected"
+    :nodeType="VARIATION_NODE.comfyui" />
+  <imageGridSplit ref="gridSplit" :src="previewUrl" :disabled="generating || deleting" :active="node.selected" :nodeType="VARIATION_NODE.comfyui" />
+  <imageMirror ref="mirror" :src="previewUrl" :disabled="generating || deleting" :active="node.selected" :nodeType="VARIATION_NODE.comfyui" />
   <imageLighting
     v-if="lightingVisible"
     ref="lighting"
@@ -244,6 +272,23 @@
     :nodeType="VARIATION_NODE.comfyui"
     :disabled="panelDisabled"
     @open="openPanorama" />
+  <imageToonSwap
+    ref="toonSwap"
+    :src="previewUrl"
+    :source="outputFile"
+    :nodeType="VARIATION_NODE.comfyui"
+    :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting"
+    :resolve-model="resolveEditModel"
+    :rewrite-prompt="data.rewritePrompt" />
+  <imageUpscale
+    ref="upscale"
+    :src="previewUrl"
+    :source="outputFile"
+    :nodeType="VARIATION_NODE.comfyui"
+    :disabled="generating || deleting || uploading || editor?.busy || gridSplit?.splitting || !upscaleModelChoice"
+    :multipliers="multiplierOptions"
+    :size="data.megapixels"
+    :resolve-model="resolveUpscaleModel" />
   <imageOutpaint
     v-if="outpaintVisible"
     ref="outpaint"
@@ -264,10 +309,12 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onScopeDispose, ref } from "vue";
 import { ElButton, ElCard, ElSelect, ElOption, ElOptionGroup, ElLoading, ElImageViewer } from "element-plus";
-import { IconPhotoAi, IconSparkles, IconArrowUp, IconPlayerStop, IconLayoutGrid, IconTransfer, IconPencil, IconSun, IconCameraRotate, IconPanoramaHorizontal, IconChevronDown, IconArrowsMaximize, IconUserScan, IconBrush, IconZoomIn, IconLayoutBoardSplit } from "@tabler/icons-vue";
+import { IconPhotoAi, IconSparkles, IconArrowUp, IconPlayerStop, IconLayoutGrid, IconFlipHorizontal, IconAdjustmentsHorizontal, IconTransfer, IconPencil, IconSun, IconCameraRotate, IconPanoramaHorizontal, IconChevronDown, IconArrowsMaximize, IconUserScan, IconBrush, IconZoomIn, IconLayoutBoardSplit } from "@tabler/icons-vue";
 import { nodeSkeleton, nodeTools, useNode, z, type NodeMediaModel, type NodeHandle } from "@toonflow/nodes-scaffold/runtime";
 import { groupNodeModels } from "@toonflow/node-shared/groupNodeModels";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
+import { isImageCapableModel } from "@toonflow/node-shared/imageCapable";
+import { modelIdOf, pickPlaybookModel, PLAYBOOK_MEGAPIXELS } from "@toonflow/node-shared/playbookDefaults";
 import { useNodeGeneration } from "@toonflow/node-shared/useNodeGeneration";
 import { useNodeReferences } from "@toonflow/node-shared/useNodeReferences";
 import referenceItem from "@toonflow/node-shared/referenceItem";
@@ -275,11 +322,15 @@ import guideReferenceCard from "@toonflow/node-shared/guideReferenceCard";
 import promptInput from "@toonflow/node-shared/promptInput";
 import mediaHistory from "@toonflow/node-shared/mediaHistory";
 import imageGridSplit from "@toonflow/node-shared/imageGridSplit";
+import imageMirror from "@toonflow/node-shared/imageMirror";
 import imageEditor from "@toonflow/node-shared/imageEditor";
 import imageLighting from "@toonflow/node-shared/imageLighting";
 import imageMultiAngle from "@toonflow/node-shared/imageMultiAngle";
 import imageMultiviewAsset from "@toonflow/node-shared/imageMultiviewAsset";
 import imagePanorama from "@toonflow/node-shared/imagePanorama";
+import imageToonSwap from "@toonflow/node-shared/imageToonSwap";
+import imageUpscale from "@toonflow/node-shared/imageUpscale";
+import imageAdjustPanel from "@toonflow/node-shared/imageAdjustPanel";
 import imageOutpaint from "@toonflow/node-shared/imageOutpaint";
 import imageInpaintPrompt from "@toonflow/node-shared/imageInpaintPrompt";
 import { useImageInpaint, type ImageInpaint, type InpaintDraftInput } from "@toonflow/node-shared/imageInpaint";
@@ -301,7 +352,7 @@ const { id, node, nodeProps, nodeEvent, outputs, files, ai, updateNodeInternals 
   label: "ComfyUI 图片生成",
 });
 type PromptModel = NonNullable<InstanceType<typeof promptInput>["$props"]["modelValue"]>;
-const data = computed(() => node.data as { prompt: string; promptModel: PromptModel; model: string; megapixels: string; ratio: string; rewritePrompt: boolean; loras?: { name: string; strength: number }[]; multiplier?: string });
+const data = computed(() => node.data as { prompt: string; promptModel: PromptModel; model: string; megapixels: string; ratio: string; rewritePrompt: boolean; loras?: { name: string; strength: number }[]; multiplier?: string; /** 一键玩法（局部重绘 / 漫真互转）挑过一次的模型，记住下次直接用。 */ playbookModel?: string });
 data.value.prompt ??= "";
 data.value.promptModel ??= [];
 data.value.model ??= "";
@@ -317,6 +368,7 @@ const modelsLoading = ref(false);
 const deleting = ref(false);
 const previewVisible = ref(false);
 const gridSplit = ref<InstanceType<typeof imageGridSplit>>();
+const mirror = ref<InstanceType<typeof imageMirror>>();
 const editor = ref<InstanceType<typeof imageEditor>>();
 const lighting = ref<InstanceType<typeof imageLighting>>();
 const lightingTarget = ref<HTMLElement>();
@@ -333,8 +385,9 @@ const outpaintTarget = ref<HTMLElement>();
 const outpaintVisible = ref(false);
 const inpaintPrompt = ref<InstanceType<typeof imageInpaintPrompt>>();
 const inpaintTarget = ref<HTMLElement>();
-const animeToRealBusy = ref(false);
-const upscaleBusy = ref(false);
+const toonSwap = ref<InstanceType<typeof imageToonSwap>>();
+const upscale = ref<InstanceType<typeof imageUpscale>>();
+const adjust = ref<InstanceType<typeof imageAdjustPanel>>();
 const createVariation = useImageVariationNode({ nodeType: VARIATION_NODE.comfyui });
 const generateInpaint = useImageInpaint();
 const paintToolbar = ref<HTMLElement>();
@@ -350,8 +403,7 @@ const selectedModel = computed(() => models.value.find((item) => JSON.stringify(
 const DEFAULT_MEGAPIXELS = ["0.5", "1", "2", "4", "8"];
 const DEFAULT_RATIOS = ["1:1"];
 // 参考图能力由所选模型的 mode 声明决定（取值 text / singleImage / multiReference），未声明时按文生图处理。
-const IMAGE_MODES = ["singleImage", "multiReference"];
-const imageCapable = computed(() => (selectedModel.value?.mode ?? []).flat().some((mode) => IMAGE_MODES.includes(mode)));
+const imageCapable = computed(() => isImageCapableModel(selectedModel.value));
 // 「自适应」不是 W:H：选中它表示比例跟随参考图，供应商据此让主 latent 取参考图编码，节点也不传 ratio。
 const megapixelOptions = computed(() => (selectedModel.value?.imageSizes?.length ? selectedModel.value.imageSizes : DEFAULT_MEGAPIXELS));
 const ratioOptions = computed(() => {
@@ -367,6 +419,8 @@ const multiplierOptions = computed(() => selectedModel.value?.upscaleMultipliers
 // 否则取第一个声明了 upscale 的（SeedVR2 等）。一个都没有时按钮禁用。
 const upscaleModelChoice = computed(() =>
   upscaleModel.value ? selectedModel.value : models.value.find((item) => item.upscale === true));
+// 按钮提示列出可选倍数（如「放大：1.5× / 2× / 3× / 4×」），没装放大模型时改成安装提示。
+const upscaleTitle = computed(() => upscaleModelChoice.value ? `放大：${multiplierOptions.value.map(value => `${value}×`).join(" / ")}（${upscaleModelChoice.value.label}）` : "请先在设置里安装放大模型（如 SeedVR2）");
 const modelGroups = computed(() => groupNodeModels(models.value));
 // 放大类模型没有提示词通道，schema 要求 prompt 非空，这里给一个占位值即可。
 const generationPrompt = computed(() =>
@@ -395,10 +449,26 @@ const inpaintGuideUrl = files.useFileUrl(
 );
 const inpaintPreviewVisible = ref(false);
 
-// 打光、多角度都要拿本节点的出图当参考图，纯文生图模型吃不下，按钮按模型能力禁用。
-const modelBlocksPlaybook = computed(() => !!selectedModel.value && !imageCapable.value);
+/**
+ * 一键玩法（局部重绘、漫真互转）用哪个模型。
+ *
+ * 它们不带模型下拉，只能自己找：① 默认「Qwen Image 2.1 图像编辑」（玩法是照着参考图改，
+ * 执行者就是它）；② 退而求其次用上次挑过的（data.playbookModel）；
+ * ③ 都没有就自动取第一个支持参考图的并记住。
+ * 之前是「节点模型不支持参考图就禁用按钮」，逼用户先去换模型——玩法本来就该点了就用。
+ */
+async function resolveEditModel() {
+  const items = models.value.length ? models.value : (await ai.getMediaModels()).filter((item) => item.type === "image");
+  const preferred = pickPlaybookModel(items, data.value.model);
+  // 记忆值只在默认模型不可用（没装 / 换名了）时才顶上，用户以前挑过的偏好不至于丢。
+  const remembered = items.find((item) => modelIdOf(item) === data.value.playbookModel);
+  const target = preferred ?? (remembered && isImageCapableModel(remembered) ? remembered : undefined) ?? items.find((item) => isImageCapableModel(item));
+  if (!target) throw new Error("未找到支持参考图的图片模型，请先在「设置 → 媒体模型」中安装（如 Qwen Image Edit）");
+  data.value.playbookModel = modelIdOf(target);
+  return data.value.playbookModel;
+}
 // 面板打开期间底栏被面板接管，其余交互都要让路，避免读到半途的状态。
-const panelDisabled = computed(() => generating.value || deleting.value || uploading.value || !!editor.value?.busy || !!gridSplit.value?.splitting);
+const panelDisabled = computed(() => generating.value || deleting.value || uploading.value || !!editor.value?.busy || !!gridSplit.value?.splitting || !!mirror.value?.mirroring);
 // 玩法预置的引导参考图（「制作资产」的版式灰模等）。它不走连线，只在 data 上留一条标记，
 // 底栏据此把它显示成一张只读卡片——否则画布上看不出它存在。
 const guideImage = computed(() => (node.data as Record<string, unknown>).guideImage as { path: string; mimeType: string; label: string } | undefined);
@@ -453,7 +523,7 @@ function loadModels() {
 
 // 标记与局部重绘共用同一个画布编辑器：进入编辑态后必须先确认或取消，才能做别的操作。
 function startEditor(mode: "inpaint" | "mark") {
-  if (generating.value || deleting.value || uploading.value || gridSplit.value?.splitting || panorama.value?.busy) return;
+  if (generating.value || deleting.value || uploading.value || gridSplit.value?.splitting || mirror.value?.mirroring || panorama.value?.busy) return;
   lightingVisible.value = false;
   multiAngleVisible.value = false;
   multiviewAssetVisible.value = false;
@@ -464,7 +534,7 @@ function startEditor(mode: "inpaint" | "mark") {
 // 局部重绘：编辑器把涂抹区域导出成标注图与 mask，交给新节点按提示词重绘，出图后再本地合成。
 async function createInpaint(input: InpaintDraftInput, signal: AbortSignal) {
   if (!editor.value) throw new Error("请先进入局部重绘");
-  await editor.value.createInpaint(input, signal);
+  await editor.value.createInpaint(input, signal, await resolveEditModel());
 }
 
 // 打光、多角度、制作资产、扩图互斥：四者都把底栏换成自己的面板，同时开只会互相盖住。
@@ -516,50 +586,16 @@ function openPanorama() {
   outpaintVisible.value = false;
 }
 
-// 动漫转真人是一键玩法：没有参数面板，用固定提示词起一个新节点。
-async function startAnimeToReal() {
-  if (panelDisabled.value || !previewUrl.value || !outputFile.value || animeToRealBusy.value) return;
-  if (modelBlocksPlaybook.value) return void showNodeError(new Error("当前模型不支持参考图，请先换成支持参考图的模型（如 Qwen Image Edit）"), "动漫转真人失败");
-  animeToRealBusy.value = true;
-  try {
-    await createVariation({
-      label: "动漫转真人",
-      prompt: buildAnimeToRealPrompt(),
-      model: data.value.model,
-      size: data.value.megapixels,
-      // 只换渲染方式不换画面，出图必须与原图同比例——固定用「自适应」让比例跟随参考图。
-      ratio: AUTO_RATIO,
-      rewritePrompt: data.value.rewritePrompt,
-      loras: recommendedLora("animeToReal"),
-    });
-  } catch (error) {
-    showNodeError(error, "动漫转真人失败");
-  } finally {
-    animeToRealBusy.value = false;
-  }
-}
-
-// 放大也是一键玩法：在旁边建一个挂了放大模型的新节点并自己发起生成。
-// 放大模型不吃提示词与 LoRA，尺寸/比例也由它按原图推导，所以不传 prompt、size、ratio、loras。
-async function startUpscale() {
-  if (panelDisabled.value || !previewUrl.value || !outputFile.value || upscaleBusy.value) return;
+// 放大也是一键玩法：在旁边建一个挂了放大模型的新节点并自己发起生成，倍数由下拉选择。
+// 放大模型不吃提示词与 LoRA，尺寸/比例也由它按原图推导，所以只下发倍数。
+// 模型优先用节点当前选中的放大模型，否则取第一个声明了 upscale 的（SeedVR2 等）。
+async function resolveUpscaleModel() {
   const target = upscaleModelChoice.value;
-  if (!target) return void showNodeError(new Error("请先在设置里安装放大模型（如 SeedVR2）"), "放大失败");
-  upscaleBusy.value = true;
-  try {
-    await createVariation({
-      label: "放大",
-      prompt: "",
-      model: JSON.stringify([target.providerId, target.modelId]),
-      size: data.value.megapixels,
-      ratio: AUTO_RATIO,
-      multiplier: data.value.multiplier || "2",
-    });
-  } catch (error) {
-    showNodeError(error, "放大失败");
-  } finally {
-    upscaleBusy.value = false;
+  if (!target) {
+    showNodeError(new Error("请先在设置里安装放大模型（如 SeedVR2）"), "放大失败");
+    return undefined;
   }
+  return JSON.stringify([target.providerId, target.modelId]);
 }
 
 async function replaceOutput(event: Event) {
@@ -590,8 +626,8 @@ async function startGeneration() {
   if (editor.value?.mode) throw new Error("请先完成图片标记");
   // 全景图预览是全屏弹窗，开着的时候生成结果看不到，也容易并发抢显存。
   if (panorama.value?.visible) throw new Error("请先关闭全景图，再启动图片生成");
-  // 扩图与动漫转真人都会在旁边建新节点并自己发起生成，重复点击只会抢显存。
-  if (outpaint.value?.generating || animeToRealBusy.value || upscaleBusy.value) throw new Error("玩法正在生成，请等待完成");
+  // 扩图与漫 / 真互转都会在旁边建新节点并自己发起生成，重复点击只会抢显存。
+  if (outpaint.value?.generating || toonSwap.value?.busy || !!upscale.value?.busy) throw new Error("玩法正在生成，请等待完成");
   if (!generationPrompt.value) throw new Error("请输入生成提示词");
   if (refList.value.some(item => item.value === undefined)) throw new Error("引用节点暂无内容，请先补充引用内容");
   if (!choice) throw new Error("请先选择图片生成模型");
@@ -677,8 +713,8 @@ async function startGeneration() {
 }
 
 nodeEvent.on("save", (reason) => {
-  if (uploading.value || gridSplit.value?.splitting || panorama.value?.busy) throw new Error("图片处理中，请完成后再切换或刷新节点");
-  if (lighting.value?.generating || multiAngle.value?.generating || multiviewAsset.value?.generating || outpaint.value?.generating || animeToRealBusy.value || upscaleBusy.value) throw new Error("玩法正在生成，请完成后再切换或刷新节点");
+  if (uploading.value || gridSplit.value?.splitting || mirror.value?.mirroring || panorama.value?.busy) throw new Error("图片处理中，请完成后再切换或刷新节点");
+  if (lighting.value?.generating || multiAngle.value?.generating || multiviewAsset.value?.generating || outpaint.value?.generating || toonSwap.value?.busy || !!upscale.value?.busy) throw new Error("玩法正在生成，请完成后再切换或刷新节点");
   if (reason === "reload" && generating.value) throw new Error("图片生成中，请完成后再刷新节点");
 });
 nodeEvent.on("delete", async () => {

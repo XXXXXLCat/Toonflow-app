@@ -40,16 +40,18 @@ import { computed, nextTick, ref, watch } from "vue";
 import { ElDialog, ElDropdown, ElDropdownItem, ElDropdownMenu } from "element-plus";
 import { IconPanoramaHorizontal } from "@tabler/icons-vue";
 import { useNode } from "@vue-flow/core";
-import type { NodeMediaValue } from "@toonflow/nodes-scaffold/runtime";
+import { useNodeAi, type NodeMediaValue } from "@toonflow/nodes-scaffold/runtime";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
 import { buildPanoramaPrompt, type PanoramaMode } from "../imagePanorama";
 import { usePanoramaCapture } from "../usePanoramaCapture";
-import { useImageVariationNode, variationSizeKey, VARIATION_NODE, recommendedLora } from "@toonflow/node-shared/useImageVariationNode";
+import { useImageVariationNode, AUTO_RATIO, recommendedLora } from "@toonflow/node-shared/useImageVariationNode";
+import { modelIdOf, pickPlaybookModel, PLAYBOOK_MEGAPIXELS } from "@toonflow/node-shared/playbookDefaults";
 import imagePanoramaPreview from "./imagePanoramaPreview.vue";
 
 const props = defineProps<{ src: string; source?: NodeMediaValue; disabled?: boolean; nodeType?: string }>();
 const emit = defineEmits<{ open: [] }>();
 const { node } = useNode();
+const ai = useNodeAi();
 const dropdown = ref<InstanceType<typeof ElDropdown>>();
 const trigger = ref<HTMLElement>();
 const visible = ref(false);
@@ -82,16 +84,16 @@ async function selectAction(command: string) {
   if (!props.source) return;
   creating.value = true;
   try {
+    // 全景图也是「照着参考图改」，执行者统一是编辑模型（Qwen Image 2.1 图像编辑），
+    // 分辨率固定 2MP、比例自适应——与其余玩法保持同一套默认值。
+    const choice = pickPlaybookModel((await ai.getMediaModels()).filter(item => item.type === "image"));
+    if (!choice) throw new Error("未找到可用的图片模型，请先在「设置 → 媒体模型」中安装");
     await createVariation({
       label: mode.value === "sphere" ? "720°全景图" : "360°环绕图",
       prompt: buildPanoramaPrompt(mode.value),
-      model: typeof node.data.model === "string" ? node.data.model : "",
-      // 尺寸键按承载节点走：ComfyUI 节点上叫 megapixels，内置节点叫 size。
-      size: (() => {
-        const value = (node.data as Record<string, unknown>)[variationSizeKey(props.nodeType ?? VARIATION_NODE.builtin)];
-        return typeof value === "string" ? value : "";
-      })(),
-      ratio: mode.value === "sphere" ? "2:1" : "4:1",
+      model: modelIdOf(choice),
+      size: PLAYBOOK_MEGAPIXELS,
+      ratio: AUTO_RATIO,
       loras: recommendedLora("panorama"),
     });
   } catch (error) {

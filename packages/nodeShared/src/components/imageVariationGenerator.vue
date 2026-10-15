@@ -27,6 +27,7 @@ import { useNodeAi, useNodeFiles, useNodeToolsContext, type NodeMediaModel, type
 import { groupNodeModels } from "@toonflow/node-shared/groupNodeModels";
 import { showNodeError } from "@toonflow/node-shared/showNodeError";
 import { useImageVariationNode, variationSizeKey, VARIATION_NODE, AUTO_RATIO, persistVariationImages } from "@toonflow/node-shared/useImageVariationNode";
+import { modelIdOf, nearestSize, pickPlaybookModel, PLAYBOOK_MEGAPIXELS } from "@toonflow/node-shared/playbookDefaults";
 
 const props = defineProps<{
   settings: { model: string; size: string; ratio: string; rewritePrompt?: boolean };
@@ -115,7 +116,7 @@ function lockedRatioTarget() {
 
 watch(selectedModel, choice => {
   if (!choice) return;
-  if (!sizeOptions.value.includes(props.settings.size)) props.settings.size = sizeOptions.value.toSorted((left, right) => (Number.parseFloat(left) || Infinity) - (Number.parseFloat(right) || Infinity))[0]!;
+  if (!sizeOptions.value.includes(props.settings.size)) props.settings.size = nearestSize(sizeOptions.value);
   if (!ratioOptions.value.includes(props.settings.ratio)) props.settings.ratio = nearestRatio(props.lockedRatio ? lockedRatioTarget() : undefined);
 }, { flush: "sync" });
 watch(() => [props.source?.url, props.source?.mimeType], () => generationController?.abort(), { flush: "sync" });
@@ -128,11 +129,20 @@ async function refreshModels() {
   try {
     const result = await ai.getMediaModels();
     if (disposed) return;
+    models.value = result.filter(item => item.type === "image");
     if (inheritModelConfig) {
-      // 尺寸键按承载节点走：ComfyUI 节点上叫 megapixels，其余叫 size。
-      for (const [key, sourceKey] of [["model", "model"], ["size", variationSizeKey(props.nodeType ?? VARIATION_NODE.builtin)]] as const) {
-        const value = (node.data as Record<string, unknown>)[sourceKey];
-        if (typeof value === "string" && value.trim()) props.settings[key] = value;
+      // 模型：玩法一律默认「Qwen Image 2.1 图像编辑」——玩法是照着参考图改，执行者就是编辑模型，
+      // 而宿主节点上选的那个是用户给文生图挑的，与玩法无关，所以不继承、每次打开都回落到这个默认项。
+      // 找不到它时才依次退让：宿主模型（能吃参考图）→ 第一个能吃参考图的 → 列表首项。
+      const hostId = (node.data as Record<string, unknown>).model;
+      const choice = pickPlaybookModel(models.value, typeof hostId === "string" ? hostId : undefined);
+      props.settings.model = choice ? modelIdOf(choice) : "";
+      // 分辨率：ComfyUI 承载节点固定默认 2MP（档位不含 2 时取数值最接近的）；
+      // 内置图片生成节点没有百万像素档位，沿用本节点存档值。
+      if (supportsRewrite.value) props.settings.size = nearestSize(sizeOptions.value, PLAYBOOK_MEGAPIXELS);
+      else {
+        const value = (node.data as Record<string, unknown>)[variationSizeKey(props.nodeType ?? VARIATION_NODE.builtin)];
+        if (typeof value === "string" && value.trim()) props.settings.size = value;
       }
       // 比例：打光、多角度、扩图、动漫转真人要求出图与原图同比例，
       // ComfyUI 承载时一律默认「自适应」（比例跟随参考图），每次打开面板都是这个默认项。
@@ -157,10 +167,10 @@ async function refreshModels() {
       }
       inheritModelConfig = false;
     }
-    models.value = result.filter(item => item.type === "image");
-    if (!props.settings.model) {
-      const choice = models.value[0];
-      props.settings.model = choice ? JSON.stringify([choice.providerId, choice.modelId]) : "";
+    // 模型列表刷新后（比如下拉重新打开），存档里的模型可能已经不存在了，补挑一次。
+    if (!props.settings.model || !selectedModel.value) {
+      const choice = pickPlaybookModel(models.value);
+      props.settings.model = choice ? modelIdOf(choice) : "";
     }
   } catch (error) { if (!disposed) showNodeError(error, "模型读取失败"); }
   finally { modelsLoading.value = false; }

@@ -116,21 +116,21 @@
       title="导入为哪种图片节点"
       :show-close="false"
       align-center
-      width="380px"
+      width="480px"
       append-to-body>
-      <p class="imageChoiceHint">拖入的图片要建成哪种节点？普通图片节点只做展示与通用生成；ComfyUI 图片生成节点自带扩图、动漫转真人、制作资产、放大等玩法。</p>
+      <p class="imageChoiceHint">拖入的图片要建成哪种节点？「图片」为基础图片节点；「ComfyUI 图片」自带制作资产、扩图、动漫转真人、放大等全部玩法。</p>
       <template #footer>
         <div class="imageChoiceFooter">
           <el-checkbox v-model="imageChoice.remember">记住选择（不再询问）</el-checkbox>
           <div class="imageChoiceButtons">
             <el-button @click="cancelImageNodeType">取消</el-button>
-            <el-button @click="confirmImageNodeType(IMAGE_NODE_CHOICES.normal)">普通图片节点</el-button>
+            <el-button @click="confirmImageNodeType(IMAGE_NODE_CHOICES.normal)">图片</el-button>
             <el-button
               type="primary"
-              :disabled="!comfyuiNodeAvailable"
-              :title="comfyuiNodeAvailable ? '' : '请先在「设置 → 媒体模型」中启用 ComfyUI 图片生成节点'"
-              @click="confirmImageNodeType(IMAGE_NODE_CHOICES.comfyui)">
-              ComfyUI 图片生成节点
+              :disabled="!imageNodeAvailable(IMAGE_NODE_CHOICES.picture)"
+              :title="imageNodeAvailable(IMAGE_NODE_CHOICES.picture) ? '' : '请先在「设置 → 媒体模型」中启用 ComfyUI 图片节点'"
+              @click="confirmImageNodeType(IMAGE_NODE_CHOICES.picture)">
+              ComfyUI 图片
             </el-button>
           </div>
         </div>
@@ -496,15 +496,20 @@ function dragFilesOver(event: DragEvent) {
   return true;
 }
 
-// 拖入/选择图片时，让用户决定建成「普通图片节点」还是「ComfyUI 图片生成节点」，
-// 后者自带扩图、动漫转真人、制作资产、放大等玩法（节点本身只调 ComfyUI）。
+// 拖入/选择图片时，让用户决定建成「图片」节点还是「ComfyUI 图片」节点，
+// 后者自带制作资产、扩图、动漫转真人、放大等全部玩法（节点本身只调 ComfyUI）。
+// 「ComfyUI 图片生成」不作为拖入目标：需要时从「添加节点」菜单创建，玩法也会自动新建它。
 // 选择可记住为默认，写入 settings.imageDropNodeType，下次不再询问。
-const IMAGE_NODE_CHOICES = { normal: "remote-imageNode", comfyui: "remote-comfyuiImageNode" } as const;
+const IMAGE_NODE_CHOICES = { normal: "remote-imageNode", picture: "remote-comfyuiPictureNode" } as const;
+const IMAGE_NODE_CHOICE_VALUES: string[] = Object.values(IMAGE_NODE_CHOICES);
 const imageChoice = reactive<{ visible: boolean; remember: boolean; resolve?: (value: string | null) => void }>({ visible: false, remember: false });
-const comfyuiNodeAvailable = computed(() => availableNodes.value.some(node => node.type === IMAGE_NODE_CHOICES.comfyui));
+function imageNodeAvailable(type: string) {
+  return availableNodes.value.some(node => node.type === type);
+}
 function chooseImageNodeType(): Promise<string | null> {
   const saved = settings.value.imageDropNodeType;
-  if (saved === IMAGE_NODE_CHOICES.normal || saved === IMAGE_NODE_CHOICES.comfyui) return Promise.resolve(saved);
+  // 记住的类型若当前不可用（例如对应 ComfyUI 插件被停用），回落到弹窗让用户重选，避免拖入时直接报错。
+  if (typeof saved === "string" && IMAGE_NODE_CHOICE_VALUES.includes(saved) && imageNodeAvailable(saved)) return Promise.resolve(saved);
   return new Promise((resolve) => {
     imageChoice.resolve = resolve;
     imageChoice.remember = false;

@@ -3,7 +3,7 @@ import { useNode, useVueFlow } from "@vue-flow/core";
 import type { NodeImageRequest } from "@toonflow/nodes-scaffold/runtime";
 import type { ImageInpaint } from "./imageInpaint";
 
-export const VARIATION_NODE = { builtin: "remote-imageGenerationNode", comfyui: "remote-comfyuiImageNode" } as const;
+export const VARIATION_NODE = { builtin: "remote-imageGenerationNode", comfyui: "remote-comfyuiImageNode", picture: "remote-comfyuiPictureNode" } as const;
 
 // 「自适应」不是 W:H 比例：选中它表示比例跟随参考图，供应商据此让主 latent 取参考图编码，节点也不下发 ratio。
 // 局部重绘必须用这个值——生成图若与原图比例不同，按蒙版合成时会被拉伸变形。
@@ -33,6 +33,8 @@ const RECOMMENDED_LORAS = {
   outpaint: `${RECOMMENDED_LORA_DIR}\\qwen-image-2.1-outpaint-v2.safetensors`,
   // 动漫转真人：只换渲染方式不换画面。
   animeToReal: `${RECOMMENDED_LORA_DIR}\\Qwen2.1_Anything2RealCharacters.safetensors`,
+  // 真人转动漫：同一件事的反方向，换的是动画专用 LoRA（画风由它决定），提示词同步改成动画渲染描述。
+  realToAnime: `${RECOMMENDED_LORA_DIR}\\Nick_2anime_QwenImage2.1.safetensors`,
   // 局部重绘：压住重绘带来的整体漂移，让选区外的构图与色调尽量贴近原图。
   inpaint: `${RECOMMENDED_LORA_DIR}\\qwen-image-2.1-consistency.safetensors`,
 } as const;
@@ -42,9 +44,10 @@ export function recommendedLora(kind: keyof typeof RECOMMENDED_LORAS, strength =
   return [{ name: RECOMMENDED_LORAS[kind], strength }];
 }
 
-const NODE_LABELS: Record<string, string> = {
+export const NODE_LABELS: Record<string, string> = {
   [VARIATION_NODE.builtin]: "图片生成节点",
-  [VARIATION_NODE.comfyui]: "ComfyUI 图片节点",
+  [VARIATION_NODE.comfyui]: "ComfyUI 图片生成节点",
+  [VARIATION_NODE.picture]: "ComfyUI 图片节点",
 };
 
 /**

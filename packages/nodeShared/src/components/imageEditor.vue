@@ -59,10 +59,11 @@ import { ElButton, ElMessage } from "element-plus";
 import { IconBrush, IconEraser, IconSquare, IconCircle, IconTypography, IconArrowBackUp, IconArrowForwardUp, IconTrash, IconCheck, IconX } from "@tabler/icons-vue";
 import { uploadNodeFile, useNodeFiles } from "@toonflow/nodes-scaffold/runtime";
 import { showNodeError } from "../showNodeError";
-import { useImageVariationNode, variationSizeKey, VARIATION_NODE, AUTO_RATIO, recommendedLora } from "../useImageVariationNode";
+import { useImageVariationNode, variationSizeKey, VARIATION_NODE, AUTO_RATIO, recommendedLora, NODE_LABELS } from "../useImageVariationNode";
 import { buildInpaintPrompt, type InpaintDraftInput } from "../imageInpaint";
+import { PLAYBOOK_MEGAPIXELS } from "../playbookDefaults";
 
-const props = defineProps<{ src: string; alt: string; toolbarTarget?: HTMLElement; disabled?: boolean; nodeType?: string }>();
+const props = defineProps<{ src: string; alt: string; toolbarTarget?: HTMLElement; disabled?: boolean; nodeType?: string; carrierNodeType?: string }>();
 const emit = defineEmits<{ load: [event: Event]; error: [event: Event] }>();
 const { node } = useNode();
 const { addNodes, addEdges, findNode, getNodes, nodeTypes } = useVueFlow();
@@ -73,6 +74,10 @@ const batchHistory = inject<(action: () => Promise<void>) => Promise<void>>("bat
 const sourceImage = ref<HTMLImageElement>();
 const paintCanvas = ref<HTMLCanvasElement>();
 const mode = ref<"inpaint" | "mark">();
+// 标记是承载型功能（只叠加笔迹、不调用生成），产物与宿主同型：ComfyUI 图片节点里标记出的图
+// 还是 ComfyUI 图片节点，保留全部玩法按钮。不能复用 nodeType——那个参数指局部重绘生成落的节点。
+const markType = computed(() => props.carrierNodeType || "remote-imageNode");
+const markLabel = computed(() => NODE_LABELS[markType.value] ?? markType.value);
 const busy = ref(false);
 const tool = ref<"brush" | "eraser" | "rectangle" | "circle" | "text">("brush");
 const color = ref("#ff4545");
@@ -303,7 +308,7 @@ async function saveMark() {
   if (busy.value) return;
   commitText();
   if (!hasDrawing.value) return;
-  if (!nodeTypes?.value?.["remote-imageNode"]) return void ElMessage.error("请先启用图片节点插件");
+  if (!nodeTypes?.value?.[markType.value]) return void ElMessage.error(`请先启用${markLabel.value}节点插件`);
   const controller = operation = new AbortController();
   busy.value = true;
   const id = crypto.randomUUID();
@@ -319,7 +324,7 @@ async function saveMark() {
     controller.signal.throwIfAborted();
     const path = await uploadNodeFile(workspace, id, file);
     controller.signal.throwIfAborted();
-    if (findNode(node.id) !== node || !nodeTypes?.value?.["remote-imageNode"]) throw new Error("画布节点已变化，请重新保存");
+    if (findNode(node.id) !== node || !nodeTypes?.value?.[markType.value]) throw new Error("画布节点已变化，请重新保存");
     const x = node.computedPosition.x + node.dimensions.width + 80;
     let y = node.computedPosition.y;
     for (const other of [...getNodes.value].sort((left, right) => left.computedPosition.y - right.computedPosition.y)) {
@@ -327,7 +332,7 @@ async function saveMark() {
     }
     await batchHistory(async () => {
       controller.signal.throwIfAborted();
-      addNodes([{ id, type: "remote-imageNode", position: { x, y }, data: { label: `${node.data.label || "图片"} - 标记`, outputs: { image: { dataType: "IMAGE", value: { url: path, mimeType: "image/png" } } } } }]);
+      addNodes([{ id, type: markType.value, position: { x, y }, data: { label: `${node.data.label || "图片"} - 标记`, outputs: { image: { dataType: "IMAGE", value: { url: path, mimeType: "image/png" } } } } }]);
       addEdges([{ id: crypto.randomUUID(), source: node.id, sourceHandle: "image", target: id, targetHandle: "in" }]);
       committed = true;
     });
@@ -343,7 +348,11 @@ async function saveMark() {
   }
 }
 
-async function createInpaint(input: InpaintDraftInput, signal: AbortSignal) {
+/**
+ * @param modelOverride 承载节点的模型不一定能吃参考图（用户在节点上选的可能是纯文生图 / 放大模型），
+ *   调用方可以传一个解析好的模型进来；不传就沿用 `node.data.model`。
+ */
+async function createInpaint(input: InpaintDraftInput, signal: AbortSignal, modelOverride?: string) {
   if (busy.value || mode.value !== "inpaint") throw new Error("请先进入局部重绘");
   if (!input.prompt.trim()) throw new Error("请输入重绘提示词");
   // 承载节点由调用方指定：ComfyUI 图片节点与内置图片生成节点的尺寸键名不同，不能写死。
@@ -383,8 +392,10 @@ async function createInpaint(input: InpaintDraftInput, signal: AbortSignal) {
     }
     const result = await createVariation({
       label: "局部重绘", nodeId, prompt: buildInpaintPrompt(input.prompt),
-      model: typeof node.data.model === "string" ? node.data.model : "",
-      size: (() => {
+      model: modelOverride ?? (typeof node.data.model === "string" ? node.data.model : ""),
+      // 局部重绘是「照着原图改」，ComfyUI 承载节点固定 2MP（与其余玩法同一套默认值）；
+      // 内置图片生成节点没有百万像素档位，沿用存档值。
+      size: type === VARIATION_NODE.comfyui ? PLAYBOOK_MEGAPIXELS : (() => {
         const value = (node.data as Record<string, unknown>)[variationSizeKey(type)];
         return typeof value === "string" ? value : "";
       })(),

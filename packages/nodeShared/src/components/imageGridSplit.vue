@@ -78,7 +78,8 @@ const imageSize = ref({ width: 0, height: 0 });
 // ACT: 每轴最多 10 格（100 张），逐张编码上传以控制内存；更大批量需加入分批任务后再放开。
 const validGrid = computed(() => [rows.value, columns.value].every(value => Number.isInteger(value) && value >= 1 && value <= 10));
 const canSplit = computed(() => validGrid.value && rows.value * columns.value > 1 && imageSize.value.width >= columns.value && imageSize.value.height >= rows.value);
-// 切出来的切片用哪种节点承载由调用方决定（内置图片节点默认；本地工作流节点可传自己的类型）。
+// 切出来的切片用哪种节点承载由调用方决定：默认内置图片节点；ComfyUI 宿主传自己的类型，
+// 让切出的每一格与宿主同型（保留该节点的全部玩法按钮）。
 const targetType = computed(() => props.nodeType || "remote-imageNode");
 let splitController: AbortController | undefined;
 
